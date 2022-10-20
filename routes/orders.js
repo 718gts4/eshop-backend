@@ -29,11 +29,11 @@ router.get(`/:id`, async (req, res)=>{
 router.post('/', async (req,res)=>{
     const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
 
-        const orderItemObject = await OrderItem.findById(orderItem);
+        const orderItemObj = await OrderItem.findById(orderItem);
 
         let newOrderItem = new OrderItem({
-            quantity: orderItemObject.quantity,
-            product: orderItemObject.product
+            quantity: orderItemObj.quantity,
+            product: orderItemObj.product
         })
 
         newOrderItem = await newOrderItem.save();
@@ -100,6 +100,45 @@ router.delete(`/:id`, (req, res)=>{
     }).catch(err=>{
         return res.status(400).json({success: false, error: err})
     })
+})
+
+router.get('/get/totalsales', async (req, res) => {
+    // below is data received from mongodb with mongoose method $sum
+    const totalSales = await Order.aggregate([
+        { $group : { _id: null, totalsales : { $sum: '$totalPrice'} }}
+    ])
+
+    if(!totalSales) {
+        return res.status(400).send('The order sales cannot be generated')
+    }
+
+    // use .pop() to only collect certain data from array
+    res.send({totalsales: totalSales.pop().totalsales})
+})
+
+router.get(`/get/count`, async (req, res) => {
+    const orderCount = await Order.countDocuments();
+
+    if (!orderCount) {
+        res.status(500).json({ success: false });
+    }
+    res.send({
+        orderCount: orderCount,
+    });
+});
+
+router.get(`/get/userorders/:userid`, async (req, res)=>{
+    const userOrderList = await Order.find({user: req.params.userid}).populate({
+        path: 'orderItems', populate: {
+            path: 'product', populate: 'category'
+        }
+    }).sort({'dateOrdered': -1});
+
+    if(!userOrderList){
+        res.status(500).json({success: false});
+    }
+
+    res.send(userOrderList);
 })
 
 module.exports = router;
