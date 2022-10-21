@@ -17,7 +17,7 @@ router.get(`/`, async (req, res)=> {
 router.get(`/:id`, async (req, res)=> {
     const video = await Video.findById(req.params.id)
     .populate('videoItems')
-    .populate('owner', []) // populate only items in array
+    .populate('owner', ['name', 'email', 'phone', 'isAdmin', 'street', 'apartment', 'zip', 'city', 'country', 'image']) // populate only items in array
     .populate({ 
         path: 'videoItems', populate: { 
             path: 'product'}
