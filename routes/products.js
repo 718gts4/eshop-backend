@@ -1,8 +1,21 @@
 const {Product} = require('../models/product');
 const express = require('express');
-const { Category } = require('../models/category');
+const {Category} = require('../models/category');
 const router = express.Router();
 const mongoose = require('mongoose');
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'public/uploads')
+    },
+    filename: function (req, file, cb) {
+      const fileName = file.originalname.split(' ').join('-')
+      cb(null, fileName + '-' + Date.now())
+    }
+  })
+  
+const uploadOptions = multer({ storage: storage })
 
 router.get(`/`, async (req, res)=> {
     // localhost:3000/api/v1/products?categories=123412,321124
@@ -30,7 +43,7 @@ router.get(`/:id`, async (req, res)=> {
     res.send(product);
 })
 
-router.post(`/`, async (req, res) => {
+router.post(`/`, uploadOptions.single('image'), async (req, res) => {
     const category = await Category.findById(req.body.category);
     if(!category) return res.status(400).send('Invalid Category');
 

@@ -38,6 +38,10 @@ const videoSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
+    numViews: {
+        type: Number,
+        default: 0
+    },
     isFeatured:{
         type: Boolean,
         default: false
