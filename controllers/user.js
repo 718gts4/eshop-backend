@@ -99,8 +99,12 @@ exports.login = async (req, res) => {
             secret,
             {expiresIn : '1d'}
         )
-       
-        res.status(200).send({user: user.email , token: token}) 
+        const { _id, email, role, name, isAdmin} = user;
+        res.status(200).json({
+            token,
+            user: { _id, email, role, name, isAdmin }
+        })
+        // res.status(200).send({user: user.email , token: token}) 
     } else {
        res.status(400).send('password is wrong!');
     }
@@ -116,4 +120,11 @@ exports.getUserCount = async (req, res) => {
     res.send({
         userCount: userCount,
     });
+}
+
+exports.requireSignin = async (req, res, next) => {
+    const token = await req.headers.authorization.split(" ")[1];
+    const user = jwt.verify(token, process.env.secret);
+    req.user = user;
+    next();
 }
