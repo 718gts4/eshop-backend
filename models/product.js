@@ -12,18 +12,20 @@ const productSchema = mongoose.Schema({
     },
     description: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     richDescription: {
         type: String,
-        default: ''
+        default: '', 
+        trim: true
     },
     image: {
         type: String,
         default: ''
     },
     productImages: [{
-        img: { type: String }
+        img: { type: Object }
     }],
     brand: {
         type: String,

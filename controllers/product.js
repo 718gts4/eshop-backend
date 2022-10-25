@@ -21,7 +21,7 @@ exports.createProduct = async (req, res) => {
             let fileName = file.filename;
             let basePath = `${req.protocol}://${req.get('host')}/uploads/`;
             let imageUrl = `${basePath}${fileName}`; // "http://localhost:3000/public/upload/image-2323232"
-            return { img: imageUrl }
+            return { img: {"name": fileName, "imageUrl": imageUrl} }
         });
     }
 

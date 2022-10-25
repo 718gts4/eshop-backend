@@ -56,6 +56,12 @@ exports.deleteUser = async (req, res) => {
 }
 
 exports.register = async (req, res) => {
+    const registerUser = await User.findOne({ email: req.body.email});
+    if(registerUser)
+    return res.status(400).json({
+        message: '이미 등록된 이메일 주소입니다.'
+    });
+
     let user = new User({
         name: req.body.name,
         email: req.body.email,
