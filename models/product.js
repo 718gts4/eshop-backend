@@ -33,6 +33,16 @@ const productSchema = mongoose.Schema({
         ref: 'Category',
         required: true
     },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    reviews: [
+        {
+            userId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+            review: String
+        }
+    ],
     countInStock: {
         type: Number,
         min: 0,

@@ -3,6 +3,41 @@ const {Category} = require('../models/category');
 const mongoose = require('mongoose');
 
 
+
+
+exports.createProduct = async (req, res) => {
+    // res.status(200).json({file: req.file, body: req.body})
+    const category = await Category.findById(req.body.category);
+    if(!category) return res.status(400).send('Invalid Category');
+
+    const file = req.file;
+    if (!file) return res.status(400).send('No image in the request');
+
+    const fileName = file.filename;
+    const basePath = `${req.protocol}://${req.get('host')}/uploads/`;
+
+    let product = new Product({
+        name: req.body.name,
+        description: req.body.description,
+        richDescription: req.body.richDescription,
+        image: `${basePath}${fileName}`, // "http://localhost:3000/public/upload/image-2323232"
+        brand: req.body.brand,
+        price: req.body.price,
+        category: req.body.category,
+        countInStock: req.body.countInStock,
+        rating: req.body.rating,
+        numReviews: req.body.numReviews,
+        isFeatured: req.body.isFeatured,
+    });
+
+    product = await product.save();
+
+    if(!product)
+    return res.status(500).send('The product cannot be created')
+
+    res.send(product);
+}
+
 exports.getProducts = async (req, res) => {
     // localhost:3000/api/v1/products?categories=123412,321124
     let filter = {};
@@ -26,32 +61,6 @@ exports.getProduct = async (req, res) => {
     if(!product){
         res.status(500).json({success:false})
     }
-    res.send(product);
-}
-
-exports.postProduct = async (req, res) => {
-    const category = await Category.findById(req.body.category);
-    if(!category) return res.status(400).send('Invalid Category');
-
-    let product = new Product({
-        name: req.body.name,
-        description: req.body.description,
-        richDescription: req.body.richDescription,
-        image: req.body.image,
-        brand: req.body.brand,
-        price: req.body.price,
-        category: req.body.category,
-        countInStock: req.body.countInStock,
-        rating: req.body.rating,
-        numReviews: req.body.numReviews,
-        isFeatured: req.body.isFeatured,
-    })
-
-    product = await product.save();
-
-    if(!product)
-    return res.status(500).send('The product cannot be created')
-
     res.send(product);
 }
 
@@ -120,3 +129,4 @@ exports.getFeaturedProductsOfCounts = async (req, res) => {
     } 
     res.send(products);
 }
+
