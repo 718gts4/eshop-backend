@@ -1,6 +1,4 @@
 const { getProducts, getProduct, updateProduct, deleteProduct, getProductCount, getFeaturedProductsOfCounts, createProduct } = require('../controllers/product');
-const {Product} = require('../models/product');
-const {Category} = require('../models/category');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
@@ -13,7 +11,7 @@ const storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
       const fileName = file.originalname.split(' ').join('-')
-      cb(null, shortid.generate() + '-' + file.originalname)
+      cb(null, shortid.generate() + '-' + fileName)
     }
   })
   
@@ -23,7 +21,7 @@ const upload = multer({ storage })
 router.get(`/`, getProducts);
 router.get(`/:id`, getProduct);
 
-router.post(`/create`, upload.single('image'), createProduct);
+router.post(`/create`, upload.array('productImages'), createProduct);
 
 router.put('/:id', updateProduct);
 router.delete(`/:id`, deleteProduct);

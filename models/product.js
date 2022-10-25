@@ -5,6 +5,11 @@ const productSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    slug: {
+        type: String,
+        required: true,
+        unique: true
+    },
     description: {
         type: String,
         required: true
@@ -17,8 +22,8 @@ const productSchema = mongoose.Schema({
         type: String,
         default: ''
     },
-    images: [{
-        type: String
+    productImages: [{
+        img: { type: String }
     }],
     brand: {
         type: String,

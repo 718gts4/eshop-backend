@@ -1,41 +1,51 @@
 const {Product} = require('../models/product');
 const {Category} = require('../models/category');
 const mongoose = require('mongoose');
-
-
+const slugify = require('slugify');
 
 
 exports.createProduct = async (req, res) => {
-    // res.status(200).json({file: req.file, body: req.body})
+
     const category = await Category.findById(req.body.category);
     if(!category) return res.status(400).send('Invalid Category');
 
-    const file = req.file;
-    if (!file) return res.status(400).send('No image in the request');
+    // const file = req.file;
+    // if (!file) return res.status(400).send('No image in the request');
 
-    const fileName = file.filename;
-    const basePath = `${req.protocol}://${req.get('host')}/uploads/`;
+    const files = req.files;
+    if (!files) return res.status(400).send('No images in the request');
+
+    let productImages = [];
+    if (req.files.length > 0){
+        productImages = req.files.map(file => {
+            let fileName = file.filename;
+            let basePath = `${req.protocol}://${req.get('host')}/uploads/`;
+            let imageUrl = `${basePath}${fileName}`; // "http://localhost:3000/public/upload/image-2323232"
+            return { img: imageUrl }
+        });
+    }
 
     let product = new Product({
         name: req.body.name,
+        slug: slugify(req.body.name),
         description: req.body.description,
         richDescription: req.body.richDescription,
-        image: `${basePath}${fileName}`, // "http://localhost:3000/public/upload/image-2323232"
+        productImages: productImages,
+        image: req.body.image,
         brand: req.body.brand,
         price: req.body.price,
-        category: req.body.category,
+        category: category,
         countInStock: req.body.countInStock,
-        rating: req.body.rating,
-        numReviews: req.body.numReviews,
-        isFeatured: req.body.isFeatured,
+        isFeatured: req.body.isFeatured
+        // createdBy: req.user._id
     });
 
     product = await product.save();
 
     if(!product)
-    return res.status(500).send('The product cannot be created')
+    return res.status(500).send('재품을 생성할 수 없습니다')
 
-    res.send(product);
+    res.status(201).json({product});
 }
 
 exports.getProducts = async (req, res) => {
@@ -75,8 +85,10 @@ exports.updateProduct = async (req, res) => {
         req.params.id,
         {
             name: req.body.name,
+            slug: slugify(req.body.name),
             description: req.body.description,
             richDescription: req.body.richDescription,
+            productImages: req.body.productImages,
             image: req.body.image,
             brand: req.body.brand,
             price: req.body.price,
