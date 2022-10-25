@@ -85,7 +85,7 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     const user = await User.findOne({email: req.body.email})
-    const secret = process.env.secret;
+    const secret = process.env.JWT_SECRET;
     if(!user) {
         return res.status(400).send('The user not found');
     }
@@ -124,7 +124,7 @@ exports.getUserCount = async (req, res) => {
 
 exports.requireSignin = async (req, res, next) => {
     const token = await req.headers.authorization.split(" ")[1];
-    const user = jwt.verify(token, process.env.secret);
+    const user = jwt.verify(token, process.env.JWT_SECRET);
     req.user = user;
     next();
 }
