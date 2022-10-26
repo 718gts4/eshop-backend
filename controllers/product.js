@@ -27,7 +27,7 @@ exports.createProduct = async (req, res) => {
                 return { img: {"name": fileName, "imageUrl": imageUrl} }
             });
         }
-    
+
         let product = new Product({
             name: req.body.name,
             slug: slugify(req.body.name),
@@ -39,8 +39,8 @@ exports.createProduct = async (req, res) => {
             price: req.body.price,
             category: category,
             countInStock: req.body.countInStock,
-            isFeatured: req.body.isFeatured
-            // createdBy: req.user._id
+            isFeatured: req.body.isFeatured,
+            createdBy: req.user.userId //user data from middleware
         });
     
         product = await product.save();
