@@ -6,12 +6,23 @@ const shortid = require('shortid');
 const path = require('path');
 const { requireSignin, adminMiddleware } = require('../common-middleware');
 
+const FILE_TYPE_MAP = {
+  'image/png': 'png',
+  'image/jpeg': 'jpeg',
+  'image/jpg': 'jpg'
+}
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, path.join(path.dirname(__dirname), 'uploads'))
+      const isValid = FILE_TYPE_MAP[file.mimetype];
+      let uploadError = new Error('이미지 파일은 .png, .jpeg, .jpg만 가능합니다.');
+      if(isValid){
+        uploadError = null
+      }
+      cb(uploadError, path.join(path.dirname(__dirname), 'uploads'))
     },
     filename: function (req, file, cb) {
-      const fileName = file.originalname.split(' ').join('-')
+      const fileName = file.originalname.split(' ').join('-');
       cb(null, shortid.generate() + '-' + fileName)
     }
   })
