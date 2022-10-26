@@ -56,6 +56,7 @@ exports.deleteUser = async (req, res) => {
 }
 
 exports.register = async (req, res) => {
+
     const registerUser = await User.findOne({ email: req.body.email});
     if(registerUser)
     return res.status(400).json({

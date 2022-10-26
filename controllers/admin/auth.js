@@ -1,6 +1,7 @@
 const {User} = require('../../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+// const { validationResult} = require('express-validator');
 
 
 exports.register = async (req, res) => {
@@ -58,6 +59,5 @@ exports.requireSignin = async (req, res, next) => {
     const token = await req.headers.authorization.split(" ")[1];
     const user = jwt.verify(token, process.env.JWT_SECRET);
     req.user = user;
-    console.log(req.user);
     next();
 }
