@@ -16,7 +16,8 @@ exports.createProduct = async (req, res) => {
 
     if (checkProduct.length ===0){
         const files = req.files;
-        if (!files) return res.status(400).send('No images in the request');
+        console.log(files[0]);
+        if (!files[0]) return res.status(400).send('이미지 파일을 추가하시기 바랍니다');
     
         let productImages = [];
         if (req.files.length > 0){
@@ -90,14 +91,17 @@ exports.updateProduct = async (req, res) => {
     if(!category) return res.status(400).send('Invalid Category');
 
     const files = req.files;
+    console.log(files.length)
     let productImages = [];
-    if (req.files.length > 0){
-        productImages = req.files.map(file => {
+    if (files.length > 0){
+        productImages = files.map(file => {
             let fileName = file.filename;
             let basePath = `${req.protocol}://${req.get('host')}/uploads/`;
             let imageUrl = `${basePath}${fileName}`; // "http://localhost:3000/public/upload/image-2323232"
             return { img: {"name": fileName, "imageUrl": imageUrl} }
         });
+    } else {
+        productImages = product.productImages;
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(
