@@ -38,7 +38,8 @@ exports.login = async (req, res) => {
         const token = jwt.sign(
             {
                 userId: user.id,
-                isAdmin: user.isAdmin
+                isAdmin: user.isAdmin,
+                role: user.role
             },
             secret,
             {expiresIn : '1d'}
@@ -54,10 +55,6 @@ exports.login = async (req, res) => {
    
 }
 
-
-exports.requireSignin = async (req, res, next) => {
-    const token = await req.headers.authorization.split(" ")[1];
-    const user = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = user;
-    next();
+exports.requestProfile = (req, res) => {
+    res.status(200).json({user: req.user});
 }

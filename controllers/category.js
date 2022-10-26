@@ -1,4 +1,27 @@
 const {Category} = require('../models/category');
+const slugify = require('slugify');
+
+// scroll through category parentIds and attach children category
+function createCategories(categories, parentId = null){
+    const categoryArray = [];
+    let category;
+    if(parentId == null){
+        category = categories.filter(cat => cat.parentId == undefined);
+    } else {
+        category = categories.filter(cate => cate.parentId == parentId);
+    }
+
+    for(let cate of category){
+        categoryArray.push({
+            _id: cate._id,
+            name: cate.name,
+            slug: cate.slug,
+            children: createCategories(categories, cate._id)
+        })
+    }
+
+    return categoryArray;
+}
 
 exports.getCategory = async (req, res) => {
     const categoryList = await Category.find();
@@ -6,7 +29,12 @@ exports.getCategory = async (req, res) => {
     if(!categoryList){
         res.status(500).json({success:false})
     }
-    res.status(200).send(categoryList);
+    
+    // compile a list of parent children categories
+    if(categoryList){
+        const categories = createCategories(categoryList);
+        res.status(200).send(categories);
+    }
 }
 
 exports.getCategoryId = async (req, res) => {
@@ -21,9 +49,15 @@ exports.getCategoryId = async (req, res) => {
 exports.postCategory = async (req, res) => {
     let category = new Category({
         name: req.body.name,
+        slug: slugify(req.body.name),
         icon: req.body.icon,
         color: req.body.color
     })
+
+    if(req.body.parentId){
+        category.parentId = req.body.parentId;
+    }
+
     category = await category.save();
 
     if(!category)

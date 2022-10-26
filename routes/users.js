@@ -1,7 +1,8 @@
-const { register, login, getUsers, getUserId, postNewUser, deleteUser, getUserCount, requireSignin } = require('../controllers/user');
+const { register, login, getUsers, getUserId, postNewUser, deleteUser, getUserCount } = require('../controllers/user');
 const express = require('express');
 const router = express.Router();
 const { validateRegisterRequest, validateLoginRequest, isRequestValidated } = require('../validators/auth');
+const { requireSignin } = require('../common-middleware/');
 
 router.get('/', getUsers);
 router.get('/:id', getUserId);

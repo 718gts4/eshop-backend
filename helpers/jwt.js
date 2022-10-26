@@ -14,6 +14,8 @@ function authJwt() {
             {url: /\/api\/v1\/videos(.*)/ , methods: ['GET', 'OPTIONS'] },
             `${api}/users/login`,
             `${api}/users/register`,
+            `${api}/admin/register`,
+            `${api}/admin/login`,
         ]
     })
 }
