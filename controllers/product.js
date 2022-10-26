@@ -9,43 +9,48 @@ exports.createProduct = async (req, res) => {
     const category = await Category.findById(req.body.category);
     if(!category) return res.status(400).send('Invalid Category');
 
-    // const file = req.file;
-    // if (!file) return res.status(400).send('No image in the request');
+    const nameSlug = slugify(req.body.name);
+    const checkProduct = await Product.find({slug: { $eq: nameSlug}});
+    if(checkProduct.length > 0) 
+    return res.status(400).send('The name of the product already exists. Please use a different name.');
 
-    const files = req.files;
-    if (!files) return res.status(400).send('No images in the request');
-
-    let productImages = [];
-    if (req.files.length > 0){
-        productImages = req.files.map(file => {
-            let fileName = file.filename;
-            let basePath = `${req.protocol}://${req.get('host')}/uploads/`;
-            let imageUrl = `${basePath}${fileName}`; // "http://localhost:3000/public/upload/image-2323232"
-            return { img: {"name": fileName, "imageUrl": imageUrl} }
+    if (checkProduct.length ===0){
+        const files = req.files;
+        if (!files) return res.status(400).send('No images in the request');
+    
+        let productImages = [];
+        if (req.files.length > 0){
+            productImages = req.files.map(file => {
+                let fileName = file.filename;
+                let basePath = `${req.protocol}://${req.get('host')}/uploads/`;
+                let imageUrl = `${basePath}${fileName}`; // "http://localhost:3000/public/upload/image-2323232"
+                return { img: {"name": fileName, "imageUrl": imageUrl} }
+            });
+        }
+    
+        let product = new Product({
+            name: req.body.name,
+            slug: slugify(req.body.name),
+            description: req.body.description,
+            richDescription: req.body.richDescription,
+            productImages: productImages,
+            image: req.body.image,
+            brand: req.body.brand,
+            price: req.body.price,
+            category: category,
+            countInStock: req.body.countInStock,
+            isFeatured: req.body.isFeatured
+            // createdBy: req.user._id
         });
+    
+        product = await product.save();
+    
+        if(!product)
+        return res.status(500).send('재품을 생성할 수 없습니다')
+    
+        res.status(201).json({product});
     }
 
-    let product = new Product({
-        name: req.body.name,
-        slug: slugify(req.body.name),
-        description: req.body.description,
-        richDescription: req.body.richDescription,
-        productImages: productImages,
-        image: req.body.image,
-        brand: req.body.brand,
-        price: req.body.price,
-        category: category,
-        countInStock: req.body.countInStock,
-        isFeatured: req.body.isFeatured
-        // createdBy: req.user._id
-    });
-
-    product = await product.save();
-
-    if(!product)
-    return res.status(500).send('재품을 생성할 수 없습니다')
-
-    res.status(201).json({product});
 }
 
 exports.getProducts = async (req, res) => {
@@ -78,17 +83,31 @@ exports.updateProduct = async (req, res) => {
     if(!mongoose.isValidObjectId(req.params.id)){
         res.status(400).send('Invalid Product ID');
     }
-    const category = await Category.findById(req.body.category);
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(400).send('Invalid Product!');
+
+    const category = await Category.findById(product.category);
     if(!category) return res.status(400).send('Invalid Category');
 
-    const product = await Product.findByIdAndUpdate(
+    const files = req.files;
+    let productImages = [];
+    if (req.files.length > 0){
+        productImages = req.files.map(file => {
+            let fileName = file.filename;
+            let basePath = `${req.protocol}://${req.get('host')}/uploads/`;
+            let imageUrl = `${basePath}${fileName}`; // "http://localhost:3000/public/upload/image-2323232"
+            return { img: {"name": fileName, "imageUrl": imageUrl} }
+        });
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
         req.params.id,
         {
             name: req.body.name,
-            slug: slugify(req.body.name),
+            slug: slugify(toString(req.body.name)),
             description: req.body.description,
             richDescription: req.body.richDescription,
-            productImages: req.body.productImages,
+            productImages: productImages,
             image: req.body.image,
             brand: req.body.brand,
             price: req.body.price,
@@ -101,10 +120,10 @@ exports.updateProduct = async (req, res) => {
         { new: true}
     );
 
-    if(!product)
+    if(!updatedProduct)
     return res.status(500).send('the product cannot be updated!')
     
-    res.send(product);
+    res.send(updatedProduct);
 }
 
 exports.deleteProduct = async (req, res) => {
