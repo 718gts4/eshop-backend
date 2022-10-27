@@ -121,19 +121,17 @@ exports.updateProduct = async (req, res) => {
 }
 
 exports.updateGalleryImages = async (req, res) => {
+    // check if the product id is correct
     if(!mongoose.isValidObjectId(req.params.id)){
         res.status(400).send('Invalid Product ID');
     }
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(400).send('Invalid Product!');
 
-    // const category = await Category.findById(product.category);
-    // if(!category) return res.status(400).send('Invalid Category');
-
     const files = req.files;
     let productImages = [];
 
-    if (files.length > 0){
+    if (files){
         productImages = files.map(file => {
             let fileName = file.filename;
             let basePath = `${req.protocol}://${req.get('host')}/uploads/`;
