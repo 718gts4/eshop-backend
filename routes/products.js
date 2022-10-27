@@ -1,4 +1,4 @@
-const { getProducts, getProduct, updateProduct, deleteProduct, getProductCount, getFeaturedProductsOfCounts, createProduct } = require('../controllers/product');
+const { getProducts, getProduct, updateProduct, deleteProduct, getProductCount, getFeaturedProductsOfCounts, createProduct, updateGalleryImages } = require('../controllers/product');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
@@ -32,8 +32,9 @@ const upload = multer({ storage })
 
 router.get(`/`, getProducts);
 router.get(`/:id`, getProduct);
-router.post(`/create`, upload.array('productImages'), requireSignin, adminMiddleware, createProduct);
-router.put('/:id', upload.array('productImages'), updateProduct, requireSignin, adminMiddleware);
+router.post(`/create`, upload.single('image'), requireSignin, adminMiddleware, createProduct);
+router.put('/:id', upload.single('image'), requireSignin, adminMiddleware, updateProduct);
+router.put('/gallery-images/:id', upload.array('productImages'), updateGalleryImages, requireSignin, adminMiddleware);
 router.delete(`/:id`, requireSignin, adminMiddleware, deleteProduct);
 router.get(`/get/count`, getProductCount);
 

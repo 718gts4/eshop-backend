@@ -4,56 +4,6 @@ const mongoose = require('mongoose');
 const slugify = require('slugify');
 
 
-exports.createProduct = async (req, res) => {
-
-    const category = await Category.findById(req.body.category);
-    if(!category) return res.status(400).send('Invalid Category');
-
-    const nameSlug = slugify(req.body.name);
-    const checkProduct = await Product.find({slug: { $eq: nameSlug}});
-    if(checkProduct.length > 0) 
-    return res.status(400).send('The name of the product already exists. Please use a different name.');
-
-    if (checkProduct.length ===0){
-        const files = req.files;
-        console.log(files[0]);
-        if (!files[0]) return res.status(400).send('이미지 파일을 추가하시기 바랍니다');
-    
-        let productImages = [];
-        if (req.files.length > 0){
-            productImages = req.files.map(file => {
-                let fileName = file.filename;
-                let basePath = `${req.protocol}://${req.get('host')}/uploads/`;
-                let imageUrl = `${basePath}${fileName}`; // "http://localhost:3000/public/upload/image-2323232"
-                return { img: {"name": fileName, "imageUrl": imageUrl} }
-            });
-        }
-
-        let product = new Product({
-            name: req.body.name,
-            slug: slugify(req.body.name),
-            description: req.body.description,
-            richDescription: req.body.richDescription,
-            productImages: productImages,
-            image: req.body.image,
-            brand: req.body.brand,
-            price: req.body.price,
-            category: category,
-            countInStock: req.body.countInStock,
-            isFeatured: req.body.isFeatured,
-            createdBy: req.user.userId //user data from middleware
-        });
-    
-        product = await product.save();
-    
-        if(!product)
-        return res.status(500).send('재품을 생성할 수 없습니다')
-    
-        res.status(201).json({product});
-    }
-
-}
-
 exports.getProducts = async (req, res) => {
     // localhost:3000/api/v1/products?categories=123412,321124
     let filter = {};
@@ -80,6 +30,49 @@ exports.getProduct = async (req, res) => {
     res.send(product);
 }
 
+exports.createProduct = async (req, res) => {
+
+    const category = await Category.findById(req.body.category);
+    if(!category) return res.status(400).send('Invalid Category');
+
+    const nameSlug = slugify(req.body.name);
+    const checkProduct = await Product.find({slug: { $eq: nameSlug}});
+    if(checkProduct.length > 0) 
+    return res.status(400).send('The name of the product already exists. Please use a different name.');
+
+    if (checkProduct.length ===0){
+        const file = req.file;
+        if (!file) return res.status(400).send('이미지 파일을 추가하시기 바랍니다');
+    
+        const fileName = file.filename;
+        const basePath = `${req.protocol}://${req.get('host')}/uploads/`;
+        const imageUrl = `${basePath}${fileName}`; // "http://localhost:3000/public/upload/image-2323232"
+
+        let product = new Product({
+            name: req.body.name,
+            slug: nameSlug,
+            description: req.body.description,
+            richDescription: req.body.richDescription,
+            productImages: req.body.productImages,
+            image: imageUrl,
+            brand: req.body.brand,
+            price: req.body.price,
+            category: category,
+            countInStock: req.body.countInStock,
+            isFeatured: req.body.isFeatured,
+            createdBy: req.user.userId //user data from middleware
+        });
+    
+        product = await product.save();
+    
+        if(!product)
+        return res.status(500).send('재품을 생성할 수 없습니다')
+    
+        res.status(201).json({product});
+    }
+
+}
+
 exports.updateProduct = async (req, res) => {
     if(!mongoose.isValidObjectId(req.params.id)){
         res.status(400).send('Invalid Product ID');
@@ -90,29 +83,26 @@ exports.updateProduct = async (req, res) => {
     const category = await Category.findById(product.category);
     if(!category) return res.status(400).send('Invalid Category');
 
-    const files = req.files;
-    console.log(files.length)
-    let productImages = [];
-    if (files.length > 0){
-        productImages = files.map(file => {
-            let fileName = file.filename;
-            let basePath = `${req.protocol}://${req.get('host')}/uploads/`;
-            let imageUrl = `${basePath}${fileName}`; // "http://localhost:3000/public/upload/image-2323232"
-            return { img: {"name": fileName, "imageUrl": imageUrl} }
-        });
+    const file = req.file;
+    let imagepath;
+
+    if (file){
+        const fileName = file.filename;
+        const basePath = `${req.protocol}://${req.get('host')}/uploads/`;
+        imagepath = `${basePath}${fileName}`; // "http://localhost:3000/public/upload/image-2323232"
     } else {
-        productImages = product.productImages;
+        imagepath = product.image;
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(
         req.params.id,
         {
             name: req.body.name,
-            slug: slugify(toString(req.body.name)),
+            slug: slugify(req.body.name),
             description: req.body.description,
             richDescription: req.body.richDescription,
-            productImages: productImages,
-            image: req.body.image,
+            productImages: req.body.productImages,
+            image: imagepath,
             brand: req.body.brand,
             price: req.body.price,
             category: req.body.category,
@@ -128,6 +118,40 @@ exports.updateProduct = async (req, res) => {
     return res.status(500).send('the product cannot be updated!')
     
     res.send(updatedProduct);
+}
+
+exports.updateGalleryImages = async (req, res) => {
+    if(!mongoose.isValidObjectId(req.params.id)){
+        res.status(400).send('Invalid Product ID');
+    }
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(400).send('Invalid Product!');
+
+    // const category = await Category.findById(product.category);
+    // if(!category) return res.status(400).send('Invalid Category');
+
+    const files = req.files;
+    let productImages = [];
+
+    if (files.length > 0){
+        productImages = files.map(file => {
+            let fileName = file.filename;
+            let basePath = `${req.protocol}://${req.get('host')}/uploads/`;
+            let imageUrl = `${basePath}${fileName}`; // "http://localhost:3000/public/upload/image-2323232"
+            return { img: {"name": fileName, "imageUrl": imageUrl} }
+        });
+    } else {
+        productImages = product.productImages;
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+        req.params.id, { productImages: productImages }
+    );
+
+    if(!updatedProduct)
+    return res.status(500).send('the product cannot be updated!')
+    
+    res.send(updatedProduct);    
 }
 
 exports.deleteProduct = async (req, res) => {
