@@ -48,7 +48,6 @@ exports.postOrder = async (req, res) => {
     }))
 
     const totalPrice = totalPrices.reduce((a,b) => a +b , 0); //sum of all num in an array
-    console.log(totalPrice);
 
     let order = new Order({
         orderItems: orderItemsIdsResolved,
