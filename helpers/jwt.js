@@ -1,5 +1,3 @@
-const dotenv = require("dotenv")
-dotenv.config();
 
 const {expressjwt: expressJwt} = require('express-jwt');
 
