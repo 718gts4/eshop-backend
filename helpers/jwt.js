@@ -3,10 +3,11 @@ const {expressjwt: expressJwt} = require('express-jwt');
 function authJwt() {
     const secret = process.env.secret;
     const api = process.env.API_URL;
-    isRevoked: isRevoked
+    
     return expressJwt({
         secret,
-        algorithms: ['HS256']
+        algorithms: ['HS256'],
+        isRevoked: isRevoked
     }).unless({
         path: [
             {url: /\/uploads(.*)/ , methods: ['GET', 'OPTIONS'] },
