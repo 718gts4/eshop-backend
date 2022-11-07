@@ -1,7 +1,7 @@
 
 const {expressjwt: expressJwt} = require('express-jwt');
-const dotenv = require("dotenv");
-dotenv.config();
+// const dotenv = require("dotenv");
+// dotenv.config();
 
 
 function authJwt() {
