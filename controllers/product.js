@@ -187,3 +187,11 @@ exports.getFeaturedProductsOfCounts = async (req, res) => {
     res.send(products);
 }
 
+exports.getAdminProducts = async (req, res) => {
+    const product = await Product.find({createdBy: req.params.id});
+    if(!product){
+        res.status(500).json({success:false}).populate('category')
+    }
+    res.send(product);
+}
+

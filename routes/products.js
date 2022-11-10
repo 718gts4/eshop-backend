@@ -1,4 +1,13 @@
-const { getProducts, getProduct, updateProduct, deleteProduct, getProductCount, getFeaturedProductsOfCounts, createProduct, updateGalleryImages } = require('../controllers/product');
+const { getProducts, 
+  getProduct, 
+  updateProduct, 
+  deleteProduct, 
+  getProductCount, 
+  getFeaturedProductsOfCounts, 
+  createProduct, 
+  updateGalleryImages,
+  getAdminProducts
+} = require('../controllers/product');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
@@ -33,10 +42,11 @@ const upload = multer({ storage })
 router.get(`/`, getProducts);
 router.get(`/:id`, getProduct);
 router.post(`/create`, upload.single('image'), requireSignin, adminMiddleware, createProduct);
-router.put('/:id', upload.single('image'), requireSignin, adminMiddleware, updateProduct);
-router.put('/gallery-images/:id', upload.array('productImages', 10), updateGalleryImages, requireSignin, adminMiddleware);
+router.put(`/:id`, upload.single('image'), requireSignin, adminMiddleware, updateProduct);
+router.put(`/gallery-images/:id`, upload.array('productImages', 10), updateGalleryImages, requireSignin, adminMiddleware);
 router.delete(`/:id`, requireSignin, adminMiddleware, deleteProduct);
 router.get(`/get/count`, getProductCount);
+router.get(`/admin/:id`, getAdminProducts);
 
 // get only the count number of featured products
 router.get(`/get/featured/:count`, getFeaturedProductsOfCounts);
