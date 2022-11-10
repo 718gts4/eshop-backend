@@ -5,8 +5,7 @@ const { requireSignin, adminMiddleware } = require('../common-middleware');
 
 router.get(`/`, getCategory);
 router.get('/:id', getCategoryId);
-// router.post(`/`, requireSignin, adminMiddleware, postCategory);
-router.post(`/`, postCategory);
+router.post(`/`, requireSignin, adminMiddleware, postCategory);
 router.put('/:id', updateCategory);
 router.delete(`/:id`, deleteCategory);
 
