@@ -1,7 +1,6 @@
 const {Order} = require('../models/order');
 const {OrderItem} = require('../models/order-item');
 
-
 exports.getOrders = async (req, res) => {
     const orderList = await Order.find().populate('user', 'name').sort({'dateOrdered': -1});
 
