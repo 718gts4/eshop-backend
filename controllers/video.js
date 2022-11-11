@@ -3,6 +3,7 @@ const { VideoItem } = require('../models/video-item');
 const { User } = require('../models/user');
 const { Product } = require('../models/product');
 
+
 exports.getVideos = async (req, res) => {
     const videoList = await Video.find().populate('owner', 'name').sort({'dateCreated': -1});
 
