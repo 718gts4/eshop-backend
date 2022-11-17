@@ -26,12 +26,9 @@ exports.getOrder = async (req, res) => {
 
 exports.postOrder = async (req, res) => {
     const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
-
-        const orderItemObj = await OrderItem.findById(orderItem);
-
         let newOrderItem = new OrderItem({
-            quantity: orderItemObj.quantity,
-            product: orderItemObj.product
+            quantity: orderItem.quantity,
+            product: orderItem.product
         })
 
         newOrderItem = await newOrderItem.save();
@@ -43,11 +40,10 @@ exports.postOrder = async (req, res) => {
     const totalPrices = await Promise.all(orderItemsIdsResolved.map(async (orderItemId)=>{
         const orderItem = await OrderItem.findById(orderItemId).populate('product', 'price');
         const totalPrice = orderItem.product.price * orderItem.quantity;
-
         return totalPrice
     }))
 
-    const totalPrice = totalPrices.reduce((a,b) => a +b , 0); //sum of all num in an array
+    const totalPrice = totalPrices.reduce((a,b) => a +b , 0);
 
     let order = new Order({
         orderItems: orderItemsIdsResolved,
@@ -67,6 +63,48 @@ exports.postOrder = async (req, res) => {
     return res.status(400).send('the order cannot be created!')
 
     res.send(order);
+    // const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
+
+    //     const orderItemObj = await OrderItem.findById(orderItem);
+
+    //     let newOrderItem = new OrderItem({
+    //         quantity: orderItemObj.quantity,
+    //         product: orderItemObj.product
+    //     })
+
+    //     newOrderItem = await newOrderItem.save();
+
+    //     return newOrderItem._id;
+    // }))
+    // const orderItemsIdsResolved =  await orderItemsIds;
+
+    // const totalPrices = await Promise.all(orderItemsIdsResolved.map(async (orderItemId)=>{
+    //     const orderItem = await OrderItem.findById(orderItemId).populate('product', 'price');
+    //     const totalPrice = orderItem.product.price * orderItem.quantity;
+
+    //     return totalPrice
+    // }))
+
+    // const totalPrice = totalPrices.reduce((a,b) => a +b , 0); //sum of all num in an array
+
+    // let order = new Order({
+    //     orderItems: orderItemsIdsResolved,
+    //     shippingAddress1: req.body.shippingAddress1,
+    //     shippingAddress2: req.body.shippingAddress2,
+    //     city: req.body.city,
+    //     zip: req.body.zip,
+    //     country: req.body.country,
+    //     phone: req.body.phone,
+    //     status: req.body.status,
+    //     totalPrice: totalPrice,
+    //     user: req.body.user,
+    // })
+    // order = await order.save();
+
+    // if(!order)
+    // return res.status(400).send('the order cannot be created!')
+
+    // res.send(order);
 }
 
 exports.updateOrder = async (req, res) => {
