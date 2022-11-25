@@ -30,7 +30,6 @@ exports.postOrder = async (req, res) => {
             quantity: orderItem.quantity,
             product: orderItem.product
         })
-
         newOrderItem = await newOrderItem.save();
 
         return newOrderItem._id;
@@ -174,3 +173,16 @@ exports.getUserOrders = async (req, res) => {
 
     res.send(userOrderList);
 }
+
+// exports.getAdminOrders = async (req, res) => {
+//     const order = await Order.find({createdBy: req.params.id})
+//     .populate('user', 'name')
+//     .populate({ 
+//         path: 'orderItems', populate: { 
+//             path: 'product', populate: 'category'}
+//         });
+//     if(!order){
+//         res.status(500).json({success: false});
+//     }
+//     res.send(order);
+// }
