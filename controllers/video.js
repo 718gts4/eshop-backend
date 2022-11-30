@@ -66,7 +66,8 @@ exports.postVideo = async (req, res) => {
 }
 
 exports.updateVideo = async (req, res) => {
-    const videoItemsArray = await Video.findById(req.params.id);
+    const videoToUpdate = await Video.findById(req.params.id);
+    if (!videoToUpdate) return res.status(400).send('Invalid Video!');
 
     const videoItemsIds = Promise.all(req.body.videoItems.map(async (videoItem) =>{
         let newVideoItem = new VideoItem({
@@ -92,6 +93,7 @@ exports.updateVideo = async (req, res) => {
             numReviews: req.body.numReviews,
             numViews: req.body.numViews,
             isFeatured: req.body.isFeatured,
+            likes: req.body.likes,
         },
         { new: true}
     )
@@ -100,6 +102,31 @@ exports.updateVideo = async (req, res) => {
     return res.status(400).send('the video cannot be update!')
 
     res.send(video);
+}
+
+exports.likeVideo = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { userId } = req.body;
+        const video = await Video.findById(id);
+        const isLiked = video.likes.get(userId);
+
+        if(isLiked){
+            video.likes.delete(userId);
+        } else {
+            video.likes.set(userId, true);
+        }
+
+        const updatedVideo = await Video.findByIdAndUpdate(
+            id,
+            { likes: video.likes },
+            { new: true }
+        );
+
+        res.status(200).json(updatedVideo);
+    } catch (err) {
+        res.status(404).json({message:err.message})
+    }
 }
 
 exports.deleteVideo = async (req, res) => {
