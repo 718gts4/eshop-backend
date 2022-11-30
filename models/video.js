@@ -46,11 +46,15 @@ const videoSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
+    likes: {
+        type: Map,
+        of: Boolean
+    },
     dateCreated:{
         type: Date,
         default: Date.now
     }
-})
+}, {timestamps: true});
 
 videoSchema.virtual('id').get(function(){
     return this._id.toHexString();

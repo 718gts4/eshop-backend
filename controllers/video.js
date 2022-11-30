@@ -54,6 +54,7 @@ exports.postVideo = async (req, res) => {
         rating: req.body.rating,
         numReviews: req.body.numReviews,
         isFeatured: req.body.isFeatured,
+        likes: {}
     })
 
     video = await video.save();
