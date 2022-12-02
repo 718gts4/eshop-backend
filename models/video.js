@@ -3,8 +3,7 @@ const mongoose = require('mongoose');
 const videoSchema = mongoose.Schema({
     videoItems: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'VideoItem',
-        required: true
+        ref: 'VideoItem'
     }],
     owner: {
         type: mongoose.Schema.Types.ObjectId,
@@ -12,11 +11,11 @@ const videoSchema = mongoose.Schema({
     },
     name: {
         type: String,
-        required: true
+        default: ''
     },
     description: {
         type: String,
-        required: true
+        default: ''
     },
     videoUrl: {
         type: String,

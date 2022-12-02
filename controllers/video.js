@@ -4,7 +4,12 @@ const { User } = require('../models/user');
 const { Product } = require('../models/product');
 
 exports.getVideos = async (req, res) => {
-    const videoList = await Video.find().populate('owner', 'name').sort({'dateCreated': -1});
+    const videoList = await Video.find()
+    .populate('owner')
+    .populate({
+        path: 'videoItems', populate: {path: 'product'}
+    })
+    .sort({'dateCreated': -1});
 
     if(!videoList){
         res.status(500).json({success:false})
@@ -15,7 +20,7 @@ exports.getVideos = async (req, res) => {
 exports.getVideo = async (req, res) => {
     const video = await Video.findById(req.params.id)
     .populate('videoItems')
-    .populate('owner', ['name', 'email', 'phone', 'isAdmin', 'street', 'apartment', 'zip', 'city', 'country', 'image']) // populate only items in array
+    .populate('owner', ['name', 'email', 'phone', 'isAdmin', 'street', 'apartment', 'zip', 'city', 'country', 'image', 'username']) // populate only items in array
     .populate({ 
         path: 'videoItems', populate: { 
             path: 'product'}
@@ -25,26 +30,28 @@ exports.getVideo = async (req, res) => {
         res.status(500).json({success:false})
     }
     res.send(video);
+    console.log('video', video)
 }
 
 exports.postVideo = async (req, res) => {
-    const owner = await User.findById(req.body.owner);     
-    if(!owner) return res.status(400).send('Invalid user id');
-
+    // const owner = await User.findById(req.body.owner);     
+    // if(!owner) return res.status(400).send('Invalid user id');
+    // console.log('owner',owner)
     // populate videoItems(products) from database and attach to new Video as array of videoItemsIds
-    const videoItemsIds = Promise.all(req.body.videoItems.map(async (videoItem) =>{
-        let newVideoItem = new VideoItem({
-            product: videoItem.product
-        })
+    // const videoItemsIds = Promise.all(req.body.videoItems.map(async (videoItem) =>{
+    //     let newVideoItem = new VideoItem({
+    //         product: videoItem.product
+    //     })
 
-        newVideoItem = await newVideoItem.save();
-        return newVideoItem._id;
-    }))
+    //     newVideoItem = await newVideoItem.save();
+    //     return newVideoItem._id;
+    // }))
 
-    const videoItemsIdsResolved =  await videoItemsIds;
+    // const videoItemsIdsResolved =  await videoItemsIds;
 
     let video = new Video({
-        videoItems: videoItemsIdsResolved,
+        // videoItems: videoItemsIdsResolved,
+        videoItems: req.body.videoItems,
         owner: req.body.owner,
         name: req.body.name,
         description: req.body.description,

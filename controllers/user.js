@@ -23,6 +23,7 @@ exports.getUserId = async (req, res) => {
 exports.postNewUser = async (req, res) => {
     let user = new User({
         name: req.body.name,
+        username: req.body.username,
         email: req.body.email,
         street: req.body.street,
         passwordHash: bcrypt.hashSync(req.body.password, 10),
