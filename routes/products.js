@@ -6,7 +6,8 @@ const { getProducts,
   getFeaturedProductsOfCounts, 
   createProduct, 
   updateGalleryImages,
-  getAdminProducts
+  getAdminProducts,
+  likeProduct
 } = require('../controllers/product');
 const express = require('express');
 const router = express.Router();
@@ -47,6 +48,7 @@ router.put(`/gallery-images/:id`, upload.array('productImages', 10), updateGalle
 router.delete(`/:id`, requireSignin, adminMiddleware, deleteProduct);
 router.get(`/get/count`, getProductCount);
 router.get(`/admin/:id`, getAdminProducts);
+router.patch('/:id/like', likeProduct, requireSignin);
 
 // get only the count number of featured products
 router.get(`/get/featured/:count`, getFeaturedProductsOfCounts);

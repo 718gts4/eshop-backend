@@ -70,7 +70,11 @@ const productSchema = mongoose.Schema({
     dateCreated:{
         type: Date,
         default: Date.now
-    }
+    },
+    likes: {
+        type: Map,
+        of: Boolean
+    },
 })
 
 productSchema.virtual('id').get(function () {

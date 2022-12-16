@@ -5,7 +5,7 @@ const videoSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'VideoItem'
     }],
-    owner: {
+    createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },

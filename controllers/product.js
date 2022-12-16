@@ -60,7 +60,8 @@ exports.createProduct = async (req, res) => {
             category: category,
             countInStock: req.body.countInStock,
             isFeatured: req.body.isFeatured,
-            createdBy: req.user.userId //user data from middleware
+            createdBy: req.user.userId, //user data from middleware
+            likes: {}
         });
     
         product = await product.save();
@@ -187,11 +188,37 @@ exports.getFeaturedProductsOfCounts = async (req, res) => {
     res.send(products);
 }
 
+
 exports.getAdminProducts = async (req, res) => {
     const product = await Product.find({createdBy: req.params.id});
     if(!product){
         res.status(500).json({success:false}).populate('category')
     }
     res.send(product);
+}
+
+exports.likeProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { userId } = req.body;
+        const product = await Product.findById(id);
+        const isLiked = product.likes.get(userId);
+
+        if(isLiked){
+            product.likes.delete(userId);
+        } else {
+            product.likes.set(userId, true);
+        }
+
+        const updatedProduct = await Product.findByIdAndUpdate(
+            id,
+            { likes: product.likes },
+            { new: true }
+        );
+
+        res.status(200).json(updatedProduct);
+    } catch (err) {
+        res.status(404).json({message:err.message})
+    }
 }
 

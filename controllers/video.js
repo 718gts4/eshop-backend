@@ -5,7 +5,7 @@ const { Product } = require('../models/product');
 
 exports.getVideos = async (req, res) => {
     const videoList = await Video.find()
-    .populate('owner')
+    .populate('createdBy')
     .populate({
         path: 'videoItems', populate: {path: 'product'}
     })
@@ -20,7 +20,7 @@ exports.getVideos = async (req, res) => {
 exports.getVideo = async (req, res) => {
     const video = await Video.findById(req.params.id)
     .populate('videoItems')
-    .populate('owner', ['name', 'email', 'phone', 'isAdmin', 'street', 'apartment', 'zip', 'city', 'country', 'image', 'username']) // populate only items in array
+    .populate('createdBy', ['name', 'email', 'phone', 'isAdmin', 'street', 'apartment', 'zip', 'city', 'country', 'image', 'username']) // populate only items in array
     .populate({ 
         path: 'videoItems', populate: { 
             path: 'product'}
@@ -30,13 +30,12 @@ exports.getVideo = async (req, res) => {
         res.status(500).json({success:false})
     }
     res.send(video);
-    console.log('video', video)
 }
 
 exports.postVideo = async (req, res) => {
-    // const owner = await User.findById(req.body.owner);     
-    // if(!owner) return res.status(400).send('Invalid user id');
-    // console.log('owner',owner)
+    // const createdBy = await User.findById(req.body.createdBy);     
+    // if(!createdBy) return res.status(400).send('Invalid user id');
+    // console.log('createdBy',createdBy)
     // populate videoItems(products) from database and attach to new Video as array of videoItemsIds
     // const videoItemsIds = Promise.all(req.body.videoItems.map(async (videoItem) =>{
     //     let newVideoItem = new VideoItem({
@@ -52,7 +51,7 @@ exports.postVideo = async (req, res) => {
     let video = new Video({
         // videoItems: videoItemsIdsResolved,
         videoItems: req.body.videoItems,
-        owner: req.body.owner,
+        createdBy: req.body.createdBy,
         name: req.body.name,
         description: req.body.description,
         image: req.body.image,
