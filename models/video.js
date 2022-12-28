@@ -41,6 +41,10 @@ const videoSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
+    numComments: {
+        type: Number,
+        default: 0
+    },
     isFeatured:{
         type: Boolean,
         default: false

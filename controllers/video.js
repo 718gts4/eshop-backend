@@ -20,7 +20,7 @@ exports.getVideos = async (req, res) => {
 exports.getVideo = async (req, res) => {
     const video = await Video.findById(req.params.id)
     .populate('videoItems')
-    .populate('createdBy', ['name', 'email', 'phone', 'isAdmin', 'street', 'apartment', 'zip', 'city', 'country', 'image', 'username']) // populate only items in array
+    .populate('createdBy', ['name', 'email', 'phone', 'isAdmin', 'image', 'username', 'numComments']) // populate only items in array
     .populate({ 
         path: 'videoItems', populate: { 
             path: 'product'}
@@ -98,6 +98,7 @@ exports.updateVideo = async (req, res) => {
             rating: req.body.rating,
             numReviews: req.body.numReviews,
             numViews: req.body.numViews,
+            numComments: req.body.numComments,
             isFeatured: req.body.isFeatured,
             likes: req.body.likes,
         },
@@ -130,6 +131,26 @@ exports.likeVideo = async (req, res) => {
         );
 
         res.status(200).json(updatedVideo);
+    } catch (err) {
+        res.status(404).json({message:err.message})
+    }
+}
+
+exports.updateVideoComment = async (req, res) => {
+    console.log('ID', req.params)
+    console.log('REQ Comment', req.body)
+    try {
+        const {id} = req.params;
+        // const video = await Video.findById(id);
+        const numComments = req.body.numComments;
+
+        const updatedVideo = await Video.findByIdAndUpdate(
+            id,
+            {numComments: numComments},
+            {new:true}
+        );
+        res.status(200).json(updatedVideo);
+
     } catch (err) {
         res.status(404).json({message:err.message})
     }

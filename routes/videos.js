@@ -5,7 +5,8 @@ const {
     updateVideo, 
     deleteVideo, 
     getVideoCount,
-    likeVideo
+    likeVideo,
+    updateVideoComment
 } = require('../controllers/video');
 const express = require('express');
 const router = express.Router();
@@ -18,5 +19,6 @@ router.put('/:id', updateVideo, requireSignin, adminMiddleware);
 router.patch('/:id/like', likeVideo, requireSignin);
 router.delete('/:id', deleteVideo, requireSignin, adminMiddleware);
 router.get(`/get/videocount`, getVideoCount);
+router.put(`/:id/updatecomments`, updateVideoComment);
 
 module.exports = router;
