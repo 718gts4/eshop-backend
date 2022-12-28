@@ -151,10 +151,10 @@ exports.login = async (req, res) => {
             secret,
             {expiresIn : '1d'}
         )
-        const { _id, email, role, name, isAdmin} = user;
+        const { _id, email, role, name, isAdmin, image} = user;
         res.status(200).json({
             token,
-            user: { _id, email, role, name, isAdmin }
+            user: { _id, email, role, name, isAdmin, image }
         })
         // res.status(200).send({user: user.email , token: token}) 
     } else {
