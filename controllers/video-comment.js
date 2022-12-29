@@ -19,8 +19,14 @@ exports.saveComment = (req, res) => {
 }
 
 exports.getComments = async (req, res) => {
+    console.log('BODY', req)
+    let limit = req.body.limit ? parseInt(req.body.limit) : 100;
+    let skip = parseInt(req.body.skip);
+
     const comments = await VideoComment.find({postId:req.params.id})
-    .populate("writer", ["name", "username", "image"]);
+    .populate("writer", ["name", "username", "image"])
+    .skip(skip)
+    .limit(limit);
 
     if(!comments){
         res.status(500).json({success:false});

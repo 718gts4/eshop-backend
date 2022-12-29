@@ -4,6 +4,6 @@ const { requireSignin } = require('../common-middleware');
 const { saveComment, getComments } = require('../controllers/video-comment');
 
 router.post(`/saveComment`, requireSignin, saveComment);
-router.get(`/:id`, getComments);
+router.post(`/:id`, getComments);
 
 module.exports = router;
