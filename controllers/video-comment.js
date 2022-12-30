@@ -25,6 +25,7 @@ exports.getComments = async (req, res) => {
 
     const comments = await VideoComment.find({postId:req.params.id})
     .populate("writer", ["name", "username", "image"])
+    .sort({'createdAt': -1})
     .skip(skip)
     .limit(limit);
 

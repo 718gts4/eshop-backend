@@ -137,8 +137,6 @@ exports.likeVideo = async (req, res) => {
 }
 
 exports.updateVideoComment = async (req, res) => {
-    console.log('ID', req.params)
-    console.log('REQ Comment', req.body)
     try {
         const {id} = req.params;
         // const video = await Video.findById(id);
