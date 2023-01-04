@@ -19,13 +19,13 @@ exports.saveComment = (req, res) => {
 }
 
 exports.getComments = async (req, res) => {
-    console.log('BODY', req)
+
     let limit = req.body.limit ? parseInt(req.body.limit) : 100;
     let skip = parseInt(req.body.skip);
 
     const comments = await VideoComment.find({postId:req.params.id})
     .populate("writer", ["name", "username", "image"])
-    .sort({'createdAt': -1})
+    .sort({'dateCreated': -1})
     .skip(skip)
     .limit(limit);
 

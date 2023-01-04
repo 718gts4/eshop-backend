@@ -26,6 +26,7 @@ const usersRoutes = require('./routes/users');
 const videosRoutes = require('./routes/videos');
 const adminRoutes = require('./routes/admin/auth');
 const videoCommentRoutes = require('./routes/video-comments');
+const bookmarkRoutes = require('./routes/bookmark');
 
 const api = process.env.API_URL;
 
@@ -37,6 +38,7 @@ app.use(`${api}/users`, usersRoutes);
 app.use(`${api}/videos`, videosRoutes);
 app.use(`${api}/admin`, adminRoutes);
 app.use(`${api}/videocomments`, videoCommentRoutes);
+app.use(`${api}/bookmarks`, bookmarkRoutes);
 
 
 mongoose.connect(process.env.CONNECTION_STRING)
