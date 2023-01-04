@@ -63,3 +63,11 @@ exports.getBookmarkedVideos = (req, res) => {
             return res.status(200).json({success: true, result})
         })
 }
+
+exports.getUserBookmarkCount = (req, res) => {
+    Bookmark.find({"userId": req.body.userId}).countDocuments()
+    .exec((err, result) => {
+        if (err) return res.status(400).send(err);
+        return res.status(200).json({success: true, result})
+    })
+}
