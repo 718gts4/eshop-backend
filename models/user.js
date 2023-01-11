@@ -61,6 +61,10 @@ const userSchema = mongoose.Schema({
         type: String,
         default: ''
     },
+    likes: {
+        type: Map,
+        of: Boolean
+    },
     savedVideos: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Video'
@@ -69,14 +73,14 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product'
     }],
-    followers: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }],
-    following: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }],
+    followers: {
+        type: Map,
+        of: Boolean
+    },   
+    following: {
+        type: Map,
+        of: Boolean
+    },   
     videos: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Video'

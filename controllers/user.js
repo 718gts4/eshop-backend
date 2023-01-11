@@ -1,6 +1,7 @@
 const {User} = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 
 exports.getUsers = async (req, res) => {
     const userList = await User.find().select('-passwordHash');
@@ -37,8 +38,9 @@ exports.postNewUser = async (req, res) => {
         role: req.body.role,
         brand: req.body.brand,
         brandDescription: req.body.brandDescription,
-        followers: [],
-        following: [],
+        likes: {},
+        followers: {},
+        following: {},
         savedVideos: [],
         savedProducts: [],
         videos: []
@@ -79,6 +81,7 @@ exports.updateUser = async (req, res)=> {
             brandDescription: req.body.brandDescription,
             followers: req.body.followers,
             following: req.body.following,
+            likes: req.body.likes,
             savedVideos: req.body.savedVideos,
             savedProducts: req.body.savedProducts,
             videos: req.body.videos,
@@ -151,10 +154,10 @@ exports.login = async (req, res) => {
             secret,
             {expiresIn : '1d'}
         )
-        const { _id, email, role, name, isAdmin, image} = user;
+        const { _id, email, role, name, isAdmin, image, username, following, followers} = user;
         res.status(200).json({
             token,
-            user: { _id, email, role, name, isAdmin, image }
+            user: { _id, email, role, name, isAdmin, image, username, following, followers }
         })
         // res.status(200).send({user: user.email , token: token}) 
     } else {
@@ -174,39 +177,59 @@ exports.getUserCount = async (req, res) => {
     });
 }
 
-exports.followUser = async (req, res) => {
+exports.subscribeUser = async (req, res) => {
     try {
-        const user = await User.find({_id: req.params.id, followers: req.user._id})
-        if(user.length > 0) return res.status(500).json({msg: "You followed this user."})
+        const vendorId = req.body.vendorId;
+        const userId = req.body.userId;
+        const vendor = await User.findById(vendorId);
+        const user = await User.findById(userId);
+        const isFollowing = vendor.followers.get(userId);
 
-        const newUser = await Users.findOneAndUpdate({_id: req.params.id}, { 
-            $push: {followers: req.user._id}
-        }, {new: true}).populate("followers following", "-password")
+        if(isFollowing){
+            vendor.followers.delete(userId);
+            user.following.delete(vendorId);
+        } else {
+            vendor.followers.set(userId, true);
+            user.following.set(vendorId, true);
+        }
 
-        await User.findOneAndUpdate({_id: req.user._id}, {
-            $push: {following: req.params.id}
-        }, {new: true})
+        const updatedVendor = await User.findByIdAndUpdate(
+            vendorId,
+            { followers: vendor.followers},
+            { new: true}
+        );
 
-        res.json({newUser})
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { following: user.following},
+            {new: true}
+        )
 
-    } catch (err) {
-        return res.status(500).json({msg: err.message})
-    }
+        res.status(200).json([updatedVendor, updatedUser]);
+    } catch(err){res.status(404).json({message:err.message})}
 }
 
-exports.unfollowUser = async (req, res) => {
+exports.likeUser = async (req, res) => {
     try {
-        const newUser = await User.findOneAndUpdate({_id: req.params.id}, { 
-            $pull: {followers: req.user._id}
-        }, {new: true}).populate("followers following", "-password")
+        const { id } = req.params;
+        const { userId } = req.body;
+        const user = await User.findById(id);
+        const isLiked = user.likes.get(userId);
 
-        await User.findOneAndUpdate({_id: req.user._id}, {
-            $pull: {following: req.params.id}
-        }, {new: true})
+        if(isLiked){
+            user.likes.delete(userId);
+        } else {
+            user.likes.set(userId, true);
+        }
 
-        res.json({newUser})
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            { likes: user.likes },
+            { new: true }
+        );
 
+        res.status(200).json(updatedUser);
     } catch (err) {
-        return res.status(500).json({msg: err.message})
+        res.status(404).json({message:err.message})
     }
 }

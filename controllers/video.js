@@ -179,3 +179,25 @@ exports.getVideoCount = async (req, res) => {
         videoCount: videoCount
     });
 }
+
+exports.getFollowingVideos = async (req, res) => {
+
+    let videos = [];
+    const followingVideos = await Promise.all(req.body.following.map(async (video) => {
+        const followingVideo = await Video.find({"createdBy": video})
+            .populate('createdBy')
+            .populate({
+                path: 'videoItems', populate: {path: 'product'}
+            })
+            .sort({'dateCreated': -1});
+        
+        const allVideos = videos.push(...followingVideo);
+        return allVideos
+    }));
+
+    if(!followingVideos) {
+        res.status(500).json({success:false})
+    }
+    res.status(200).send(videos)
+}
+
