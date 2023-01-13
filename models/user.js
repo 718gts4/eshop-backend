@@ -85,6 +85,10 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Video'
     }],
+    adresses: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Address'
+    }],
 });
 
 userSchema.virtual('id').get(function () {
