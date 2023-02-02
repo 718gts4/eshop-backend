@@ -1,16 +1,17 @@
 const mongoose = require('mongoose');
 
 const addressSchema = new mongoose.Schema({
-    title: {type: String},
-    street: { type: String, required: true },
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    zip: { type: Number, required: true },
-    country: { type: String, required: true },
+    name: {type: String},
+    phone: { type: Number, required: true },
+    shippingAddress1: { type: String },
+    shippingAddress2: { type: String },
+    zip: { type: Number },
+    deliveryNote: {type:String},
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
+    isDefault: {type: Boolean}
 }, {timestaps: true});
 
 addressSchema.virtual('id').get(function () {
@@ -22,4 +23,3 @@ addressSchema.set('toJSON', {
 });
 
 exports.Address = mongoose.model('Address', addressSchema);
-

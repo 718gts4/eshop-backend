@@ -1,44 +1,45 @@
 const {Address} = require('../models/address');
-const { User } = require('../models/user');
 
-exports.getAddressId = async (req, res) => {
-    const address = await Address.findById(req.params.id)
-        .populate('user', 'name')
 
-    if(!address){
-        res.status(500).json({message:'The address with the given ID was not found'})
+exports.getUserAddress = async (req, res) => {
+    try {
+        const address = await Address.find({userId:req.params.id})
+            
+        if(!address){
+            res.status(500).json({message:'The address with the given ID was not found'});
+        }
+        res.status(200).send(address);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while fetching the address' });
     }
-    res.status(200).send(address);
 }
 
-exports.createAddressAndAddToUser = async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        const { street, city, state, zip, country, title, userId } = req.body;
-        const newAddress = new Address({ street, city, state, zip, country, title, userId });
-        await newAddress.save();
-        user.addresses.push(newAddress._id);
-        await user.save();
-        res.status(200).json({ message: 'Address created and added to user' });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
+
+exports.createAddress = async (req, res) => {
+    const { name, phone, shippingAddress1, shippingAddress2, zip, deliveryNote, userId, isDefault } = req.body;
+    let newAddress = new Address({ name, phone, shippingAddress1, shippingAddress2, zip, deliveryNote, userId, isDefault });
+
+    newAddress = await newAddress.save();
+    
+    if(!newAddress)
+    return res.status(404).send('새로운 주소가 저장되지 않았습니다.')
+
+    res.send(newAddress);
 }
 
 exports.updateAddress = async (req, res) => {
     const address = await Address.findByIdAndUpdate(
         req.params.id,
         {   
-            title: req.body.title,
-            street: req.body.street,
-            city: req.body.city,
-            state: req.body.state,
+            name: req.body.name,
+            phone: req.body.phone,
+            shippingAddress1: req.body.shippingAddress1,
+            shippingAddress2: req.body.shippingAddress2,
             zip: req.body.zip,
-            country: req.body.zip,
-            userId: req.body.userId
+            deliveryNote: req.body.deliveryNote,
+            userId: req.body.userId,
+            isDefault: req.body.isDefault
         },
         { new: true}
     )
