@@ -28,6 +28,20 @@ exports.createAddress = async (req, res) => {
     res.send(newAddress);
 }
 
+exports.updateDefaultAddress = async (req, res) => {
+    console.log('ID', req.params)
+    const {id} = req.params;
+    const {userId} = req.body;
+
+    try {
+        await Address.updateMany({userId:userId}, {$set: {isDefault:false}});
+        const updatedAddress = await Address.findByIdAndUpdate(id, {$set:{isDefault:true}},{new:true});
+        res.send(updatedAddress);
+    } catch (error) {
+        res.status(400).send(error);
+    }
+}
+
 exports.updateAddress = async (req, res) => {
     const address = await Address.findByIdAndUpdate(
         req.params.id,

@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const addressSchema = new mongoose.Schema({
-    name: {type: String},
+    name: {type: String, required: true},
     phone: { type: Number, required: true },
-    shippingAddress1: { type: String },
+    shippingAddress1: { type: String, required: true },
     shippingAddress2: { type: String },
     zip: { type: Number },
     deliveryNote: {type:String},
