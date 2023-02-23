@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const addressSchema = new mongoose.Schema({
     name: {type: String, required: true},
-    phone: { type: Number, required: true },
+    phone: { type: String, required: true },
     shippingAddress1: { type: String, required: true },
     shippingAddress2: { type: String },
     zip: { type: Number },

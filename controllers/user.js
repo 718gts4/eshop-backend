@@ -126,6 +126,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     const user = await User.findOne({email: req.body.email})
     const secret = process.env.secret;
+    const twentyYearsInSeconds = 60 * 60 * 24 * 365 * 20;
     if(!user) {
         return res.status(400).send('The user not found');
     }
@@ -137,7 +138,7 @@ exports.login = async (req, res) => {
                 isAdmin: user.isAdmin
             },
             secret,
-            {expiresIn : '1d'}
+            {expiresIn : twentyYearsInSeconds}
         )
         const { _id, email, role, name, isAdmin, image, username, following, followers} = user;
         res.status(200).json({
