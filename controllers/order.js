@@ -46,12 +46,13 @@ exports.postOrder = async (req, res) => {
 
     let order = new Order({
         orderItems: orderItemsIdsResolved,
-        shippingAddress1: req.body.shippingAddress1,
-        shippingAddress2: req.body.shippingAddress2,
-        city: req.body.city,
-        zip: req.body.zip,
-        country: req.body.country,
-        phone: req.body.phone,
+        address: req.body.address,
+        // shippingAddress1: req.body.shippingAddress1,
+        // shippingAddress2: req.body.shippingAddress2,
+        // city: req.body.city,
+        // zip: req.body.zip,
+        // country: req.body.country,
+        // phone: req.body.phone,
         status: req.body.status,
         totalPrice: totalPrice,
         user: req.body.user,
@@ -132,15 +133,3 @@ exports.getUserOrders = async (req, res) => {
     res.send(userOrderList);
 }
 
-// exports.getAdminOrders = async (req, res) => {
-//     const order = await Order.find({createdBy: req.params.id})
-//     .populate('user', 'name')
-//     .populate({ 
-//         path: 'orderItems', populate: { 
-//             path: 'product', populate: 'category'}
-//         });
-//     if(!order){
-//         res.status(500).json({success: false});
-//     }
-//     res.send(order);
-// }
