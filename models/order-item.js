@@ -7,7 +7,16 @@ const orderItemSchema = mongoose.Schema({
     },
     product: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product'
+        ref: 'Product',
+        required: true
+    },
+    buyer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    address: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Address'
     }
 })
 
