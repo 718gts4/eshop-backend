@@ -16,18 +16,25 @@ function decrypt(iv, encryptedData) {
 exports.getUserCard = async (req, res) => {
     const userId = req.params.userId;
     try {
-        const card1 = await Card.find(userId);
-        const card = card1[0];
+        const cards = await Card.find(userId);
+        const card = cards[0];
             
         if(!card){
-            res.status(500).json({message:'The card with the given ID was not found'});
+            return res.status(404).json({message:'카드를 찾을 수 없습니다'});
         }
 
         const decipheredCardNumber = decrypt(card.cardNumber.iv, card.cardNumber.encryptedData);
         const decipheredExpDateMonth = decrypt(card.expDateMonth.iv, card.expDateMonth.encryptedData);
         const decipheredExpDateYear = decrypt(card.expDateYear.iv, card.expDateYear.encryptedData);
 
-        const decipheredCard = {cardNum: decipheredCardNumber, expDateMonth:decipheredExpDateMonth, expDateYear:decipheredExpDateYear, isDefault:card.isDefault, id:card._id  }
+        const decipheredCard = {
+            cardNum: decipheredCardNumber, 
+            expDateMonth:decipheredExpDateMonth, 
+            expDateYear:decipheredExpDateYear, 
+            isDefault:card.isDefault, 
+            id:card._id  
+        };
+
         res.status(200).send(decipheredCard);
     } catch (error) {
         console.error(error);
