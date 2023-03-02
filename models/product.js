@@ -1,5 +1,39 @@
 const mongoose = require('mongoose');
 
+const optionValueSchema = new mongoose.Schema({
+    value: {
+        type: String,
+        required: true
+    },
+    stock: {
+        type: Number,
+        required: true,
+        default: 0
+    }  
+});
+
+const optionSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    values: {
+        type: [optionValueSchema],
+        required: true
+    }
+});
+
+const saleSchema = new mongoose.Schema({
+    discount: {
+        type: Number,
+        required: true
+    },
+    endTime: {
+        type: Date,
+        required: true
+    }
+});
+  
 const productSchema = mongoose.Schema({
     name: {
         type: String,
@@ -75,6 +109,17 @@ const productSchema = mongoose.Schema({
         type: Map,
         of: Boolean
     },
+    options: {
+        type: [optionSchema],
+    },
+    sale: {
+        type: saleSchema,
+        default: null
+    },
+    delivery : {
+        type: String,
+        default: ''
+    }
 })
 
 productSchema.virtual('id').get(function () {

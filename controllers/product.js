@@ -61,8 +61,19 @@ exports.createProduct = async (req, res) => {
             countInStock: req.body.countInStock,
             isFeatured: req.body.isFeatured,
             createdBy: req.user.userId, //user data from middleware
-            likes: {}
+            likes: {},
+            options: req.body.options || null,
+            sale: req.body.sale || null
         });
+
+        if (product.sale) {
+            const endTime = new Date(req.body.sale.endTime);
+            const currentTime = new Date();
+            if (endTime <= currentTime){
+                return res.status(400).json({message: "Sale이 마감되었습니다"});
+            }
+            product.sale.endTime = endTime;
+        }
     
         product = await product.save();
     
@@ -110,7 +121,8 @@ exports.updateProduct = async (req, res) => {
             countInStock: req.body.countInStock,
             rating: req.body.rating,
             numReviews: req.body.numReviews,
-            isFeatured: req.body.isFeatured
+            isFeatured: req.body.isFeatured,
+            options: req.body.options
         },
         { new: true}
     );
@@ -120,6 +132,31 @@ exports.updateProduct = async (req, res) => {
     
     res.send(updatedProduct);
 }
+
+
+exports.editSaleDuration = async (req, res) => {
+    const productId = req.params.id;
+    const newEndTime = new Date(req.body.endTime);
+  
+    try {
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        if (!product.sale) {
+            return res.status(400).json({ message: 'Product is not on sale' });
+        }
+        const currentTime = new Date();
+        if (newEndTime <= currentTime) {
+            return res.status(400).json({ message: 'Sale end time must be in the future' });
+        }
+        product.sale.endTime = newEndTime;
+        const updatedProduct = await product.save();
+        res.json(updatedProduct);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+};
 
 exports.updateGalleryImages = async (req, res) => {
     // check if the product id is correct
