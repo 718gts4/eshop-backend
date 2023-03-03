@@ -12,13 +12,66 @@ const optionValueSchema = new mongoose.Schema({
     }  
 });
 
+const colorOptionSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        default: 'color',
+        required: true
+    },
+    value: {
+        type: String,
+        required: true
+    },
+    hexCode: {
+        type: String,
+        required: true
+    },
+    optionValues: {
+        type: [optionValueSchema],
+        required: true
+    }
+});
+
+const sizeOptionSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        default: 'size',
+        required: true
+    },
+    value: {
+      type: String,
+      required: true
+    },
+    optionValues: {
+      type: [optionValueSchema],
+      required: true
+    }
+});
+
+const widthOptionSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        default: 'width',
+        required: true
+    },
+    value: {
+        type: String,
+        required: true
+    },
+    optionValues: [{
+      value: {
+            type: String,
+      }
+    }]
+});
+
 const optionSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
     },
     values: {
-        type: [optionValueSchema],
+        type: [colorOptionSchema, sizeOptionSchema, widthOptionSchema],
         required: true
     }
 });
