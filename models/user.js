@@ -19,12 +19,25 @@ const userSchema = mongoose.Schema({
     },
     phone: {
         type: String,
+        default: ''
+    },
+    gender: {
+        type: String,
+        default: '선택하지 않음'
+    },
+    birthday: {
+        type: String,
+        default: ''
     },
     isAdmin: {
         type: Boolean,
         default: false,
     },
     image: {
+        type: String,
+        default: ''
+    },
+    link: {
         type: String,
         default: ''
     },

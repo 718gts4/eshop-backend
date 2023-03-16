@@ -38,7 +38,8 @@ exports.postNewUser = async (req, res) => {
         following: {},
         savedVideos: [],
         savedProducts: [],
-        videos: []
+        videos: [],
+        link: req.body.link,
     })
     user = await user.save();
 
@@ -50,13 +51,20 @@ exports.postNewUser = async (req, res) => {
 
 exports.updateUser = async (req, res)=> {
     const userExist = await User.findById(req.params.id);
+
+    const usernameExist = await User.findOne({ username: req.body.username});
+    if(usernameExist)
+    return res.status(400).json({
+        message: '이미 등록된 유저이름입니다'
+    });
+
     let newPassword
     if(req.body.password) {
         newPassword = bcrypt.hashSync(req.body.password, 10)
     } else {
         newPassword = userExist.passwordHash;
     }
-
+ 
     const user = await User.findByIdAndUpdate(
         req.params.id,
         {
@@ -65,6 +73,8 @@ exports.updateUser = async (req, res)=> {
             email: req.body.email,
             passwordHash: newPassword,
             phone: req.body.phone,
+            gender: req.body.gender,
+            birthday: req.body.birthday,
             isAdmin: req.body.isAdmin,
             role: req.body.role,
             brand: req.body.brand,
@@ -75,12 +85,13 @@ exports.updateUser = async (req, res)=> {
             savedVideos: req.body.savedVideos,
             savedProducts: req.body.savedProducts,
             videos: req.body.videos,
+            link: req.body.link,
         },
         { new: true}
     )
 
     if(!user)
-    return res.status(400).send('the user cannot be created!')
+    return res.status(400).send('사용자 정보를 업데이트할 수 없습니다')
 
     res.send(user);
 }
@@ -114,11 +125,14 @@ exports.register = async (req, res) => {
         role: req.body.role,
         brand: req.body.brand,
         brandDescription: req.body.brandDescription,
+        followers: {},
+        following: {},
+        likes: {}
     })
     user = await user.save();
 
     if(!user)
-    return res.status(400).send('the user cannot be created!')
+    return res.status(400).send('회원가입에 문제가 발생했습니다. 정보를 확인해주세요.')
 
     res.send(user);
 }
@@ -140,10 +154,10 @@ exports.login = async (req, res) => {
             secret,
             {expiresIn : twentyYearsInSeconds}
         )
-        const { _id, email, role, name, isAdmin, image, username, following, followers} = user;
+        const { _id, email, role, name, isAdmin, image, username, following, followers, brand, brandDescription, link, phone, gender, birthday} = user;
         res.status(200).json({
             token,
-            user: { _id, email, role, name, isAdmin, image, username, following, followers }
+            user: { _id, email, role, name, isAdmin, image, username, following, followers, brand, brandDescription, link, phone, gender, birthday }
         })
         // res.status(200).send({user: user.email , token: token}) 
     } else {

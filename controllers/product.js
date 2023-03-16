@@ -63,7 +63,10 @@ exports.createProduct = async (req, res) => {
             createdBy: req.user.userId, //user data from middleware
             likes: {},
             options: req.body.options || null,
-            sale: req.body.sale || null
+            sale: req.body.sale || null,
+            subOption1: req.body.subOption1,
+            subOption2: req.body.subOption2,
+            subOption3: req.body.subOption3,
         });
 
         if (product.sale) {
@@ -122,7 +125,10 @@ exports.updateProduct = async (req, res) => {
             rating: req.body.rating,
             numReviews: req.body.numReviews,
             isFeatured: req.body.isFeatured,
-            options: req.body.options
+            options: req.body.options,
+            subOption1: req.body.subOption1,
+            subOption2: req.body.subOption2,
+            subOption3: req.body.subOption3
         },
         { new: true}
     );

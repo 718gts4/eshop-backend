@@ -1,80 +1,5 @@
 const mongoose = require('mongoose');
 
-const optionValueSchema = new mongoose.Schema({
-    value: {
-        type: String,
-        required: true
-    },
-    stock: {
-        type: Number,
-        required: true,
-        default: 0
-    }  
-});
-
-const colorOptionSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        default: 'color',
-        required: true
-    },
-    value: {
-        type: String,
-        required: true
-    },
-    hexCode: {
-        type: String,
-        required: true
-    },
-    optionValues: {
-        type: [optionValueSchema],
-        required: true
-    }
-});
-
-const sizeOptionSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        default: 'size',
-        required: true
-    },
-    value: {
-      type: String,
-      required: true
-    },
-    optionValues: {
-      type: [optionValueSchema],
-      required: true
-    }
-});
-
-const widthOptionSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        default: 'width',
-        required: true
-    },
-    value: {
-        type: String,
-        required: true
-    },
-    optionValues: [{
-      value: {
-            type: String,
-      }
-    }]
-});
-
-const optionSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    values: {
-        type: [colorOptionSchema, sizeOptionSchema, widthOptionSchema],
-        required: true
-    }
-});
 
 const saleSchema = new mongoose.Schema({
     discount: {
@@ -162,8 +87,69 @@ const productSchema = mongoose.Schema({
         type: Map,
         of: Boolean
     },
-    options: {
-        type: [optionSchema],
+    options: [
+        {
+            productColor: {
+                type: String,
+                required: true
+            },   
+            hexColor: {
+                type: String,
+            },
+            sizes:[
+                {
+                    size: {
+                        type: String,
+                        required: true
+                    },
+                    stock: {
+                        type: Number,
+                    }   
+                }
+            ],
+        }
+    ],
+    subOption1: {
+        name: {
+            type: String,
+            required: true
+        },
+        values: [
+            {
+                name: {
+                    type: String,
+                    required: true
+                }
+            }
+        ]
+    },
+    subOption2: {
+        name: {
+            type: String,
+            required: true
+        },
+        values: [
+            {
+                name: {
+                    type: String,
+                    required: true
+                }
+            }
+        ]
+    },
+    subOption3: {
+        name: {
+            type: String,
+            required: true
+        },
+        values: [
+            {
+                name: {
+                    type: String,
+                    required: true
+                }
+            }
+        ]
     },
     sale: {
         type: saleSchema,
@@ -174,6 +160,7 @@ const productSchema = mongoose.Schema({
         default: ''
     }
 })
+
 
 productSchema.virtual('id').get(function () {
     return this._id.toHexString();
