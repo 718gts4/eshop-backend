@@ -23,7 +23,7 @@ const userSchema = mongoose.Schema({
     },
     gender: {
         type: String,
-        default: '선택하지 않음'
+        default: 'none'
     },
     birthday: {
         type: String,
