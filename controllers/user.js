@@ -58,6 +58,12 @@ exports.updateUser = async (req, res)=> {
         message: '이미 등록된 유저이름입니다'
     });
 
+    const emailExist = await User.findOne({email: req.body.email});
+    if(emailExist)
+    return res.status(400).json({
+        message: '이미 등록된 이메일 주소입니다.'
+    });
+
     let newPassword
     if(req.body.password) {
         newPassword = bcrypt.hashSync(req.body.password, 10)
