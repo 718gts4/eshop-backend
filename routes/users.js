@@ -58,40 +58,40 @@ router.post('/profile', requireSignin, (req, res)=>{
 router.patch('/subscribeUser', subscribeUser, requireSignin);
 router.patch('/:id/like', likeUser, requireSignin);
 
-// router.put(`/:id/profile-image`,
-//     upload.single("image"),
-//     async (req, res) => {
-//         const file = req.file;
-//         const caption = req.body.caption;
+router.put(`/:id/profile-image`,
+    upload.single("image"),
+    async (req, res) => {
+        const file = req.file;
+        const caption = req.body.caption;
 
-//         const fileBuffer = await sharp(file.buffer)
-//             .resize({width:300, fit: "inside"})
-//             .jpeg({quality: 80})
-//             .toBuffer()
+        const fileBuffer = await sharp(file.buffer)
+            .resize({width:300, fit: "inside"})
+            .jpeg({quality: 80})
+            .toBuffer()
 
-//         const s3 = new S3Client({
-//             region,
-//             credetials: {
-//                 accessKeyId,
-//                 secretAccessKey
-//             }
-//         });
+        const s3 = new S3Client({
+            region,
+            credetials: {
+                accessKeyId,
+                secretAccessKey
+            }
+        });
 
-//         const params = {
-//             Bucket: bucketName,
-//             Key: `profile-images/${req.params.id}`,
-//             Body: fileBuffer
-//         }
+        const params = {
+            Bucket: bucketName,
+            Key: `profile-images/${req.params.id}`,
+            Body: fileBuffer
+        }
 
-//         const result = await s3.putObject(params).promise();
+        const result = await s3.putObject(params).promise();
 
-//         const user = await User.findByIdAndUpdate(
-//             req.params.id,
-//             { image: result.Location },
-//             { new: true }
-//         );
-//         res.status(200).json(user);
-//     }
-// )
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            { image: result.Location },
+            { new: true }
+        );
+        res.status(200).json(user);
+    }
+)
 
 module.exports = router;
