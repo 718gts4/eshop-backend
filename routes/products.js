@@ -36,7 +36,7 @@ const storage = multer.diskStorage({
       const fileName = file.originalname.split(' ').join('-');
       cb(null, shortid.generate() + '-' + fileName)
     }
-  })
+})
   
 const upload = multer({ storage })
 
