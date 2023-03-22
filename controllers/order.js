@@ -25,10 +25,11 @@ exports.getOrder = async (req, res) => {
 }
 
 exports.postOrder = async (req, res) => {
+    
     const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
         let newOrderItem = new OrderItem({
             quantity: orderItem.quantity,
-            product: orderItem.product,
+            product: orderItem.product.id,
             buyer: req.body.user,
             address: req.body.address,
         })
