@@ -16,9 +16,9 @@ const s3 = new S3Client({
 });
 
 exports.uploadToS3 = async (image) => {
-    const { file, userId } = image;
+    const { file } = image;
 
-    const key = `${userId}/${uuid()}`;
+    const key = `${uuid()}`;
     const command = new PutObjectCommand({
         Bucket: BUCKET,
         Key: key,
