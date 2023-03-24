@@ -9,8 +9,31 @@ const multerS3 = require('multer-s3');
 const { S3Client } = require('@aws-sdk/client-s3');
 const sharp = require('sharp');
 const { User } = require('../models/user');
+const { getUserPresignedUrls, uploadToS3 } = require('../s3')
 
-const { upload, uploadFileToS3 } = require('../utilities/s3')
+
+const FILE_TYPE_MAP = {
+    'image/png': 'png',
+    'image/jpeg': 'jpeg',
+    'image/jpg': 'jpg'
+  }
+  
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+    const isValid = FILE_TYPE_MAP[file.mimetype];
+    let uploadError = new Error('이미지 파일은 .png, .jpeg, .jpg만 가능합니다.');
+    if(isValid){
+        uploadError = null
+    }
+    cb(uploadError, path.join(path.dirname(__dirname), 'uploads'))
+    },
+    filename: function (req, file, cb) {
+    const fileName = file.originalname.split(' ').join('-');
+    cb(null, shortid.generate() + '-' + fileName)
+    }
+})
+
+const upload = multer({ storage })
 
 router.get('/', getUsers);
 router.get('/:id', getUserId);
@@ -28,14 +51,17 @@ router.patch('/subscribeUser', subscribeUser, requireSignin);
 router.patch('/:id/like', likeUser, requireSignin);
 
 router.post("/:id/profile-image", upload.single("image"), async (req, res) => {
+    const file = req.body.uri;
+    const userId = req.params.id;
+
+    if (!file || !userId) return res.status(400).json({ message: "Bad request"});
+
     try {
-        const imageUrl = req.file.location;
-        // Update the user's profile image in the database
-        // ...
-        res.json({ imageUrl });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({message:'Server Error'});
+        const key = await uploadToS3({file, userId});
+        console.log('key',key)
+        return res.status(201).json({key});
+    } catch (error) {
+        return res.status(500).json({message: error.message});
     }
 });
 

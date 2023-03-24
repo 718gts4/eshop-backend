@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.295.0",
+    "@aws-sdk/s3-request-presigner": "^3.297.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
@@ -26,6 +27,7 @@
     "nodemon": "^2.0.20",
     "sharp": "^0.31.3",
     "shortid": "^2.2.16",
-    "slugify": "^1.6.5"
+    "slugify": "^1.6.5",
+    "uuid": "^9.0.0"
   }
 }
