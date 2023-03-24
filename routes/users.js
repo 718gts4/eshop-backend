@@ -22,22 +22,38 @@ const FILE_TYPE_MAP = {
     'image/jpg': 'jpg'
   }
   
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-    const isValid = FILE_TYPE_MAP[file.mimetype];
-    let uploadError = new Error('이미지 파일은 .png, .jpeg, .jpg만 가능합니다.');
-    if(isValid){
-        uploadError = null
-    }
-    cb(uploadError, path.join(path.dirname(__dirname), 'uploads'))
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//     const isValid = FILE_TYPE_MAP[file.mimetype];
+//     let uploadError = new Error('이미지 파일은 .png, .jpeg, .jpg만 가능합니다.');
+//     if(isValid){
+//         uploadError = null
+//     }
+//     cb(uploadError, path.join(path.dirname(__dirname), 'uploads'))
+//     },
+//     filename: function (req, file, cb) {
+//     const fileName = file.originalname.split(' ').join('-');
+//     cb(null, shortid.generate() + '-' + fileName)
+//     }
+// })
+
+// const upload = multer({ storage })
+
+const s3 = new S3Client()
+
+const upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: 'some-bucket',
+    metadata: function (req, file, cb) {
+      cb(null, {fieldName: file.fieldname});
     },
-    filename: function (req, file, cb) {
-    const fileName = file.originalname.split(' ').join('-');
-    cb(null, shortid.generate() + '-' + fileName)
+    key: function (req, file, cb) {
+      cb(null, Date.now().toString())
     }
+  })
 })
 
-const upload = multer({ storage })
 
 router.get('/', getUsers);
 router.get('/:id', getUserId);
@@ -54,7 +70,7 @@ router.post('/profile', requireSignin, (req, res)=>{
 router.patch('/subscribeUser', subscribeUser, requireSignin);
 router.patch('/:id/like', likeUser, requireSignin);
 
-router.post("/:id/profile-image", upload.single("image"), async (req, res) => {
+router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
     const file = req.body.uri;
     const userId = req.params.id;
 
