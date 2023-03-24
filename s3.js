@@ -15,9 +15,9 @@ const s3 = new S3Client({
   },
 });
 
-exports.uploadToS3 = async (formData) => {
-    const { file, userId } = formData;
-    
+exports.uploadToS3 = async (image) => {
+    const { file, userId } = image;
+
     const key = `${userId}/${uuid()}`;
     const command = new PutObjectCommand({
         Bucket: BUCKET,
