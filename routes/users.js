@@ -22,39 +22,22 @@ const FILE_TYPE_MAP = {
     'image/jpg': 'jpg'
   }
   
-// const storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//     const isValid = FILE_TYPE_MAP[file.mimetype];
-//     let uploadError = new Error('이미지 파일은 .png, .jpeg, .jpg만 가능합니다.');
-//     if(isValid){
-//         uploadError = null
-//     }
-//     cb(uploadError, path.join(path.dirname(__dirname), 'uploads'))
-//     },
-//     filename: function (req, file, cb) {
-//     const fileName = file.originalname.split(' ').join('-');
-//     cb(null, shortid.generate() + '-' + fileName)
-//     }
-// })
-
-// const upload = multer({ storage })
-const bucketV = process.env.AWS_BUCKET_NAME;
-
-const s3 = new S3Client()
-
-const upload = multer({
-  storage: multerS3({
-    s3: s3,
-    bucket: "voutiq-app",
-    metadata: function (req, file, cb) {
-      cb(null, {fieldName: file.fieldname});
-    },
-    key: function (req, file, cb) {
-      cb(null, Date.now().toString())
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+    const isValid = FILE_TYPE_MAP[file.mimetype];
+    let uploadError = new Error('이미지 파일은 .png, .jpeg, .jpg만 가능합니다.');
+    if(isValid){
+        uploadError = null
     }
-  })
+    cb(uploadError, path.join(path.dirname(__dirname), 'uploads'))
+    },
+    filename: function (req, file, cb) {
+    const fileName = file.originalname.split(' ').join('-');
+    cb(null, shortid.generate() + '-' + fileName)
+    }
 })
 
+const upload = multer({ storage })
 
 router.get('/', getUsers);
 router.get('/:id', getUserId);
