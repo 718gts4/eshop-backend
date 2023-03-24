@@ -15,23 +15,25 @@ const s3 = new S3Client({
   },
 });
 
-exports.uploadToS3 = async ({ file, userId }) => {
-  const key = `${userId}/${uuid()}`;
-  const command = new PutObjectCommand({
-    Bucket: BUCKET,
-    Key: key,
-    Body: file.buffer,
-    ContentType: file.mimetype,
-  });
+exports.uploadToS3 = async (formData) => {
+    const { file, userId } = formData;
+    
+    const key = `${userId}/${uuid()}`;
+    const command = new PutObjectCommand({
+        Bucket: BUCKET,
+        Key: key,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+    });
 
-  try {
-    await s3.send(command);
-    console.log('kk', key)
-    return { key };
-  } catch (error) {
-    console.log(error);
-    return { error };
-  }
+    try {
+        await s3.send(command);
+        console.log('kk', key)
+        return { key };
+    } catch (error) {
+        console.log(error);
+        return { error };
+    }
 };
 
 const getImageKeysByUser = async (userId) => {
