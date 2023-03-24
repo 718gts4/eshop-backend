@@ -38,13 +38,14 @@ const FILE_TYPE_MAP = {
 // })
 
 // const upload = multer({ storage })
+const bucketV = process.env.AWS_BUCKET_NAME;
 
 const s3 = new S3Client()
 
 const upload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: 'some-bucket',
+    bucket: 'bucketV',
     metadata: function (req, file, cb) {
       cb(null, {fieldName: file.fieldname});
     },
