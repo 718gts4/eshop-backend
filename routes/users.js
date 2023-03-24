@@ -50,19 +50,19 @@ router.post('/profile', requireSignin, (req, res)=>{
 router.patch('/subscribeUser', subscribeUser, requireSignin);
 router.patch('/:id/like', likeUser, requireSignin);
 
-router.post("/:id/profile-image", upload.single("image"), async (req, res) => {
-    const file = req.body.uri;
-    const userId = req.params.id;
+// router.post("/:id/profile-image", upload.single("image"), async (req, res) => {
+//     const file = req.body.uri;
+//     const userId = req.params.id;
 
-    if (!file || !userId) return res.status(400).json({ message: "Bad request"});
+//     if (!file || !userId) return res.status(400).json({ message: "Bad request"});
 
-    try {
-        const key = await uploadToS3({file, userId});
-        console.log('key',key)
-        return res.status(201).json({key});
-    } catch (error) {
-        return res.status(500).json({message: error.message});
-    }
-});
+//     try {
+//         const key = await uploadToS3({file, userId});
+//         console.log('key',key)
+//         return res.status(201).json({key});
+//     } catch (error) {
+//         return res.status(500).json({message: error.message});
+//     }
+// });
 
 module.exports = router;
