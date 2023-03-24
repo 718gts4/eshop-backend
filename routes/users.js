@@ -4,9 +4,11 @@ const router = express.Router();
 const { validateRegisterRequest, validateLoginRequest, isRequestValidated } = require('../validators/auth');
 const { requireSignin } = require('../common-middleware/');
 
+
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const { S3Client } = require('@aws-sdk/client-s3');
+const path = require('path');
 const sharp = require('sharp');
 const { User } = require('../models/user');
 const { getUserPresignedUrls, uploadToS3 } = require('../s3')
