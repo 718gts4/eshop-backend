@@ -55,7 +55,7 @@ router.patch('/subscribeUser', subscribeUser, requireSignin);
 router.patch('/:id/like', likeUser, requireSignin);
 
 router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
-    const {file} = req;
+    const file = req;
     const userId = req.params.id;
     console.log('file', file);
     console.log('user id', userId);
