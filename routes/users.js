@@ -55,14 +55,14 @@ router.patch('/subscribeUser', subscribeUser, requireSignin);
 router.patch('/:id/like', likeUser, requireSignin);
 
 router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
-    console.log('REQ', req.params.id)
+    console.log('REQ', req)
     const file = req.body.uri;
     const userId = req.params.id;
 
     if (!file || !userId) return res.status(400).json({ message: "Bad request"});
 
     try {
-        const key = await uploadToS3({file, userId});
+        const key = await uploadToS3({file});
         console.log('key',key)
         return res.status(201).json({key});
     } catch (error) {

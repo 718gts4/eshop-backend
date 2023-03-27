@@ -28,10 +28,8 @@ exports.uploadToS3 = async (image) => {
 
     try {
         await s3.send(command);
-        console.log('kk', key)
         return { key };
     } catch (error) {
-        console.log(error);
         return { error };
     }
 };
