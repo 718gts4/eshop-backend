@@ -16,11 +16,17 @@ const s3 = new S3Client({
 });
 
 exports.getFile = async (key) => {
-    const downloadParams = {
+    const command = new GetObjectCommand({
         Bucket: BUCKET,
         Key: key,
-    };
-    s3.getObject(downloadParams).createReadStream();
+    });
+    
+    const response = await s3.send(command);
+    if (response.Body && typeof response.Body.pipe === "function") {
+        return response.Body;
+    } else {
+        throw new Error("S3 response is not a stream");
+    }
 }
 
 exports.uploadToS3 = async (image) => {

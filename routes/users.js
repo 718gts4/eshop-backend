@@ -73,9 +73,15 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
 
 router.get("/images/:key", async (req, res) => {
     const key = req.params.key;
-    const result = getFile(key)
-    result.pipe(res);
-    
+    try {
+        const stream = await getFile(key);
+        res.set("Content-Type", "image/jpeg"); // set the correct content type for your image
+        stream.pipe(res);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error getting image from S3");
+    }
+
     // console.log('user id', userId);
 
     // if (!userId) return res.status(400).json({ message: "File or user id is not available"});
