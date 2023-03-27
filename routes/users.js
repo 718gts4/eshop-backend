@@ -71,4 +71,17 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
     }
 });
 
+router.get("/:id/profile-image", async (req, res) => {
+    const userId = req.params.id;
+
+    console.log('user id', userId);
+
+    if (!userId) return res.status(400).json({ message: "File or user id is not available"});
+
+    const { error, presignedUrls } = await getUserPresignedUrls(userId);
+    if (error) return res.status(400).json({ message: error.message });
+
+    return res.status(201).json(presignedUrls);
+});
+
 module.exports = router;
