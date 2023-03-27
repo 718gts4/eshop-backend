@@ -12,7 +12,7 @@ const path = require('path');
 const shortid = require('shortid');
 const sharp = require('sharp');
 const { User } = require('../models/user');
-const { getUserPresignedUrls, uploadToS3 } = require('../s3')
+const { getUserPresignedUrls, uploadToS3, getFile } = require('../s3')
 
 require('dotenv/config');
 
@@ -71,17 +71,19 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
     }
 });
 
-router.get("/:id/profile-image", async (req, res) => {
-    const userId = req.params.id;
+router.get("/images/:key", async (req, res) => {
+    const key = req.params.key;
+    const result = getFile(key)
+    result.pipe(res);
+    
+    // console.log('user id', userId);
 
-    console.log('user id', userId);
+    // if (!userId) return res.status(400).json({ message: "File or user id is not available"});
 
-    if (!userId) return res.status(400).json({ message: "File or user id is not available"});
+    // const { error, presignedUrls } = await getUserPresignedUrls(userId);
+    // if (error) return res.status(400).json({ message: error.message });
 
-    const { error, presignedUrls } = await getUserPresignedUrls(userId);
-    if (error) return res.status(400).json({ message: error.message });
-
-    return res.status(201).json(presignedUrls);
+    // return res.status(201).json(presignedUrls);
 });
 
 module.exports = router;

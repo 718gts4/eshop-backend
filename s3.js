@@ -15,6 +15,14 @@ const s3 = new S3Client({
   },
 });
 
+exports.getFile = async (key) => {
+    const downloadParams = {
+        Bucket: BUCKET,
+        Key: key,
+    };
+    s3.getObject(downloadParams).createReadStream();
+}
+
 exports.uploadToS3 = async (image) => {
     const { file } = image;
 
