@@ -59,7 +59,7 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
     const file = req.body.uri;
     const userId = req.params.id;
 
-    if (!file || !userId) return res.status(400).json({ message: "Bad request"});
+    if (!file || !userId) return res.status(400).json({ message: "This is a bad request"});
 
     try {
         const key = await uploadToS3({file});
