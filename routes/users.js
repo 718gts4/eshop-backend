@@ -67,6 +67,18 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
         const key = await uploadProfileToS3({file, userId});
         console.log('key',key)
 
+        if (key) {
+            const user = await User.findByIdAndUpdate(
+                req.params.id,
+                {
+                    image: key
+                },
+                { new: true}
+            )
+
+            
+        }
+
         return res.status(201).json({key});
     } catch (error) {
         return res.status(500).json({message: error.message});
