@@ -4,7 +4,6 @@ const router = express.Router();
 const { validateRegisterRequest, validateLoginRequest, isRequestValidated } = require('../validators/auth');
 const { requireSignin } = require('../common-middleware/');
 
-
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const { S3Client } = require('@aws-sdk/client-s3');
@@ -15,13 +14,14 @@ const { getUserPresignedUrls, uploadProfileToS3, getFile } = require('../s3')
 
 require('dotenv/config');
 
-const FILE_TYPE_MAP = {
-    'image/png': 'png',
-    'image/jpeg': 'jpeg',
-    'image/jpg': 'jpg'
-}
-
 const storage = multer.memoryStorage()
+
+// const FILE_TYPE_MAP = {
+//     'image/png': 'png',
+//     'image/jpeg': 'jpeg',
+//     'image/jpg': 'jpg'
+// }
+
 
 // const storage = multer.diskStorage({
 //     destination: function (req, file, cb) {
@@ -72,7 +72,7 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
                 { new: true}
             );
             
-            console.log('updated user', updateUser);
+            res.send(updateUser);
             return res.status(201).json({key});
         }
 
@@ -86,21 +86,13 @@ router.get("/images/:key", async (req, res) => {
     const key = req.params.key;
     try {
         const stream = await getFile(key);
-        res.set("Content-Type", "image/jpeg"); // set the correct content type for your image
-        stream.pipe(res);
+        console.log('stream', stream)
+        // res.set("Content-Type", "image/jpeg"); // set the correct content type for your image
+        // stream.pipe(res);
     } catch (err) {
         console.error(err);
         res.status(500).send("Error getting image from S3");
     }
-
-    // console.log('user id', userId);
-
-    // if (!userId) return res.status(400).json({ message: "File or user id is not available"});
-
-    // const { error, presignedUrls } = await getUserPresignedUrls(userId);
-    // if (error) return res.status(400).json({ message: error.message });
-
-    // return res.status(201).json(presignedUrls);
 });
 
 module.exports = router;

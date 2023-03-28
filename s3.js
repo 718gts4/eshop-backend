@@ -17,17 +17,19 @@ const s3 = new S3Client({
 });
 
 exports.getFile = async (key) => {
-    const command = new GetObjectCommand({
+    const getObjectParams = {
         Bucket: BUCKET,
-        Key: key,
-    });
-
-    const response = await s3.send(command);
-    if (response.Body && typeof response.Body.pipe === "function") {
-        return response.Body;
-    } else {
-        throw new Error("S3 response is not a stream");
+        Key: key
     }
+    const command = new GetObjectCommand(getObjectParams);
+    const url = await getSignedUrl(s3, command, { expiresIn: 3600})
+    console.log('URL', url)
+    // const response = await s3.send(command);
+    // if (response.Body && typeof response.Body.pipe === "function") {
+    //     return response.Body;
+    // } else {
+    //     throw new Error("S3 response is not a stream");
+    // }
 }
 
 exports.uploadProfileToS3 = async (image) => {
