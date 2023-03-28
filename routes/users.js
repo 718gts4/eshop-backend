@@ -72,7 +72,7 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
                 { new: true}
             );
             
-            res.send(updateUser);
+            // res.send(updateUser);
             return res.status(201).json({key});
         }
 
