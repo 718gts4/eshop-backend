@@ -20,24 +20,26 @@ const FILE_TYPE_MAP = {
     'image/png': 'png',
     'image/jpeg': 'jpeg',
     'image/jpg': 'jpg'
-  }
-  
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-    const isValid = FILE_TYPE_MAP[file.mimetype];
-    let uploadError = new Error('이미지 파일은 .png, .jpeg, .jpg만 가능합니다.');
-    if(isValid){
-        uploadError = null
-    }
-    cb(uploadError, path.join(path.dirname(__dirname), 'uploads'))
-    },
-    filename: function (req, file, cb) {
-    const fileName = file.originalname.split(' ').join('-');
-    cb(null, shortid.generate() + '-' + fileName)
-    }
-})
+}
 
-const upload = multer({ storage })
+const storage = multer.memoryStorage()
+
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//     const isValid = FILE_TYPE_MAP[file.mimetype];
+//     let uploadError = new Error('이미지 파일은 .png, .jpeg, .jpg만 가능합니다.');
+//     if(isValid){
+//         uploadError = null
+//     }
+//     cb(uploadError, path.join(path.dirname(__dirname), 'uploads'))
+//     },
+//     filename: function (req, file, cb) {
+//     const fileName = file.originalname.split(' ').join('-');
+//     cb(null, shortid.generate() + '-' + fileName)
+//     }
+// })
+
+const upload = multer({ storage: storage })
 
 router.get('/', getUsers);
 router.get('/:id', getUserId);
@@ -55,7 +57,8 @@ router.patch('/subscribeUser', subscribeUser, requireSignin);
 router.patch('/:id/like', likeUser, requireSignin);
 
 router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
-    const file = req;
+    console.log('req body', req.body)
+    const file = req.file;
     const userId = req.params.id;
     console.log('FILE', file);
     console.log('user id', userId);
