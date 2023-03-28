@@ -73,6 +73,7 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
             },
             { new: true}
         )
+        console.log('USER', user)
         res.send(user);
         return res.status(201).json({key});
     } catch (error) {
