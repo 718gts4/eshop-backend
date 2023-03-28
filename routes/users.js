@@ -86,11 +86,10 @@ router.get("/images/:key", async (req, res) => {
     const key = req.params.key;
     try {
         const stream = await getFile(key);
-        console.log('stream', stream)
-        // res.set("Content-Type", "image/jpeg"); // set the correct content type for your image
-        // stream.pipe(res);
+        res.set("Content-Type", "image/jpeg"); // set the correct content type for your image
+        stream.pipe(res);
     } catch (err) {
-        console.error('there is an error',err);
+        console.error(err);
         res.status(500).send("Error getting image from S3");
     }
 });
