@@ -1,4 +1,3 @@
-const {User} = require('../models/user')
 const { register, login, getUsers, getUserId, postNewUser, deleteUser, getUserCount, updateUser, subscribeUser, likeUser } = require('../controllers/user');
 const express = require('express');
 const router = express.Router();
@@ -67,14 +66,14 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
     try {
         const key = await uploadProfileToS3({file, userId});
         console.log('key',key)
-        const user = await User.findByIdAndUpdate(
-            userId,
-            {
-                image: key,
-            },
-            { new: true}
-        )
-        res.send(user);
+        // const user = await User.findByIdAndUpdate(
+        //     userId,
+        //     {
+        //         image: key,
+        //     },
+        //     { new: true}
+        // )
+        // res.send(user);
         return res.status(201).json({key});
     } catch (error) {
         return res.status(500).json({message: error.message});
