@@ -58,8 +58,6 @@ router.patch('/:id/like', likeUser, requireSignin);
 router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
     const file = req.file;
     const userId = req.params.id;
-    // console.log('FILE', file.buffer);
-    console.log('user id', userId);
 
     if (!file || !userId) return res.status(400).json({ message: "File or user id is not available"});
 
@@ -68,18 +66,17 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
         console.log('key',key)
 
         if (key) {
-            const user = await User.findByIdAndUpdate(
+            const updateUser = await User.findByIdAndUpdate(
                 userId,
-                {
-                    image: key
-                },
+                { image: key },
                 { new: true}
-            )
-
-
+            );
+            
+            console.log('updated user', updateUser);
+            return res.status(201).json({key});
         }
 
-        return res.status(201).json({key});
+        
     } catch (error) {
         return res.status(500).json({message: error.message});
     }
