@@ -23,7 +23,7 @@ exports.getFile = async (key) => {
     }
     const command = new GetObjectCommand(getObjectParams);
     const url = await getSignedUrl(s3, command, { expiresIn: 3600})
-    console.log('URL', url)
+    // console.log('URL', url)
     return url;
 }
 
