@@ -68,7 +68,7 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
         if (key) {
             const updateUser = await User.findByIdAndUpdate(
                 userId,
-                { image: key },
+                { image: key.key },
                 { new: true}
             );
             
