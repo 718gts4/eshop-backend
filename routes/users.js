@@ -88,7 +88,7 @@ router.get("/images/:key", async (req, res) => {
         const stream = await getFile(key);
         res.set("Content-Type", "image/jpeg"); // set the correct content type for your image
         console.log('stream', stream)
-        stream.pipe(res);
+        // stream.pipe(res);
         
 
     } catch (err) {
