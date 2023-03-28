@@ -1,6 +1,7 @@
 const { GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { v4: uuid } = require("uuid");
+const sharp = require('sharp');
 
 const BUCKET = process.env.AWS_BUCKET_NAME;
 const region = process.env.AWS_REGION;
@@ -20,7 +21,7 @@ exports.getFile = async (key) => {
         Bucket: BUCKET,
         Key: key,
     });
-    
+
     const response = await s3.send(command);
     if (response.Body && typeof response.Body.pipe === "function") {
         return response.Body;
@@ -29,14 +30,16 @@ exports.getFile = async (key) => {
     }
 }
 
-exports.uploadToS3 = async (image) => {
+exports.uploadProfileToS3 = async (image) => {
     const { file } = image;
+    // resize image
+    const buffer = await sharp(file.buffer).resize({height:300, width:300, fit:"contain"}).toBuffer()
 
     const key = `${uuid()}`;
     const command = new PutObjectCommand({
         Bucket: BUCKET,
         Key: key,
-        Body: file.buffer,
+        Body: buffer,
         ContentType: file.mimetype,
     });
 

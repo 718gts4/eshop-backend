@@ -10,9 +10,8 @@ const multerS3 = require('multer-s3');
 const { S3Client } = require('@aws-sdk/client-s3');
 const path = require('path');
 const shortid = require('shortid');
-const sharp = require('sharp');
 const { User } = require('../models/user');
-const { getUserPresignedUrls, uploadToS3, getFile } = require('../s3')
+const { getUserPresignedUrls, uploadProfileToS3, getFile } = require('../s3')
 
 require('dotenv/config');
 
@@ -66,7 +65,7 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
     if (!file || !userId) return res.status(400).json({ message: "File or user id is not available"});
 
     try {
-        const key = await uploadToS3({file, userId});
+        const key = await uploadProfileToS3({file, userId});
         console.log('key',key)
         return res.status(201).json({key});
     } catch (error) {
