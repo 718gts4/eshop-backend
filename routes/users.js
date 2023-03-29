@@ -63,19 +63,15 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
 
     try {
         const key = await uploadProfileToS3({file, userId});
-        console.log('key',key)
-
         if (key) {
             const updateUser = await User.findByIdAndUpdate(
                 userId,
                 { image: key.key },
                 { new: true}
-            );
-            
+            );   
             // res.send(updateUser);
             return res.status(201).json({key});
         }
-
         
     } catch (error) {
         return res.status(500).json({message: error.message});
@@ -87,12 +83,8 @@ router.get("/images/:key", async (req, res) => {
     try {
         const stream = await getFile(key);
         res.set("Content-Type", "image/jpeg"); // set the correct content type for your image
-        console.log('stream', stream)
         stream.pipe(res);
-        
-
     } catch (err) {
-        console.error(err);
         res.status(500).send("Error getting image from S3");
     }
 });

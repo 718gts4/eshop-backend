@@ -22,9 +22,8 @@ exports.getFile = async (key) => {
         Key: key
     }
     const command = new GetObjectCommand(getObjectParams);
-    const url = await getSignedUrl(s3, command, { expiresIn: 3600})
-    // console.log('URL', url)
-    return url;
+    const { Body } = await s3.send(command);
+    return Body;
 }
 
 exports.uploadProfileToS3 = async (image) => {
