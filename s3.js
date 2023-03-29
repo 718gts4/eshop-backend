@@ -29,7 +29,7 @@ exports.getFile = async (key) => {
 exports.uploadProfileToS3 = async (image) => {
     const { file } = image;
     // resize image
-    const buffer = await sharp(file.buffer).resize(300).toBuffer()
+    const buffer = await sharp(file.buffer).rotate().resize(300).toBuffer()
 
     const key = `${uuid()}`;
     const command = new PutObjectCommand({
