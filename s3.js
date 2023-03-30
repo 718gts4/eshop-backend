@@ -14,6 +14,7 @@ const s3 = new S3Client({
     accessKeyId,
     secretAccessKey,
   },
+  signatureVersion: 'v2', // set version to v2
 });
 
 exports.getFile = async (key) => {
