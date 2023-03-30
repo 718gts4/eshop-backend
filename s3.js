@@ -68,7 +68,7 @@ exports.getUserPresignedUrls = async (userId) => {
     const presignedUrls = await Promise.all(
       imageKeys.map((key) => {
         const command = new GetObjectCommand({ Bucket: BUCKET, Key: key });
-        return getSignedUrl(s3, command, { expiresIn: 900 }); // default
+        return getSignedUrl(s3, command, { expiresIn: 600 }); // default
       })
     );
 
