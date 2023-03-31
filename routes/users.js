@@ -15,28 +15,7 @@ const { getUserPresignedUrls, uploadProfileToS3, getFile } = require('../s3')
 require('dotenv/config');
 
 const storage = multer.memoryStorage()
-
-// const FILE_TYPE_MAP = {
-//     'image/png': 'png',
-//     'image/jpeg': 'jpeg',
-//     'image/jpg': 'jpg'
-// }
-
-
-// const storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//     const isValid = FILE_TYPE_MAP[file.mimetype];
-//     let uploadError = new Error('이미지 파일은 .png, .jpeg, .jpg만 가능합니다.');
-//     if(isValid){
-//         uploadError = null
-//     }
-//     cb(uploadError, path.join(path.dirname(__dirname), 'uploads'))
-//     },
-//     filename: function (req, file, cb) {
-//     const fileName = file.originalname.split(' ').join('-');
-//     cb(null, shortid.generate() + '-' + fileName)
-//     }
-// })
+const voutiq_url = process.env.AWS_CDN_URL;
 
 const upload = multer({ storage: storage })
 
@@ -69,7 +48,7 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
                 { image: key.key },
                 { new: true}
             );   
-            // res.send(updateUser);
+        
             return res.status(201).json({key});
         }
         
@@ -80,13 +59,15 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
 
 router.get("/images/:key", async (req, res) => {
     const key = req.params.key;
-    try {
-        const stream = await getFile(key);
-        res.set("Content-Type", "image/jpeg"); // set the correct content type for your image
-        stream.pipe(res);
-    } catch (err) {
-        res.status(500).send("Error getting image from S3");
-    }
+    const imageUrl = voutiq_url + key;
+    res.send(imageUrl)
+    // try {
+    //     const stream = await getFile(key);
+    //     res.set("Content-Type", "image/jpeg"); // set the correct content type for your image
+    //     stream.pipe(res);
+    // } catch (err) {
+    //     res.status(500).send("Error getting image from S3");
+    // }
 });
 
 module.exports = router;
