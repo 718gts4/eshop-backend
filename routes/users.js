@@ -15,7 +15,7 @@ const { getUserPresignedUrls, uploadProfileToS3, getFile } = require('../s3')
 require('dotenv/config');
 
 const storage = multer.memoryStorage()
-const voutiq_url = process.env.AWS_CDN_URL;
+const voutiq_url = "https://d22veplpbtt1aw.cloudfront.net/";
 
 const upload = multer({ storage: storage })
 
