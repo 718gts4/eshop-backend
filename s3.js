@@ -82,5 +82,10 @@ exports.deleteUrl = async (key) => {
     Key: key
   }
   const s3Command = new DeleteObjectCommand(params)
-  await s3.send(s3Command)
+  try {
+    await s3.send(s3Command)
+    console.log(`Deleted object with key ${key} from bucket`)
+  } catch (error) {
+    console.log('error', error)
+  }
 };
