@@ -60,6 +60,7 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
 router.get("/images/:key", async (req, res) => {
     const key = req.params.key;
     const imageUrl = getFile(key);
+    console.log('test url', imageUrl)
     // const imageUrl = voutiq_url + key;
     res.send(imageUrl)
 });

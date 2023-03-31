@@ -21,7 +21,9 @@ const s3 = new S3Client({
 
 exports.getFile = async (key) => {
     const imageUrl = image_url + key;
+    console.log('IM URL', imageUrl)
     return imageUrl;
+
     // const getObjectParams = {
     //     Bucket: BUCKET,
     //     Key: key
