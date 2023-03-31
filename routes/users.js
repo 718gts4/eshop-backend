@@ -59,12 +59,9 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
 router.get("/images/:key", async (req, res) => {
     const key = req.params.key;
     const imageUrl = getFile(key);
+    console.log('IU', imageUrl)
     res.send(imageUrl)
 });
 
-router.delete("/images/:key", async(req, res) => {
-    const key = req.params.id;
-
-})
 
 module.exports = router;
