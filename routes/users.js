@@ -62,9 +62,10 @@ router.get("/images/:key", async (req, res) => {
     res.send(imageUrl)
 });
 
-router.delete("/images/:key", async(req, res) => {
-    const key = req.params.key;
-    deleteUrl(key);
-})
+// router.delete("/imagedelete/:key", async(req, res) => {
+//     console.log('check key', req.params.key)
+//     const key = req.params.key;
+//     deleteUrl(key);
+// })
 
 module.exports = router;

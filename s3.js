@@ -76,11 +76,11 @@ exports.getUserPresignedUrls = async (userId) => {
   }
 };
 
-exports.deleteUrl = async (key) => {
-  const params = {
-    Bucket: BUCKET,
-    Key: key
-  }
-  const s3Command = new DeleteObjectCommand(params)
-  await s3.send(s3Command)
-};
+// exports.deleteUrl = async (key) => {
+//   const params = {
+//     Bucket: BUCKET,
+//     Key: key
+//   }
+//   const s3Command = new DeleteObjectCommand(params)
+//   await s3.send(s3Command)
+// };
