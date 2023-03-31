@@ -10,7 +10,7 @@ const { S3Client } = require('@aws-sdk/client-s3');
 const path = require('path');
 const shortid = require('shortid');
 const { User } = require('../models/user');
-const { getUserPresignedUrls, uploadProfileToS3, getFile } = require('../s3')
+const { getUserPresignedUrls, uploadProfileToS3, getFile, deleteUrl } = require('../s3')
 
 require('dotenv/config');
 
@@ -59,9 +59,12 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
 router.get("/images/:key", async (req, res) => {
     const key = req.params.key;
     const imageUrl = getFile(key);
-    console.log('IU', imageUrl)
     res.send(imageUrl)
 });
 
+router.delete("/imagedelete/:key", async(req, res) => {
+    const key = req.params.key;
+    console.log('key', key)
+})
 
 module.exports = router;
