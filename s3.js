@@ -1,4 +1,4 @@
-const { GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client, DeleteObjectCommand } = require("@aws-sdk/client-s3");
+const { GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { v4: uuid } = require("uuid");
 const sharp = require('sharp');
@@ -75,12 +75,3 @@ exports.getUserPresignedUrls = async (userId) => {
     return { error };
   }
 };
-
-// exports.deleteUrl = async (key) => {
-//   const params = {
-//     Bucket: BUCKET,
-//     Key: key
-//   }
-//   const s3Command = new DeleteObjectCommand(params)
-//   await s3.send(s3Command)
-// };
