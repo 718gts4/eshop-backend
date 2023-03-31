@@ -59,15 +59,14 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
 
 router.get("/images/:key", async (req, res) => {
     const key = req.params.key;
-    const imageUrl = voutiq_url + key;
+    const imageUrl = getFile(key);
+    // const imageUrl = voutiq_url + key;
     res.send(imageUrl)
-    // try {
-    //     const stream = await getFile(key);
-    //     res.set("Content-Type", "image/jpeg"); // set the correct content type for your image
-    //     stream.pipe(res);
-    // } catch (err) {
-    //     res.status(500).send("Error getting image from S3");
-    // }
 });
+
+router.delete("/images/:key", async(req, res) => {
+    const key = req.params.id;
+
+})
 
 module.exports = router;

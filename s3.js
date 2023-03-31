@@ -8,6 +8,8 @@ const region = process.env.AWS_REGION;
 const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 
+const image_url = process.env.AWS_CDN_URL;
+
 const s3 = new S3Client({
   region,
   credentials: {
@@ -18,13 +20,16 @@ const s3 = new S3Client({
 });
 
 exports.getFile = async (key) => {
-    const getObjectParams = {
-        Bucket: BUCKET,
-        Key: key
-    }
-    const command = new GetObjectCommand(getObjectParams);
-    const { Body } = await s3.send(command);
-    return Body;
+    const imageUrl = image_url + key;
+    return imageUrl;
+    // const getObjectParams = {
+    //     Bucket: BUCKET,
+    //     Key: key
+    // }
+
+    // const command = new GetObjectCommand(getObjectParams);
+    // const { Body } = await s3.send(command);
+    // return Body;
 }
 
 exports.uploadProfileToS3 = async (image) => {
