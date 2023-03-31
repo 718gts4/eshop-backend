@@ -10,12 +10,11 @@ const { S3Client } = require('@aws-sdk/client-s3');
 const path = require('path');
 const shortid = require('shortid');
 const { User } = require('../models/user');
-const { getUserPresignedUrls, uploadProfileToS3, getFile } = require('../s3')
+const { getUserPresignedUrls, uploadProfileToS3, getFile, deleteUrl } = require('../s3')
 
 require('dotenv/config');
 
 const storage = multer.memoryStorage()
-const voutiq_url = "https://d22veplpbtt1aw.cloudfront.net/";
 
 const upload = multer({ storage: storage })
 
@@ -60,15 +59,12 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
 router.get("/images/:key", async (req, res) => {
     const key = req.params.key;
     const imageUrl = getFile(key);
-    const str = JSON.stringify(imageUrl)
-    console.log('test url', imageUrl)
-    // const imageUrl = voutiq_url + key;
-    res.send(str)
+    res.send(imageUrl)
 });
 
 router.delete("/images/:key", async(req, res) => {
     const key = req.params.id;
-
+    deleteUrl(key);
 })
 
 module.exports = router;

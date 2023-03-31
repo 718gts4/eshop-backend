@@ -1,4 +1,4 @@
-const { GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } = require("@aws-sdk/client-s3");
+const { GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { v4: uuid } = require("uuid");
 const sharp = require('sharp');
@@ -19,19 +19,9 @@ const s3 = new S3Client({
   signatureVersion: 'v2', // set version to v2
 });
 
-exports.getFile = async (key) => {
-    const imageUrl = image_url + key;
-    console.log('IM URL', imageUrl)
+exports.getFile = (key) => {
+    const imageUrl = `${image_url}${key}`;
     return imageUrl;
-
-    // const getObjectParams = {
-    //     Bucket: BUCKET,
-    //     Key: key
-    // }
-
-    // const command = new GetObjectCommand(getObjectParams);
-    // const { Body } = await s3.send(command);
-    // return Body;
 }
 
 exports.uploadProfileToS3 = async (image) => {
@@ -84,4 +74,13 @@ exports.getUserPresignedUrls = async (userId) => {
     console.log(error);
     return { error };
   }
+};
+
+exports.deleteUrl = async (key) => {
+  const params = {
+    Bucket: BUCKET,
+    Key: key
+  }
+  const s3Command = new DeleteObjectCommand(params)
+  await s3.send(s3Command)
 };
