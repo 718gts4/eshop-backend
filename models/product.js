@@ -158,6 +158,10 @@ const productSchema = mongoose.Schema({
     delivery : {
         type: String,
         default: ''
+    },
+    topSeller: {
+        type: Boolean,
+        default: false
     }
 })
 
