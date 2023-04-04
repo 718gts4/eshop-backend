@@ -25,7 +25,8 @@ exports.postCategory = async (req, res) => {
         name: req.body.name,
         slug: slugify(req.body.name),
         icon: req.body.icon,
-        color: req.body.color
+        color: req.body.color,
+        subcategories: req.body.subcategories || []
     })
 
     category = await category.save();

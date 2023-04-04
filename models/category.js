@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const categorySchema = mongoose.Schema({
+const subcategorySchema = mongoose.Schema({
     name: {
         type:String, 
         required:true,
@@ -17,12 +17,26 @@ const categorySchema = mongoose.Schema({
     color: {
         type: String
     }
-})
+});
 
-// categorySchema.method('toJSON', function(){
-//     const { __v, ...object } = this.toObject();
-//     const { _id:id, ...result } = object;
-//     return { ...result, id };
-// });
+const categorySchema = mongoose.Schema({
+    name: {
+        type:String, 
+        required:true,
+        trim: true
+    },
+    slug: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    icon: {
+        type: String
+    },
+    color: {
+        type: String
+    },
+    subcategories: [subcategorySchema]
+})
 
 exports.Category = mongoose.model('Category', categorySchema);
