@@ -1,6 +1,26 @@
 const {Category} = require('../models/category');
 const slugify = require('slugify');
 
+function createCategories(categories, parentId = null){
+    const categoryList = [];
+    let category;
+    if(parentId == null) {
+        category = categories.filter(cat => cat.parentId === undefined);
+    } else {
+        category = categories.filter(cat => cat.parentId === parentId.toString());
+    }
+
+    for(let cate of category) {
+        categoryList.push({
+            _id: cate._id,
+            name: cate.name,
+            slug: cate.slug,
+            children: createCategories(categories, cate._id)
+        });
+    }
+
+    return categoryList;
+};
 
 exports.getCategory = async (req, res) => {
     const categoryList = await Category.find();
@@ -9,6 +29,19 @@ exports.getCategory = async (req, res) => {
         res.status(500).json({success:false})
     }
     res.status(200).send(categoryList);
+}
+
+// retrieving category tree with subcategories
+exports.getCategories =  (req, res) => {
+    Category.find({})
+    .exec((error, categories) => {
+        if(error) return res.status(400).json({error});
+
+        if(categories){
+            const categoryList = createCategories(categories);
+            res.status(200).json({categoryList});
+        }
+    })
 }
 
 exports.getCategoryId = async (req, res) => {
@@ -21,20 +54,24 @@ exports.getCategoryId = async (req, res) => {
 }
 
 exports.postCategory = async (req, res) => {
-    let category = new Category({
-        name: req.body.name,
-        slug: slugify(req.body.name),
-        icon: req.body.icon,
-        color: req.body.color,
-        subcategories: req.body.subcategories || []
-    })
+    try{
+        let category = new Category({
+                name: req.body.name,
+                icon: req.body.icon,
+                color: req.body.color,
+                slug: slugify(req.body.name),
+                parentId: req.body.parentId
+            })
 
-    category = await category.save();
+            category = await category.save();
 
-    if(!category)
-    return res.status(404).send('the category cannot be created!')
-    
-    res.send(category);
+            if(!category)
+            return res.status(404).send('the category cannot be created!')
+            
+            res.send(category);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 }
 
 exports.updateCategory = async (req, res) => {
