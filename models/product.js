@@ -162,6 +162,10 @@ const productSchema = mongoose.Schema({
     topSeller: {
         type: Boolean,
         default: false
+    },
+    justin: {
+        type: Boolean,
+        default: false
     }
 })
 
