@@ -33,21 +33,16 @@ exports.getVideo = async (req, res) => {
 }
 
 exports.getVideosByUser = async (req, res) => {
-    try {
-      const videos = await Video.find({ createdBy: req.params.userId })
-        .populate('videoItems')
-        .populate('createdBy', ['name', 'email', 'phone', 'isAdmin', 'image', 'username', 'numComments'])
-        .populate({ path: 'videoItems', populate: { path: 'product' } });
-  
-      if (!videos) {
-        return res.status(404).json({ success: false, message: 'No videos found for this user' });
-      }
-  
-      res.status(200).json({ success: true, data: videos });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, message: 'Server error' });
+    const videoList = await Video.find({ createdBy: req.params.id })
+    .populate('createdBy')
+    .populate({
+        path: 'videoItems'})
+    .sort({'dateCreated': -1});
+
+    if(!videoList){
+        res.status(500).json({success:false})
     }
+    res.status(200).send(videoList);
 };
 
 exports.postVideo = async (req, res) => {
