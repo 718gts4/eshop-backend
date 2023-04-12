@@ -5,6 +5,10 @@ const userSchema = mongoose.Schema({
         type: String,
         default: ''
     },
+    image: {
+        type: String,
+        default: ''
+    },
     email: {
         type: String,
         required: true,
@@ -32,10 +36,6 @@ const userSchema = mongoose.Schema({
     isAdmin: {
         type: Boolean,
         default: false,
-    },
-    image: {
-        type: String,
-        default: ''
     },
     link: {
         type: String,
