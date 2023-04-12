@@ -13,6 +13,7 @@ const {
 const express = require('express');
 const router = express.Router();
 const { requireSignin, adminMiddleware } = require('../common-middleware');
+const { User } = require('../models/user');
 
 const { uploadVideoToS3, } = require('../s3')
 
