@@ -75,10 +75,8 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
     const file = req.file;
     const userId = req.params.id;
     const Id = mongoose.Types.ObjectId(req.params.id);
-    
-    if (!file || !userId) return res.status(400).json({ message: "File or user id is not available"});
 
-    let responseSent = false;
+    if (!file || !userId) return res.status(400).json({ message: "File or user id is not available"});
 
     try {
         await ffmpeg.ffprobe(file.path, function (err, metadata){
@@ -93,6 +91,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
 
         const key = await uploadVideoToS3({file, userId});
         if (key) {
+
             const video = new Video({
                 videoUrl: key.key,
                 createdBy: Id,
@@ -103,26 +102,34 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
 
             if(!savedVideo) {
                 fs.unlink(file.path, (err) => {
-                    if (err) throw err;
-                    console.log(`${file.path} was not deleted`);
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).json({message: 'An error occurred while deleting the file'});
+                    }
+                    console.log(`${file.path} was deleted`);
+                    return res.status(500).send('The video cannot be created');
                 });
-                return res.status(500).send('The video cannot be created')
-            }
+            } else {
+                fs.unlink(file.path, (err) => {
+                    if (err) {
+                        console.error(err);
+                    } else {
+                        console.log(`${file.path} was deleted`);
+                    }
+                });
 
-            fs.unlink(file.path, (err) => {
-                if (err) throw err;
-                console.log(`${file.path} was deleted`);
-            });
-
-            if (key && !responseSent) {
-                res.status(201).json({key});
-                responseSent = true;
+                return res.status(201).json({key});
             }
+        
         }
+        
     } catch (error) {
         fs.unlink(file.path, (err) => {
-            if (err) throw err;
-            console.log(`${file.path} was not deleted`);
+            if (err) {
+                console.error(err);
+            } else {
+                console.log(`${file.path} was deleted`);
+            }
         });
         return res.status(500).json({message: error.message});
     }
