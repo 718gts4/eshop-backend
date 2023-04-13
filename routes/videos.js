@@ -13,9 +13,10 @@ const {
 const express = require('express');
 const router = express.Router();
 const { requireSignin, adminMiddleware } = require('../common-middleware');
-const { User } = require('../models/user');
+const { Video } = require('../models/video');
+const mongoose = require('mongoose');
 
-const { uploadVideoToS3, } = require('../s3')
+const { uploadVideoToS3, getVideoFile} = require('../s3')
 
 require('dotenv/config');
 const multer = require('multer');
@@ -23,6 +24,8 @@ const multerS3 = require('multer-s3');
 const { S3Client } = require('@aws-sdk/client-s3');
 const shortid = require('shortid');
 const path = require('path');
+const ffmpeg = require('fluent-ffmpeg');
+const fs = require('fs');
 
 const FILE_TYPE_MAP = {
     'image/png': 'png',
@@ -49,7 +52,10 @@ const storage = multer.diskStorage({
     }
 })
     
-const upload = multer({ storage })
+const upload = multer({ 
+    dest: 'uploads/', 
+    limits: { fileSize: 1024 * 1024 * 50 } 
+});
 
 
 router.get(`/`, getVideos);
@@ -63,27 +69,69 @@ router.put(`/:id/updatecomments`, updateVideoComment);
 router.post(`/:id/followingVideos`, getFollowingVideos);
 router.get(`/uservideos/:id`, getVideosByUser)
 
-router.post("/create", upload.single('video'), async (req, res) => {
-    const video = req.file;
+router.post("/upload/:id", upload.single('video'), async (req, res) => {
+    console.log('req chek', req.file)
+    console.log('id num', req.params.id)
+    const file = req.file;
     const userId = req.params.id;
+    const Id = mongoose.Types.ObjectId(req.params.id);
+    
+    if (!file || !userId) return res.status(400).json({ message: "File or user id is not available"});
 
-    if (!video || !userId) return res.status(400).json({ message: "File or user id is not available"});
+    let responseSent = false;
 
     try {
-        const key = await uploadVideoToS3({video, userId});
+        await ffmpeg.ffprobe(file.path, function (err, metadata){
+            if (err) {
+                return res.status(400).json({message: 'Error extracting video metadata'});
+            }
+            const duration = metadata.format.duration;
+            if(duration > 16) {
+                return res.status(400).json({message: '영상이 15초를 초과하면 안됩니다'})
+            }
+        });
+
+        const key = await uploadVideoToS3({file, userId});
         if (key) {
-            const updateUser = await User.findByIdAndUpdate(
-                userId,
-                { videoUrl: key.key },
-                { new: true}
-            );   
-        
-            return res.status(201).json({key});
+            const video = new Video({
+                videoUrl: key.key,
+                createdBy: Id,
+                name: req.file.filename,
+            });
+
+            const savedVideo = await video.save({new:true});
+
+            if(!savedVideo) {
+                fs.unlink(file.path, (err) => {
+                    if (err) throw err;
+                    console.log(`${file.path} was not deleted`);
+                });
+                return res.status(500).send('The video cannot be created')
+            }
+
+            fs.unlink(file.path, (err) => {
+                if (err) throw err;
+                console.log(`${file.path} was deleted`);
+            });
+
+            if (key && !responseSent) {
+                res.status(201).json({key});
+                responseSent = true;
+            }
         }
-        
     } catch (error) {
+        fs.unlink(file.path, (err) => {
+            if (err) throw err;
+            console.log(`${file.path} was not deleted`);
+        });
         return res.status(500).json({message: error.message});
     }
+});
+
+router.get("/video/:key", async (req, res) => {
+    const key = req.params.key;
+    const videoUrl = getVideoFile(key);
+    res.send(videoUrl)
 });
 
 module.exports = router;
