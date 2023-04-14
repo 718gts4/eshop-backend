@@ -26,6 +26,9 @@ const shortid = require('shortid');
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 const fs = require('fs');
+const bodyParser = require('body-parser');
+const mime = require('mime');
+
 
 const FILE_TYPE_MAP = {
     'image/png': 'png',
@@ -57,6 +60,11 @@ const upload = multer({
     limits: { fileSize: 1024 * 1024 * 50 } 
 });
 
+const MAX_FILE_SIZE = 1024 * 1024 * 50; // 50 MB
+
+router.use(bodyParser.json({ limit: '50mb' }));
+router.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+
 
 router.get(`/`, getVideos);
 router.get(`/:id`, getVideo);
@@ -70,21 +78,59 @@ router.post(`/:id/followingVideos`, getFollowingVideos);
 router.get(`/uservideos/:id`, getVideosByUser)
 
 router.post("/upload/:id", upload.single('video'), async (req, res) => {
-    console.log('req chek', req.file)
-    console.log('id num', req.params.id)
     const file = req.file;
     const userId = req.params.id;
     const Id = mongoose.Types.ObjectId(req.params.id);
 
     if (!file || !userId) return res.status(400).json({ message: "File or user id is not available"});
 
+    const fileType = mime.getType(file.originalname);
+    if (!fileType.startsWith('video/')) {
+        fs.unlink(file.path, (err) => {
+            if (err) {
+                console.error(err);
+            } else {
+                console.log(`${file.path} was deleted`);
+            }
+        });
+        return res.status(400).json({ message: "Invalid file type. Only video files are allowed." });
+    }
+
+    const fileInfo = await FileSystem.getInfoAsync(file.path);
+
+    const fileSize = file.size;
+    if (fileSize > MAX_FILE_SIZE) {
+        fs.unlink(file.path, (err) => {
+            if (err) {
+                console.error(err);
+            } else {
+                console.log(`${file.path} was deleted`);
+            }
+        });
+        return res.status(400).json({ message: "File size exceeded. Maximum file size is 50 MB." });
+    }
+
     try {
         await ffmpeg.ffprobe(file.path, function (err, metadata){
             if (err) {
+                fs.unlink(file.path, (err) => {
+                    if (err) {
+                        console.error(err);
+                    } else {
+                        console.log(`${file.path} was deleted`);
+                    }
+                });
                 return res.status(400).json({message: 'Error extracting video metadata'});
             }
             const duration = metadata.format.duration;
             if(duration > 16) {
+                fs.unlink(file.path, (err) => {
+                    if (err) {
+                        console.error(err);
+                    } else {
+                        console.log(`${file.path} was deleted`);
+                    }
+                });
                 return res.status(400).json({message: '영상이 15초를 초과하면 안됩니다'})
             }
         });
