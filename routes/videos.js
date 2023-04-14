@@ -11,6 +11,7 @@ const {
     getVideosByUser
 } = require('../controllers/video');
 const express = require('express');
+const mime = require('mime');
 const router = express.Router();
 const { requireSignin, adminMiddleware } = require('../common-middleware');
 const { Video } = require('../models/video');
@@ -27,7 +28,6 @@ const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 const fs = require('fs');
 const bodyParser = require('body-parser');
-const mime = require('mime');
 
 
 const FILE_TYPE_MAP = {
