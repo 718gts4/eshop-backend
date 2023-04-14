@@ -15,6 +15,7 @@ const router = express.Router();
 const { requireSignin, adminMiddleware } = require('../common-middleware');
 const { Video } = require('../models/video');
 const mongoose = require('mongoose');
+mongoose.set('strictQuery', false);
 
 const { uploadVideoToS3, getVideoFile} = require('../s3')
 
