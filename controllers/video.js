@@ -5,7 +5,7 @@ const { Product } = require('../models/product');
 
 exports.getVideos = async (req, res) => {
 
-    let limit = req.body.limit ? parseInt(req.body.limit) : 50;
+    // let limit = req.body.limit ? parseInt(req.body.limit) : 50;
     let skip = parseInt(req.body.skip);
 
     const videoList = await Video.find()
@@ -15,7 +15,7 @@ exports.getVideos = async (req, res) => {
     })
     .sort({'dateCreated': -1})
     .skip(skip)
-    .limit(limit);
+    .limit(10);
 
     if(!videoList){
         res.status(500).json({success:false})
