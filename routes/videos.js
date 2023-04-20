@@ -74,69 +74,70 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
     const file = req.file;
     const userId = req.params.id;
     const Id = mongoose.Types.ObjectId(req.params.id);
-    
-    if (!file || !userId) return res.status(400).json({ message: "File or user id is not available"});
 
-    let responseSent = false;
+    if (!file || !userId) {
+        return res.status(400).json({ message: "File or user id is not available" });
+    }
 
     try {
-        await ffmpeg.ffprobe(file.path, function (err, metadata){
-            if (err) {
-                return res.status(400).json({message: 'Error extracting video metadata'});
-            }
-            const duration = metadata.format.duration;
-            if(duration > 16) {
-                return res.status(400).json({message: '영상이 15초를 초과하면 안됩니다'})
-            }
+        const metadata = await new Promise((resolve, reject) => {
+            ffmpeg.ffprobe(file.path, (err, metadata) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(metadata);
+                }
+            });
         });
 
-        const key = await uploadVideoToS3({file, userId});
-        if (key) {
-            const video = new Video({
-                videoUrl: key.key,
-                createdBy: Id,
-                name: req.file.filename,
+        const duration = metadata.format.duration;
+        if (duration > 16) {
+            return res.status(400).json({message: '영상이 15초를 초과하면 안됩니다'})
+        }
+
+        const key = await uploadVideoToS3({ file, userId });
+        if (!key) {
+            return res.status(500).send('The video cannot be created');
+        }
+
+        const video = new Video({
+            videoUrl: key.key,
+            createdBy: Id,
+            name: req.file.filename,
+        });
+
+        const savedVideo = await video.save({ new: true });
+
+        if (!savedVideo) {
+            fs.unlink(file.path, (err) => {
+            if (err) {
+                console.log('unlinking error',err)
+                return res.status(500).json({ message: '영상 업로드에 문제가 발생했습니다' })
+            }
+            console.log(`${file.path} was not deleted`);
+
+            return res.status(500).send('The video cannot be created')
+            });
+        } else {
+            fs.unlink(file.path, (err) => {
+            if (err) {
+                console.log('err', err);
+            } else {
+                console.log(`${file.path} was deleted`);
+            }
             });
 
-            const savedVideo = await video.save({new:true});
-
-            if(!savedVideo) {
-                fs.unlink(file.path, (err) => {
-                    if (err) {
-                        console.log('unlinking error',err)
-                        return res.status(500).json({message:'영상 업로드에 문제가 발생했습니다'})
-                    }
-                    console.log(`${file.path} was not deleted`);
-                
-                return res.status(500).send('The video cannot be created')
-                });
-            } else {
-                fs.unlink(file.path, (err) => {
-                    if (err) {
-                        console.log('err', err);
-                    } else {
-                        console.log(`${file.path} was deleted`);
-                    }
-                });
-
-                return res.status(201).json({key});
-            }
-
-            
-
-            if (key && !responseSent) {
-                res.status(201).json({key});
-                responseSent = true;
-            }
+            return res.status(201).json({ key });
         }
     } catch (error) {
         fs.unlink(file.path, (err) => {
             if (err) throw err;
             console.log(`${file.path} was not deleted`);
         });
-        return res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
 });
+
 
 router.get("/video/:key", async (req, res) => {
     const key = req.params.key;
