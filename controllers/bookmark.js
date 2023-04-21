@@ -47,6 +47,7 @@ exports.removeFromBookmark = (req, res) => {
 exports.getBookmarkedVideos = (req, res) => {
     Bookmark.find({"userId": req.body.userId})
         .populate('userId')
+        .populate('createdBy')
         .populate({
             path: 'videoId', populate: {
                 path: 'createdBy'
