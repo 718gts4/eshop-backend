@@ -8,9 +8,9 @@ const multer = require('multer');
 const multerS3 = require('multer-s3');
 const { S3Client } = require('@aws-sdk/client-s3');
 const path = require('path');
-const shortid = require('shortid');
+// const shortid = require('shortid');
 const { User } = require('../models/user');
-const { getUserPresignedUrls, uploadProfileToS3, getFile, deleteUrl } = require('../s3')
+const { uploadProfileToS3, getFile, deleteUrl } = require('../s3')
 
 require('dotenv/config');
 

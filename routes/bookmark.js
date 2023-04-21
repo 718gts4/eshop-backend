@@ -7,7 +7,7 @@ router.post(`/bookmarked`, requireSignin, bookmarked);
 router.post(`/getBookmarkCount`, getBookmarks);
 router.post(`/addToBookmark`, addToBookmark);
 router.post(`/removeFromBookmark`, removeFromBookmark);
-router.post(`/getBookmarkedVideos/:id`, getBookmarkedVideos);
+router.get(`/getBookmarkedVideos/`, getBookmarkedVideos);
 router.post(`/getUserBookmarkCount`, getUserBookmarkCount);
 
 module.exports = router;
