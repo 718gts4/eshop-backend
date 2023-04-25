@@ -160,6 +160,31 @@ exports.likeVideo = async (req, res) => {
     }
 }
 
+exports.bookmarkVideo = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { userId } = req.body;
+        const video = await Video.findById(id);
+        const isBookmarked = video.bookmarks.get(userId);
+
+        if(isBookmarked){
+            video.bookmarks.delete(userId);
+        } else {
+            video.bookmarks.set(userId, true);
+        }
+
+        const updatedVideo = await Video.findByIdAndUpdate(
+            id,
+            { bookmarks: video.bookmarks },
+            { new: true }
+        );
+
+        res.status(200).json(updatedVideo);
+    } catch (err) {
+        res.status(404).json({message:err.message})
+    }
+}
+
 exports.updateVideoComment = async (req, res) => {
     try {
         const {id} = req.params;

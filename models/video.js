@@ -53,6 +53,10 @@ const videoSchema = mongoose.Schema({
         type: Map,
         of: Boolean
     },
+    bookmarks: {
+        type: Map,
+        of: Boolean
+    },
     dateCreated:{
         type: Date,
         default: Date.now

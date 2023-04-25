@@ -8,7 +8,8 @@ const {
     likeVideo,
     updateVideoComment,
     getFollowingVideos,
-    getVideosByUser
+    getVideosByUser,
+    bookmarkVideo
 } = require('../controllers/video');
 const express = require('express');
 const router = express.Router();
@@ -64,6 +65,7 @@ router.get(`/:id`, getVideo);
 // router.post(`/create`, postVideo, requireSignin, adminMiddleware);
 router.put('/:id', updateVideo, requireSignin, adminMiddleware);
 router.patch('/:id/like', likeVideo, requireSignin);
+router.patch('/:id/bookmark', bookmarkVideo, requireSignin);
 router.delete('/:id', deleteVideo, requireSignin, adminMiddleware);
 router.get(`/get/videocount`, getVideoCount);
 router.put(`/:id/updatecomments`, updateVideoComment);
