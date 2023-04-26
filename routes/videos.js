@@ -18,7 +18,7 @@ const { Video } = require('../models/video');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 
-const { uploadVideoToS3, getVideoFile} = require('../s3')
+const { uploadVideoToS3, getVideoFile, uploadThumbnailToS3} = require('../s3')
 
 require('dotenv/config');
 const multer = require('multer');
@@ -142,6 +142,8 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
                     console.log('thumbnail deleted');
                 }
             });
+
+            console.log('THUMB KEY', thumbnailKey)
 
             const thumbKey = res.json({key, thumbnail: thumbnailKey});
 
