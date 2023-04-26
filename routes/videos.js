@@ -131,6 +131,20 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
             }
             });
 
+            // Create and upload thumbnail
+            const thumbnailPath = `./uploads/thumbnails/${file.filename}-thumb.jpg`;
+            await createThumbnail(file.path, thumbnailPath);
+            const thumbnailKey = await uploadThumbnailToS3({file: thumbnailPath, userId});
+            fs.unlink(thumbnailPath, (err) => {
+                if (err) {
+                    console.log('thumbnail error', err);
+                } else {
+                    console.log('thumbnail deleted');
+                }
+            });
+
+            const thumbKey = res.json({key, thumbnail: thumbnailKey});
+
             return res.status(201).json({ key });
         }
     } catch (error) {
