@@ -106,6 +106,8 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
             videoUrl: key.key,
             createdBy: Id,
             name: req.file.filename,
+            likes: {},
+            bookmarks: {},
         });
 
         const savedVideo = await video.save({ new: true });

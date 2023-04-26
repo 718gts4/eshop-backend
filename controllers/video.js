@@ -84,6 +84,7 @@ exports.postVideo = async (req, res) => {
         rating: req.body.rating,
         numReviews: req.body.numReviews,
         isFeatured: req.body.isFeatured,
+        bookmarks: {},
         likes: {}
     })
 
@@ -125,6 +126,7 @@ exports.updateVideo = async (req, res) => {
             numComments: req.body.numComments,
             isFeatured: req.body.isFeatured,
             likes: req.body.likes,
+            bookmarks: req.body.bookmarks,
         },
         { new: true}
     )
@@ -165,17 +167,18 @@ exports.bookmarkVideo = async (req, res) => {
         const { id } = req.params;
         const { userId } = req.body;
         const video = await Video.findById(id);
-        const isBookmarked = video.bookmarks.get(userId);
-        console.log('isbookemarked', isBookmarked);
+        const bookmarks = video.bookmarks || new Map();
+        const isBookmarked = bookmarks.get(userId);
+        
         if(isBookmarked){
-            video.bookmarks.delete(userId);
+            bookmarks.delete(userId);
         } else {
-            video.bookmarks.set(userId, true);
+            bookmarks.set(userId, true);
         }
 
         const updatedVideo = await Video.findByIdAndUpdate(
             id,
-            { bookmarks: video.bookmarks },
+            { bookmarks: bookmarks },
             { new: true }
         );
 
