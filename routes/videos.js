@@ -123,6 +123,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         }
 
         const key = await uploadVideoToS3({ file, userId });
+        console.log('keky', key)
         if (!key) {
             return res.status(500).send('The video cannot be created');
         }
