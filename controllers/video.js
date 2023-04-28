@@ -218,7 +218,6 @@ exports.getVideoCount = async (req, res) => {
 }
 
 exports.getFollowingVideos = async (req, res) => {
-
     let videos = [];
     const followingVideos = await Promise.all(req.body.following.map(async (video) => {
         const followingVideo = await Video.find({"createdBy": video})
