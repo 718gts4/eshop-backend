@@ -54,11 +54,15 @@ const storage = multer.diskStorage({
     }
 })
     
-const upload = multer({ 
-    dest: 'uploads/', 
-    limits: { fileSize: 1024 * 1024 * 50 } 
-});
+// const upload = multer({ 
+//     dest: 'uploads/', 
+//     limits: { fileSize: 1024 * 1024 * 50 } 
+// });
 
+const upload = multer({ 
+    storage: storage,
+    limits: { fileSize: 1024 * 1024 * 50 } 
+})
 
 router.get(`/`, getVideos);
 router.get(`/:id`, getVideo);
