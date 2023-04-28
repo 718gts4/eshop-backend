@@ -52,33 +52,15 @@ exports.uploadProfileToS3 = async (image) => {
     }
 };
 
-exports.uploadThumbnailToS3 = async (file) => {
-    try {
-        const buffer = await sharp(file.path).rotate().resize(300).toBuffer();
-        const key = `${uuid()}.png`;
-        const command = new PutObjectCommand({
-            Bucket: BUCKET,
-            Key: key,
-            Body: buffer,
-            ContentType: file.mimetype,
-        });
-            await s3.send(command);
-            return { key };
-    } catch (error) {
-        console.error(error);
-        return null;
-    }
-};
-
 exports.uploadVideoToS3 = async (video) => {
     const { file } = video;
     const key = `${uuid()}`;
-    const buffer = fs.readFileSync(file.path);
+    const stream = fs.createReadStream(file.path);
 
     const command = new PutObjectCommand({
         Bucket: BUCKET,
         Key: key,
-        Body: buffer,
+        Body: stream,
         ContentType: file.mimetype,
     });
 
