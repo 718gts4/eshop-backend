@@ -18,7 +18,7 @@ const { Video } = require('../models/video');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 
-const { uploadVideoToS3, getVideoFile, uploadThumbnailToS3} = require('../s3')
+const { uploadVideoToS3, getVideoFile } = require('../s3')
 
 require('dotenv/config');
 const multer = require('multer');
@@ -62,7 +62,7 @@ const upload = multer({
 
 router.get(`/`, getVideos);
 router.get(`/:id`, getVideo);
-// router.post(`/create`, postVideo, requireSignin, adminMiddleware);
+router.post(`/create`, postVideo, requireSignin, adminMiddleware);
 router.put('/:id', updateVideo, requireSignin, adminMiddleware);
 router.patch('/:id/like', likeVideo, requireSignin);
 router.patch('/:id/bookmark', bookmarkVideo, requireSignin);
@@ -71,6 +71,25 @@ router.get(`/get/videocount`, getVideoCount);
 router.put(`/:id/updatecomments`, updateVideoComment);
 router.post(`/:id/followingVideos`, getFollowingVideos);
 router.get(`/uservideos/:id`, getVideosByUser)
+
+
+const createThumbnail = async (videoPath, thumbnailPath) => {
+    try {
+      await ffmpeg(videoPath)
+        .screenshot({
+          count: 1,
+          folder: path.dirname(thumbnailPath),
+          filename: path.basename(thumbnailPath),
+          size: '1080x1920',
+        })
+        .on('error', (err) => {
+          console.log(`Error generating thumbnail: ${err}`);
+        });
+    } catch (error) {
+      console.log(`Error generating thumbnail: ${error}`);
+    }
+  };
+
 
 router.post("/upload/:id", upload.single('video'), async (req, res) => {
     const file = req.file;
@@ -131,22 +150,6 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
             }
             });
 
-            // Create and upload thumbnail
-            const thumbnailPath = `./uploads/thumbnails/${file.filename}-thumb.jpg`;
-            await createThumbnail(file.path, thumbnailPath);
-            const thumbnailKey = await uploadThumbnailToS3({file: thumbnailPath, userId});
-            fs.unlink(thumbnailPath, (err) => {
-                if (err) {
-                    console.log('thumbnail error', err);
-                } else {
-                    console.log('thumbnail deleted');
-                }
-            });
-
-            console.log('THUMB KEY', thumbnailKey)
-
-            const thumbKey = res.json({key, thumbnail: thumbnailKey});
-
             return res.status(201).json({ key });
         }
     } catch (error) {
@@ -157,8 +160,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-
-
+  
 router.get("/video/:key", async (req, res) => {
     const key = req.params.key;
     const videoUrl = getVideoFile(key);

@@ -52,10 +52,10 @@ exports.uploadProfileToS3 = async (image) => {
     }
 };
 
-const uploadThumbnailToS3 = async ({ file, userId }) => {
+exports.uploadThumbnailToS3 = async (file) => {
     try {
         const buffer = await sharp(file.path).rotate().resize(300).toBuffer();
-        const key = `${userId}/thumbnails/${uuid()}.png`;
+        const key = `${uuid()}.png`;
         const command = new PutObjectCommand({
             Bucket: BUCKET,
             Key: key,
@@ -69,7 +69,6 @@ const uploadThumbnailToS3 = async ({ file, userId }) => {
         return null;
     }
 };
-
 
 exports.uploadVideoToS3 = async (video) => {
     const { file } = video;

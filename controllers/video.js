@@ -57,23 +57,8 @@ exports.getVideosByUser = async (req, res) => {
 };
 
 exports.postVideo = async (req, res) => {
-    // const createdBy = await User.findById(req.body.createdBy);     
-    // if(!createdBy) return res.status(400).send('Invalid user id');
-    // console.log('createdBy',createdBy)
-    // populate videoItems(products) from database and attach to new Video as array of videoItemsIds
-    // const videoItemsIds = Promise.all(req.body.videoItems.map(async (videoItem) =>{
-    //     let newVideoItem = new VideoItem({
-    //         product: videoItem.product
-    //     })
-
-    //     newVideoItem = await newVideoItem.save();
-    //     return newVideoItem._id;
-    // }))
-
-    // const videoItemsIdsResolved =  await videoItemsIds;
 
     let video = new Video({
-        // videoItems: videoItemsIdsResolved,
         videoItems: req.body.videoItems,
         createdBy: req.body.createdBy,
         name: req.body.name,
@@ -169,7 +154,7 @@ exports.bookmarkVideo = async (req, res) => {
         const video = await Video.findById(id);
         const bookmarks = video.bookmarks || new Map();
         const isBookmarked = bookmarks.get(userId);
-        
+
         if(isBookmarked){
             bookmarks.delete(userId);
         } else {
