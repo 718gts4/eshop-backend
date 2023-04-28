@@ -39,21 +39,23 @@ const FILE_TYPE_MAP = {
     'video/x-msvideo': 'avi'
 };
   
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const isValid = FILE_TYPE_MAP[file.mimetype];
-        let uploadError = new Error('.mp4, .mpeg, .mov and .avi 파일만 가능합니다!');
-        if(isValid){
-            uploadError = null
-        }
-        cb(uploadError, path.join(path.dirname(__dirname), 'uploads'))
-    },
-    filename: function (req, file, cb) {
-        const fileName = file.originalname.split(' ').join('-');
-        cb(null, shortid.generate() + '-' + fileName)
-    }
-})
-    
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         const isValid = FILE_TYPE_MAP[file.mimetype];
+//         let uploadError = new Error('.mp4, .mpeg, .mov and .avi 파일만 가능합니다!');
+//         if(isValid){
+//             uploadError = null
+//         }
+//         cb(uploadError, path.join(path.dirname(__dirname), 'uploads'))
+//     },
+//     filename: function (req, file, cb) {
+//         const fileName = file.originalname.split(' ').join('-');
+//         cb(null, shortid.generate() + '-' + fileName)
+//     }
+// })
+   
+const storage = multer.memoryStorage()
+
 // const upload = multer({ 
 //     dest: 'uploads/', 
 //     limits: { fileSize: 1024 * 1024 * 50 } 
@@ -98,6 +100,7 @@ const createThumbnail = async (videoPath, thumbnailPath) => {
 router.post("/upload/:id", upload.single('video'), async (req, res) => {
     console.log('id', req.params.id);
     console.log('req', req.file)
+    console.log('body', req.body.description)
     const file = req.file;
     const userId = req.params.id;
     const Id = mongoose.Types.ObjectId(req.params.id);
@@ -132,6 +135,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
             videoUrl: key.key,
             createdBy: Id,
             name: req.file.filename,
+            description: req.body.description,
             likes: {},
             bookmarks: {},
         });
