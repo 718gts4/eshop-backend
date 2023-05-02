@@ -57,7 +57,7 @@ exports.getVideosByUser = async (req, res) => {
 };
 
 exports.postVideo = async (req, res) => {
-
+    console.log('req body', req.body)
     let video = new Video({
         videoItems: req.body.videoItems,
         createdBy: req.body.createdBy,
