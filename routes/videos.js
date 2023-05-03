@@ -131,6 +131,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         } else {
             console.log('req.body.videoItems is not an array');
             req.body.videoItems = [req.body.videoItems];
+            console.log('checking 3', req.body.videoItems)
         }
           
         const video = new Video({
