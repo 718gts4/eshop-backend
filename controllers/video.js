@@ -27,10 +27,9 @@ exports.getVideo = async (req, res) => {
     const video = await Video.findById(req.params.id)
     .populate('videoItems')
     .populate('createdBy', ['name', 'email', 'phone', 'isAdmin', 'image', 'username', 'numComments']) // populate only items in array
-    .populate({ 
-        path: 'videoItems', populate: { 
-            path: 'product'}
-        });
+    .populate({
+        path: 'videoItems', populate: {path: 'product'}
+    })
 
     if(!video){
         res.status(500).json({success:false})
