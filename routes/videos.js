@@ -147,7 +147,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
             createdBy: Id,
             name: req.file.filename,
             description: req.body.description,
-            videoItems: req.body.videoItems,
+            videoItems: [...req.body.videoItems],
             likes: {},
             bookmarks: {},
         });
