@@ -97,7 +97,6 @@ const createThumbnail = async (videoPath, thumbnailPath) => {
 
 
 router.post("/upload/:id", upload.single('video'), async (req, res) => {
-
     const file = req.file;
     const userId = req.params.id;
     const Id = mongoose.Types.ObjectId(req.params.id);
@@ -129,16 +128,17 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
 
         if (Array.isArray(req.body.videoItems)) {
             console.log('req.body.videoItems is an array');
-          } else {
+        } else {
             console.log('req.body.videoItems is not an array');
-          }
+            req.body.videoItems = [req.body.videoItems];
+        }
           
         const video = new Video({
             videoUrl: key.key,
             createdBy: Id,
             name: req.file.filename,
             description: req.body.description,
-            videoItems: req.body.videoItems.map(id => mongoose.Types.ObjectId(id)),
+            videoItems: req.body.videoItems,
             likes: {},
             bookmarks: {},
         });
