@@ -126,11 +126,13 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         console.log('videoItems', req.body.videoItems)
         console.log('typeof', typeof req.body.videoItems);
 
+        const videoArray = [];
         if (Array.isArray(req.body.videoItems)) {
             console.log('req.body.videoItems is an array');
+            videoArray = req.body.videoItems.map(id => mongoose.Types.ObjectId(id))
         } else {
             console.log('req.body.videoItems is not an array');
-            req.body.videoItems = [req.body.videoItems];
+            videoArray = [req.body.videoItems.map(id => mongoose.Types.ObjectId(id))];
             console.log('checking 3', req.body.videoItems)
         }
           
@@ -139,7 +141,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
             createdBy: Id,
             name: req.file.filename,
             description: req.body.description,
-            videoItems: req.body.videoItems.map(id => mongoose.Types.ObjectId(id)),
+            videoItems: videoArray,
             likes: {},
             bookmarks: {},
         });
