@@ -131,7 +131,6 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         } else {
             console.log('req.body.videoItems is not an array');
             req.body.videoItems = [req.body.videoItems];
-            console.log('hlhlhl', req.body.videoItems);
         }
           
         const video = new Video({
@@ -139,7 +138,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
             createdBy: Id,
             name: req.file.filename,
             description: req.body.description,
-            videoItems: req.body.videoItems,
+            videoItems: req.body.videoItems.map(id => mongoose.Types.ObjectId(id)),
             likes: {},
             bookmarks: {},
         });
