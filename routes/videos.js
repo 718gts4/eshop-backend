@@ -149,7 +149,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
             bookmarks: {},
         });
 
-        const savedVideo = await video.save({ new: true });
+        const savedVideo = await video.save();
         console.log('saved video', savedVideo);
         return res.status(201).json({key});
 
