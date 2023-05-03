@@ -131,9 +131,9 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
             console.log('KEY', key)
         }
 
-        if (!key) {
-            return res.status(500).send('The video cannot be created');
-        }
+        // if (!key) {
+        //     return res.status(500).send('The video cannot be created');
+        // }
 
         const video = new Video({
             videoUrl: key.key,
