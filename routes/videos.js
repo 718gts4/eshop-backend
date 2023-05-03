@@ -108,22 +108,6 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
 
     console.log('check point 1')
     try {
-        // const metadata = await new Promise((resolve, reject) => {
-        //     ffmpeg.ffprobe(file.path, (err, metadata) => {
-        //         if (err) {
-        //             console.log('ffmpeg error', err)
-        //             reject(err);
-        //         } else {
-        //             console.log('metadata', metadata)
-        //             resolve(metadata);
-        //         }
-        //     });
-        // });
-        // console.log('check 2')
-        // const duration = metadata.format.duration;
-        // if (duration > 16) {
-        //     return res.status(400).json({message: '영상이 15초를 초과하면 안됩니다'})
-        // }
 
         const key = await uploadVideoToS3({ file, userId });
 
@@ -141,6 +125,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         console.log('name', req.file.filename)
         console.log('description', req.body.description)
         console.log('videoItems', req.body.videoItems)
+        console.log('typeof', typeof req.body.videoItems);
 
         const video = new Video({
             videoUrl: key.key,
@@ -153,32 +138,10 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         });
 
         const savedVideo = await video.save();
-        // if(!savedVideo) {
-        //     return res.status(400).send('영상을 업로드할 수 없습니다.')
-        // }
+
         console.log('saved video', savedVideo);
         return res.status(201).json({ key });
-        // if (!savedVideo) {
-        //     fs.unlink(file.path, (err) => {
-        //     if (err) {
-        //         console.log('unlinking error',err)
-        //         return res.status(500).json({ message: '영상 업로드에 문제가 발생했습니다' })
-        //     }
-        //     console.log(`${file.path} was not deleted`);
 
-        //     return res.status(500).send('The video cannot be created')
-        //     });
-        // } else {
-        //     fs.unlink(file.path, (err) => {
-        //     if (err) {
-        //         console.log('err', err);
-        //     } else {
-        //         console.log(`${file.path} was deleted`);
-        //     }
-        //     });
-
-        //     return res.status(201).json({ key });
-        // }
     } catch (error) {
         fs.unlink(file.path, (err) => {
             if (err) throw err;
