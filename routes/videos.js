@@ -154,28 +154,28 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
 
         const savedVideo = await video.save();
         console.log('saved video', savedVideo);
+        return res.status(201).json({ key });
+        // if (!savedVideo) {
+        //     fs.unlink(file.path, (err) => {
+        //     if (err) {
+        //         console.log('unlinking error',err)
+        //         return res.status(500).json({ message: '영상 업로드에 문제가 발생했습니다' })
+        //     }
+        //     console.log(`${file.path} was not deleted`);
 
-        if (!savedVideo) {
-            fs.unlink(file.path, (err) => {
-            if (err) {
-                console.log('unlinking error',err)
-                return res.status(500).json({ message: '영상 업로드에 문제가 발생했습니다' })
-            }
-            console.log(`${file.path} was not deleted`);
+        //     return res.status(500).send('The video cannot be created')
+        //     });
+        // } else {
+        //     fs.unlink(file.path, (err) => {
+        //     if (err) {
+        //         console.log('err', err);
+        //     } else {
+        //         console.log(`${file.path} was deleted`);
+        //     }
+        //     });
 
-            return res.status(500).send('The video cannot be created')
-            });
-        } else {
-            fs.unlink(file.path, (err) => {
-            if (err) {
-                console.log('err', err);
-            } else {
-                console.log(`${file.path} was deleted`);
-            }
-            });
-
-            return res.status(201).json({ key });
-        }
+        //     return res.status(201).json({ key });
+        // }
     } catch (error) {
         fs.unlink(file.path, (err) => {
             if (err) throw err;
