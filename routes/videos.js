@@ -99,7 +99,8 @@ const createThumbnail = async (videoPath, thumbnailPath) => {
 router.post("/upload/:id", upload.single('video'), async (req, res) => {
     console.log('id', req.params.id);
     console.log('req', req.file)
-    console.log('body', req.body.description)
+    console.log('description', req.body.description)
+    console.log('videoItems', req.body)
     const file = req.file;
     const userId = req.params.id;
     const Id = mongoose.Types.ObjectId(req.params.id);
@@ -134,7 +135,8 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
             videoUrl: key.key,
             createdBy: Id,
             name: req.file.filename,
-            description: req.body.description,
+            description: req.body.description[0],
+            videoItems: req.body.videoItems,
             likes: {},
             bookmarks: {},
         });
