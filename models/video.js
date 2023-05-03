@@ -5,6 +5,10 @@ const videoSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'VideoItem'
     }],
+    products: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+    }],
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

@@ -123,21 +123,21 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         console.log('createdBy', Id)
         console.log('name', req.file.filename)
         console.log('description', req.body.description)
-        console.log('videoItems', req.body.videoItems)
+        console.log('products', req.body.products)
         console.log('typeof', typeof req.body.videoItems);
 
-        let videoArray = [];
-        if (Array.isArray(req.body.videoItems)) {
-            console.log('req.body.videoItems is an array');
-            videoArray = req.body.videoItems.map(id => mongoose.Types.ObjectId(id))
+        let productArray = [];
+        if (Array.isArray(req.body.products)) {
+            console.log('req.body.products is an array');
+            productArray = req.body.products.map(id => mongoose.Types.ObjectId(id))
         } else {
-            console.log('req.body.videoItems is not an array');
-            const videoItemsArray = req.body.videoItems.split(',')
+            console.log('req.body.products is not an array');
+            const productsArray = req.body.products.split(',')
             console.log('checking 3', videoItemsArray)
-            const test = videoItemsArray.map(id => mongoose.Types.ObjectId(id));
+            const test = productsArray.map(id => mongoose.Types.ObjectId(id));
             console.log('test', test);
-            videoArray = videoItemsArray.map(id => mongoose.Types.ObjectId(id));
-            console.log('video array', videoArray);
+            productArray = productsArray.map(id => mongoose.Types.ObjectId(id));
+            console.log('product array', productArray);
         }
           
         const video = new Video({
@@ -145,7 +145,8 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
             createdBy: Id,
             name: req.file.filename,
             description: req.body.description,
-            videoItems: videoArray,
+            products: productArray,
+            videoItems: productArray,
             likes: {},
             bookmarks: {},
         });
