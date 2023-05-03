@@ -98,9 +98,6 @@ const createThumbnail = async (videoPath, thumbnailPath) => {
 
 router.post("/upload/:id", upload.single('video'), async (req, res) => {
 
-    console.log('req', req.file)
-    // console.log('description', req.body.description)
-    // console.log('videoItems', req.body.videoItems)
     const file = req.file;
     const userId = req.params.id;
     const Id = mongoose.Types.ObjectId(req.params.id);
@@ -127,9 +124,9 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         // if (duration > 16) {
         //     return res.status(400).json({message: '영상이 15초를 초과하면 안됩니다'})
         // }
-        console.log('chekcing here');
+
         const key = await uploadVideoToS3({ file, userId });
-        console.log('keky', key)
+
         if (key) {
             console.log('KEY', key)
         }
@@ -138,6 +135,12 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
             console.log('no key')
             return res.status(500).send('The video cannot be created');
         }
+
+        console.log('videoUrl', key.key)
+        console.log('createdBy', Id)
+        console.log('name', req.file.filename)
+        console.log('description', req.body.description)
+        console.log('videoItems', req.body.videoItems)
 
         const video = new Video({
             videoUrl: key.key,
