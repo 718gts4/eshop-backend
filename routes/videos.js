@@ -97,7 +97,7 @@ const createThumbnail = async (videoPath, thumbnailPath) => {
 
 
 router.post("/upload/:id", upload.single('video'), async (req, res) => {
-    console.log('id', req.params.id);
+
     console.log('req', req.file)
     console.log('description', req.body.description)
     console.log('videoItems', req.body.videoItems)
@@ -127,6 +127,10 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
 
         const key = await uploadVideoToS3({ file, userId });
         console.log('keky', key)
+        if (key) {
+            console.log('KEY', key)
+        }
+
         if (!key) {
             return res.status(500).send('The video cannot be created');
         }
