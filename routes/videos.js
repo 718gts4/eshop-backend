@@ -100,7 +100,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
     console.log('id', req.params.id);
     console.log('req', req.file)
     console.log('description', req.body.description)
-    console.log('videoItems', req.body)
+    console.log('videoItems', req.body.videoItems)
     const file = req.file;
     const userId = req.params.id;
     const Id = mongoose.Types.ObjectId(req.params.id);
@@ -135,7 +135,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
             videoUrl: key.key,
             createdBy: Id,
             name: req.file.filename,
-            description: req.body.description[0],
+            description: req.body.description,
             videoItems: req.body.videoItems,
             likes: {},
             bookmarks: {},
