@@ -109,6 +109,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         return res.status(400).json({ message: "File or user id is not available" });
     }
 
+    console.log('check point 1')
     try {
         const metadata = await new Promise((resolve, reject) => {
             ffmpeg.ffprobe(file.path, (err, metadata) => {
