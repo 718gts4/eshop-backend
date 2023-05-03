@@ -153,9 +153,9 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         });
 
         const savedVideo = await video.save();
-        if(!savedVideo) {
-            return res.status(400).send('영상을 업로드할 수 없습니다.')
-        }
+        // if(!savedVideo) {
+        //     return res.status(400).send('영상을 업로드할 수 없습니다.')
+        // }
         console.log('saved video', savedVideo);
         return res.status(201).json({ key });
         // if (!savedVideo) {
