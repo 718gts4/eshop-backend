@@ -127,6 +127,12 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         console.log('videoItems', req.body.videoItems)
         console.log('typeof', typeof req.body.videoItems);
 
+        if (Array.isArray(req.body.videoItems)) {
+            console.log('req.body.videoItems is an array');
+          } else {
+            console.log('req.body.videoItems is not an array');
+          }
+          
         const video = new Video({
             videoUrl: key.key,
             createdBy: Id,
