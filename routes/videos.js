@@ -111,32 +111,33 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
 
     console.log('check point 1')
     try {
-        const metadata = await new Promise((resolve, reject) => {
-            ffmpeg.ffprobe(file.path, (err, metadata) => {
-                if (err) {
-                    console.log('ffmpeg error', err)
-                    reject(err);
-                } else {
-                    console.log('metadata', metadata)
-                    resolve(metadata);
-                }
-            });
-        });
-        console.log('check 2')
-        const duration = metadata.format.duration;
-        if (duration > 16) {
-            return res.status(400).json({message: '영상이 15초를 초과하면 안됩니다'})
-        }
+        // const metadata = await new Promise((resolve, reject) => {
+        //     ffmpeg.ffprobe(file.path, (err, metadata) => {
+        //         if (err) {
+        //             console.log('ffmpeg error', err)
+        //             reject(err);
+        //         } else {
+        //             console.log('metadata', metadata)
+        //             resolve(metadata);
+        //         }
+        //     });
+        // });
+        // console.log('check 2')
+        // const duration = metadata.format.duration;
+        // if (duration > 16) {
+        //     return res.status(400).json({message: '영상이 15초를 초과하면 안됩니다'})
+        // }
         console.log('chekcing here');
-        const key = await uploadProfileToS3({ file, userId });
+        const key = await uploadVideoToS3({ file, userId });
         console.log('keky', key)
         if (key) {
             console.log('KEY', key)
         }
 
-        // if (!key) {
-        //     return res.status(500).send('The video cannot be created');
-        // }
+        if (!key) {
+            console.log('no key')
+            return res.status(500).send('The video cannot be created');
+        }
 
         const video = new Video({
             videoUrl: key?.key,
