@@ -140,7 +140,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         }
 
         const video = new Video({
-            videoUrl: key?.key,
+            videoUrl: key.key,
             createdBy: Id,
             name: req.file.filename,
             description: req.body.description,
@@ -150,6 +150,8 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         });
 
         const savedVideo = await video.save({ new: true });
+        console.log('saved video', savedVideo);
+        return res.status(201).json({key});
 
         if (!savedVideo) {
             fs.unlink(file.path, (err) => {
