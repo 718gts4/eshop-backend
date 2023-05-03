@@ -53,6 +53,7 @@ exports.uploadProfileToS3 = async (image) => {
 };
 
 exports.uploadVideoToS3 = async (video) => {
+    console.log('VIDEO', video)
     const { file } = video;
     const key = `${uuid()}`;
     const stream = fs.createReadStream(file.path);
