@@ -124,7 +124,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         if (duration > 16) {
             return res.status(400).json({message: '영상이 15초를 초과하면 안됩니다'})
         }
-
+        console.log('chekcing here');
         const key = await uploadProfileToS3({ file, userId });
         console.log('keky', key)
         if (key) {
