@@ -126,7 +126,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         console.log('videoItems', req.body.videoItems)
         console.log('typeof', typeof req.body.videoItems);
 
-        const videoArray = [];
+        let videoArray = [];
         if (Array.isArray(req.body.videoItems)) {
             console.log('req.body.videoItems is an array');
             videoArray = req.body.videoItems.map(id => mongoose.Types.ObjectId(id))
@@ -134,6 +134,8 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
             console.log('req.body.videoItems is not an array');
             const videoItemsArray = req.body.videoItems.split(',')
             console.log('checking 3', videoItemsArray)
+            const test = videoItemsArray.map(id => mongoose.Types.ObjectId(id));
+            console.log('test', test);
             videoArray = videoItemsArray.map(id => mongoose.Types.ObjectId(id));
             console.log('video array', videoArray);
         }
