@@ -18,7 +18,7 @@ const { Video } = require('../models/video');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 
-const { uploadVideoToS3, getVideoFile } = require('../s3')
+const { uploadVideoToS3, getVideoFile, uploadProfileToS3 } = require('../s3')
 
 require('dotenv/config');
 const multer = require('multer');
@@ -125,7 +125,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
             return res.status(400).json({message: '영상이 15초를 초과하면 안됩니다'})
         }
 
-        const key = await uploadVideoToS3({ file, userId });
+        const key = await uploadProfileToS3({ file, userId });
         console.log('keky', key)
         if (key) {
             console.log('KEY', key)
