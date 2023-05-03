@@ -10,9 +10,10 @@ exports.getVideos = async (req, res) => {
 
     const videoList = await Video.find()
     .populate('createdBy')
-    .populate({
-        path: 'videoItems', populate: {path: 'product'}
-    })
+    // .populate({
+    //     path: 'videoItems', populate: {path: 'product'}
+    // })
+    .populate('videoItems')
     .sort({'dateCreated': -1})
     .skip(skip)
     .limit(limit);
