@@ -114,8 +114,10 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         const metadata = await new Promise((resolve, reject) => {
             ffmpeg.ffprobe(file.path, (err, metadata) => {
                 if (err) {
+                    console.log('ffmpeg error', err)
                     reject(err);
                 } else {
+                    console.log('metadata', metadata)
                     resolve(metadata);
                 }
             });
