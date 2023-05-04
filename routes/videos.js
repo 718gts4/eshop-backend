@@ -119,25 +119,12 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
             return res.status(500).send('The video cannot be created');
         }
 
-        console.log('videoUrl', key.key)
-        console.log('createdBy', Id)
-        console.log('name', req.file.filename)
-        console.log('description', req.body.description)
-        console.log('videoItems', req.body.videoItems)
-        console.log('typeof', typeof req.body.videoItems);
-
         let videoArray = [];
         if (Array.isArray(req.body.videoItems)) {
-            console.log('req.body.videoItems is an array');
             videoArray = req.body.videoItems.map(id => mongoose.Types.ObjectId(id))
         } else {
-            console.log('req.body.videoItems is not an array');
             const videoItemsArray = req.body.videoItems.split(',')
-            console.log('checking 3', videoItemsArray)
-            const test = videoItemsArray.map(id => mongoose.Types.ObjectId(id));
-            console.log('test', test);
             videoArray = videoItemsArray.map(id => mongoose.Types.ObjectId(id));
-            console.log('video array', videoArray);
         }
           
         const video = new Video({
@@ -152,7 +139,6 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
 
         const savedVideo = await video.save();
 
-        console.log('saved video', savedVideo);
         return res.status(201).json({ key });
 
     } catch (error) {
