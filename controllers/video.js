@@ -2,22 +2,15 @@ const { Video } = require('../models/video');
 const { VideoItem } = require('../models/video-item');
 const { User } = require('../models/user');
 const { Product } = require('../models/product');
+const { deleteUrl } = require('../s3');
 
 exports.getVideos = async (req, res) => {
     let limit = 10;
-    // let limit = req.body.limit ? parseInt(req.body.limit) : 50;
     let skip = parseInt(req.query.skip) || 0;
 
     const videoList = await Video.find()
     .populate('createdBy')
     .populate('videoItems')
-    // .populate({
-    //     path: 'videoItems',
-    //     populate: 'product'
-    // })
-    // .populate({
-    //     path: 'videoItems', populate: {path: 'product'}
-    // })
     .sort({'dateCreated': -1})
     .skip(skip)
     .limit(limit);
@@ -32,9 +25,6 @@ exports.getVideo = async (req, res) => {
     const video = await Video.findById(req.params.id)
     .populate('videoItems')
     .populate('createdBy', ['name', 'email', 'phone', 'isAdmin', 'image', 'username', 'numComments']) // populate only items in array
-    .populate({
-        path: 'videoItems', populate: {path: 'product'}
-    })
 
     if(!video){
         res.status(500).json({success:false})
@@ -196,11 +186,10 @@ exports.updateVideoComment = async (req, res) => {
 }
 
 exports.deleteVideo = async (req, res) => {
-    Video.findByIdAndRemove(req.params.id).then(async video =>{
+    Video.findByIdAndRemove(req.params.id).then(video =>{
         if(video) {
-            await video.videoItems.map(async videoItem => {
-                await VideoItem.findByIdAndRemove(videoItem)
-            })
+            console.log('video check', video)
+            // deleteUrl()
             return res.status(200).json({success: true, message: 'the video is deleted!'})
         } else {
             return res.status(404).json({success: false , message: "video not found!"})

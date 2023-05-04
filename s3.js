@@ -135,15 +135,15 @@ exports.getVideoPresignedUrls = async (userId) => {
 };
 
 exports.deleteUrl = async (key) => {
-  const params = {
-    Bucket: BUCKET,
-    Key: key
-  }
-  const s3Command = new DeleteObjectCommand(params)
-  try {
-    await s3.send(s3Command)
-    console.log(`Deleted object with key ${key} from bucket`)
-  } catch (error) {
-    console.log('error', error)
-  }
+    const params = {
+        Bucket: BUCKET,
+        Key: key
+    }
+    const s3Command = new DeleteObjectCommand(params)
+    try {
+        await s3.send(s3Command)
+        console.log(`Deleted object with key ${key} from bucket`)
+    } catch (error) {
+        console.log('error', error)
+    }
 };
