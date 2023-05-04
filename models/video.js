@@ -3,10 +3,6 @@ const mongoose = require('mongoose');
 const videoSchema = mongoose.Schema({
     videoItems: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'VideoItem'
-    }],
-    products: [{
-        type: mongoose.Schema.Types.ObjectId,
         ref: 'Product'
     }],
     createdBy: {

@@ -10,10 +10,11 @@ exports.getVideos = async (req, res) => {
 
     const videoList = await Video.find()
     .populate('createdBy')
-    .populate({
-        path: 'videoItems',
-        populate: 'product'
-    })
+    .populate('videoItems')
+    // .populate({
+    //     path: 'videoItems',
+    //     populate: 'product'
+    // })
     // .populate({
     //     path: 'videoItems', populate: {path: 'product'}
     // })
