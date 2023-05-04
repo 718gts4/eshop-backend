@@ -186,10 +186,8 @@ exports.updateVideoComment = async (req, res) => {
 }
 
 exports.deleteVideo = async (req, res) => {
-    console.log('video id', req.params)
     Video.findByIdAndRemove(req.params.id).then(video =>{
         if(video) {
-            console.log('video url', video.videoUrl)
             deleteUrl(video.videoUrl)
             return res.status(200).json({success: true, message: 'the video is deleted!'})
         } else {
