@@ -139,6 +139,14 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
 
         const savedVideo = await video.save();
 
+        fs.unlink(file.path, (err) => {
+            if (err) {
+                console.error(err);
+            } else {
+                console.log(`File ${file.filename} has been deleted from local storage`);
+            }
+        });
+
         return res.status(201).json({ key });
 
     } catch (error) {
