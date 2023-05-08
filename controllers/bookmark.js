@@ -52,10 +52,10 @@ exports.getBookmarkedVideos = (req, res) => {
                 path: 'createdBy'
             }
         })
-        .populate('videoItems')
         .populate({ 
-            path: 'videoId', 
-            populate: 'videoItems'
+            path: 'videoId', populate: {
+                path: 'videoItems'
+            }
         })
         .exec((err, result) => {
             if (err) return res.status(400).send(err);
