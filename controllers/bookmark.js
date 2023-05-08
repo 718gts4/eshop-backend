@@ -45,6 +45,9 @@ exports.removeFromBookmark = (req, res) => {
 }
 
 exports.getBookmarkedVideos = (req, res) => {
+    let limit = 10;
+    let skip = parseInt(req.query.skip) || 0;
+
     Bookmark.find({"userId": req.query.userId})
         .populate('userId')
         .populate({
@@ -57,6 +60,9 @@ exports.getBookmarkedVideos = (req, res) => {
                 path: 'videoItems'
             }
         })
+        .sort({'dateCreated': -1})
+        .skip(skip)
+        .limit(limit)
         .exec((err, result) => {
             if (err) return res.status(400).send(err);
             return res.status(200).json({success: true, result})
