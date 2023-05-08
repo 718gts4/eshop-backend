@@ -214,9 +214,7 @@ exports.getFollowingVideos = async (req, res) => {
     const followingVideos = await Promise.all(req.body.following.map(async (video) => {
         const followingVideo = await Video.find({"createdBy": video})
             .populate('createdBy')
-            .populate({
-                path: 'videoItems', populate: {path: 'product'}
-            })
+            .populate('videoItems')
             .sort({'dateCreated': -1});
         
         const allVideos = videos.push(...followingVideo);
