@@ -37,10 +37,23 @@ exports.addToBookmark = (req, res) => {
 }
 
 exports.removeFromBookmark = (req, res) => {
-    Bookmark.findOneAndDelete({bookmarkId: req.body.bookmarkId})
+    Bookmark.findOneAndDelete({videoId: req.body.videoId, userId: req.body.userId})
         .exec((err, result) => {
             if(err) return res.status(400).json({success: false, err})
             res.status(200).json({success: true, result})
+        })
+}
+
+exports.deleteBookmark = async (req, res) => {
+    Bookmark.findByIdAndRemove(req.params.id)
+        .then(bookmark =>{
+            if(bookmark){
+                return res.status(200).json({success:true, message:'the bookmark is deleted'})
+            } else {
+                return res.status(404).json({success:false, message: "bookmark not found"})
+            }
+        }).catch(err=>{
+            return res.status(400).json({success: false, error: err})
         })
 }
 
