@@ -37,7 +37,7 @@ exports.addToBookmark = (req, res) => {
 }
 
 exports.removeFromBookmark = (req, res) => {
-    Bookmark.findOneAndDelete({videoId: req.body.videoId, userId: req.body.userId})
+    Bookmark.findOneAndDelete({id: req.body.bookmarkId})
         .exec((err, result) => {
             if(err) return res.status(400).json({success: false, err})
             res.status(200).json({success: true, result})
