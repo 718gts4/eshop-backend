@@ -56,7 +56,7 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
     }
 });
 
-router.get("/images/profile/:key", async (req, res) => {
+router.get("/images/:key", async (req, res) => {
     console.log('what prarm', req.params.key)
     const key = req.params.key;
     const imageUrl = getFile(key);
