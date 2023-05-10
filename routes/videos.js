@@ -18,7 +18,7 @@ const { Video } = require('../models/video');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 
-const { uploadVideoToS3, getVideoFile, uploadProfileToS3 } = require('../s3')
+const { uploadVideoToS3, getVideoFile } = require('../s3')
 
 require('dotenv/config');
 const multer = require('multer');

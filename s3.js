@@ -22,6 +22,7 @@ const s3 = new S3Client({
 });
 
 exports.getFile = (key) => {
+    console.log('key k', key)
     const imageUrl = `${image_url}${key}`;
     return imageUrl;
 }
