@@ -36,7 +36,7 @@ exports.uploadProfileToS3 = async (image) => {
     // resize image
     const buffer = await sharp(file.buffer).rotate().resize(300).toBuffer()
 
-    const key = `${uuid()}`;
+    const key = `profile/${uuid()}`;
     const command = new PutObjectCommand({
         Bucket: BUCKET,
         Key: key,
@@ -54,7 +54,7 @@ exports.uploadProfileToS3 = async (image) => {
 
 exports.uploadVideoToS3 = async (video) => {
     const { file } = video;
-    const key = `${uuid()}`;
+    const key = `video/${uuid()}`;
     const stream = fs.createReadStream(file.path);
 
     const command = new PutObjectCommand({
@@ -135,6 +135,7 @@ exports.getVideoPresignedUrls = async (userId) => {
 };
 
 exports.deleteUrl = async (key) => {
+    console.log('KEY URL', key)
     const params = {
         Bucket: BUCKET,
         Key: key
