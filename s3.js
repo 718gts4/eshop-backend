@@ -23,7 +23,7 @@ const s3 = new S3Client({
 
 exports.getFile = (key) => {
     console.log('key k', key)
-    const imageUrl = `${image_url}${key}`;
+    const imageUrl = `${image_url}profile/${key}`;
     return imageUrl;
 }
 
@@ -37,9 +37,9 @@ exports.uploadProfileToS3 = async (image) => {
     // resize image
     const buffer = await sharp(file.buffer).rotate().resize(300).toBuffer()
 
-    const key = `profile/${uuid()}`;
+    const key = `${uuid()}`;
     const command = new PutObjectCommand({
-        Bucket: BUCKET,
+        Bucket: BUCKET+'/profile',
         Key: key,
         Body: buffer,
         ContentType: file.mimetype,
@@ -55,7 +55,7 @@ exports.uploadProfileToS3 = async (image) => {
 
 exports.uploadVideoToS3 = async (video) => {
     const { file } = video;
-    const key = `video/${uuid()}`;
+    const key = `${uuid()}`;
     const stream = fs.createReadStream(file.path);
 
     const command = new PutObjectCommand({
@@ -148,4 +148,19 @@ exports.deleteUrl = async (key) => {
     } catch (error) {
         console.log('error', error)
     }
+};
+
+exports.deleteProfileUrl = async (key) => {
+  console.log('KEY URL', key)
+  const params = {
+      Bucket: BUCKET+'/profile',
+      Key: key
+  }
+  const s3Command = new DeleteObjectCommand(params)
+  try {
+      await s3.send(s3Command)
+      console.log(`Deleted object with key ${key} from bucket`)
+  } catch (error) {
+      console.log('error', error)
+  }
 };
