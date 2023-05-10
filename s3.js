@@ -92,11 +92,11 @@ exports.getUserPresignedUrls = async (userId) => {
 
     const presignedUrls = await Promise.all(
       imageKeys.map((key) => {
-        const command = new GetObjectCommand({ Bucket: BUCKET, Key: key });
+        const command = new GetObjectCommand({ Bucket: BUCKET+'/profile', Key: key });
         return getSignedUrl(s3, command, { expiresIn: 600 }); // default
       })
     );
-
+      console.log('presignedUrls', presignedUrls)
     return { presignedUrls };
   } catch (error) {
     console.log(error);
