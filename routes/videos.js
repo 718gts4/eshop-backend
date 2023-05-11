@@ -162,20 +162,31 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
     }
 });
   
-router.post("/upload-image", upload.single('thumbnail'),  async (req, res) => {
-    console.log('REQ file', req.file)
-    console.log('req body', req.body)
-    if(req.file){
-        const file = req.file;
-        // const videoId = req.params.id;
-        const key = await uploadVideoImageToS3({file});
-    } else {
-        res.status(400).send('There was a problem uploading thumbnail file')
+// router.post("/upload-image", upload.single('thumbnail'),  async (req, res) => {
+//     console.log('REQ file', req.file)
+//     console.log('req body', req.body)
+//     if(req.file){
+//         const file = req.file;
+//         // const videoId = req.params.id;
+//         const key = await uploadVideoImageToS3({file});
+//     } else {
+//         res.status(400).send('There was a problem uploading thumbnail file')
+//     }
+
+
+// });
+
+router.post('/upload-image', uploadVideoImageToS3, async (req, res) => {
+    try {
+      // Access the uploaded file via req.file
+      console.log(req.file);
+      // Handle further processing or response
+      res.status(200).json({ message: 'Image uploaded successfully' });
+    } catch (error) {
+      console.log('Error uploading image:', error);
+      res.status(500).json({ error: 'Failed to upload image' });
     }
-
-
-});
-
+  });
 
 router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
     const file = req.file;

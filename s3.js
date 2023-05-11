@@ -1,3 +1,6 @@
+const multer = require('multer');
+const multerS3 = require('multer-s3');
+
 const { GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { v4: uuid } = require("uuid");
@@ -21,6 +24,17 @@ const s3 = new S3Client({
   signatureVersion: 'v2', // set version to v2
 });
 
+const upload = multer({
+  storage: multerS3({
+    s3,
+    bucket: BUCKET,
+    key: (req, file, cb) => {
+      const key = `${uuid()}-${file.originalname}`;
+      cb(null, key);
+    },
+  }),
+});
+
 exports.getFile = (key) => {
     const imageUrl = `${image_url}${key}`;
     return imageUrl;
@@ -34,7 +48,7 @@ exports.getVideoFile = (key) => {
 exports.uploadProfileToS3 = async (image) => {
     console.log('profile img s3 check', image)
     const { file } = image;
-    // resize image
+
     const buffer = await sharp(file.buffer).rotate().resize(300).toBuffer()
 
     const key = `${uuid()}`;
@@ -53,27 +67,28 @@ exports.uploadProfileToS3 = async (image) => {
     }
 };
 
-exports.uploadVideoImageToS3 = async (image) => {
-  console.log('s3 vid img', image);
-  const {file}  = image;
-  // resize image
-  const buffer = await sharp(file.buffer).rotate().resize(300).toBuffer()
+exports.uploadVideoImageToS3 = upload.single('videoImage');
+// exports.uploadVideoImageToS3 = async (image) => {
+//   console.log('s3 vid img', image);
+//   const {file}  = image;
 
-  const key = `${uuid()}`;
-  const command = new PutObjectCommand({
-      Bucket: BUCKET,
-      Key: key,
-      Body: buffer,
-      ContentType: file.mimetype,
-  });
+//   const buffer = await sharp(file.buffer).rotate().resize(300).toBuffer()
 
-  try {
-      await s3.send(command);
-      return { key };
-  } catch (error) {
-      return { error };
-  }
-};
+//   const key = `${uuid()}`;
+//   const command = new PutObjectCommand({
+//       Bucket: BUCKET,
+//       Key: key,
+//       Body: buffer,
+//       ContentType: file.mimetype,
+//   });
+
+//   try {
+//       await s3.send(command);
+//       return { key };
+//   } catch (error) {
+//       return { error };
+//   }
+// };
 
 exports.uploadVideoToS3 = async (video) => {
     const { file } = video;
