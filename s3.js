@@ -53,10 +53,11 @@ exports.uploadProfileToS3 = async (image) => {
     }
 };
 
-exports.uploadVideoImageToS3 = async (imagePath) => {
-  // const { file } = image;
+exports.uploadVideoImageToS3 = async (image) => {
+  const { file } = image;
+  console.log('imagepathhh', image)
   // resize image
-  const buffer = await sharp(imagePath).rotate().toBuffer()
+  const buffer = await sharp(image).resize(300).rotate().toBuffer()
 
   const key = `${uuid()}`;
   const command = new PutObjectCommand({
