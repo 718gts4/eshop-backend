@@ -67,7 +67,20 @@ exports.uploadProfileToS3 = async (image) => {
     }
 };
 
-exports.uploadVideoImageToS3 = upload.single('thumbnail');
+exports.uploadVideoImageToS3 = (req, res) => {
+    upload.single('thumbnail')(req, res, (error) => {
+        if (error) {
+          console.log('Error uploading video image:', error);
+          return res.status(500).json({ error: 'Failed to upload video image' });
+        }
+        
+        // Access the uploaded file's key
+        const key = req.file.key;
+
+        // Return the key in the response
+        return res.status(200).json({ key });
+    });
+};
 // exports.uploadVideoImageToS3 = async (image) => {
 //   console.log('s3 vid img', image);
 //   const {file}  = image;
