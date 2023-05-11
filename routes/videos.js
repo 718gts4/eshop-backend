@@ -18,7 +18,7 @@ const { Video } = require('../models/video');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 
-const { uploadVideoToS3, getVideoFile, uploadVideoImageToS3, uploadProfileToS3 } = require('../s3')
+const { uploadVideoToS3, getVideoFile, uploadVideoImageToS3 } = require('../s3')
 
 require('dotenv/config');
 const multer = require('multer');
@@ -168,7 +168,7 @@ router.post("/upload-image", upload.single('thumbnail'),  async (req, res) => {
     if(req.file){
         const file = req.file;
         // const videoId = req.params.id;
-        const key = await uploadProfileToS3({file});
+        const key = await uploadVideoImageToS3({file});
     } else {
         res.status(400).send('There was a problem uploading thumbnail file')
     }
