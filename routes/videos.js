@@ -165,11 +165,10 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
 router.post("/upload-image", upload.single('image'),  async (req, res) => {
     console.log('req file', req.file)
     console.log('req body', req.body)
-    console.log('req param', req.params)
     const file = req.file;
     // const videoId = req.params.id;
 
-    // const key = await uploadVideoImageToS3({file, videoId});
+    const key = await uploadVideoImageToS3(file);
 
 });
 
