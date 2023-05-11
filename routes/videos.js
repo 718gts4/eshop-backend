@@ -168,7 +168,7 @@ router.post("/upload-image", upload.single('thumbnail'),  async (req, res) => {
     if(req.file){
         const file = req.file;
         // const videoId = req.params.id;
-        const key = await uploadVideoImageToS3(file);
+        const key = await uploadVideoImageToS3({file});
     } else {
         res.status(400).send('There was a problem uploading thumbnail file')
     }
