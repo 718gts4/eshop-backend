@@ -130,7 +130,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
           
         const video = new Video({
             videoUrl: key.key,
-            image: req.file.image,
+            image: req.body.image,
             createdBy: Id,
             name: req.file.filename,
             description: req.body.description,
