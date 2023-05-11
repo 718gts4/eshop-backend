@@ -163,7 +163,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
 });
   
 router.post("/upload-image", upload.single('image'),  async (req, res) => {
-    console.log('req file', req.file)
+    console.log('REQ file', req.file)
     console.log('req body', req.body)
     const file = req.file;
     // const videoId = req.params.id;
