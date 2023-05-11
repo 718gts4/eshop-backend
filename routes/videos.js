@@ -54,8 +54,6 @@ const storage = multer.diskStorage({
     }
 })
   
-const storageImage = multer.memoryStorage();
-const uploadImage = multer({ storageImage });
 
 // const upload = multer({ 
 //     dest: 'uploads/', 
@@ -161,11 +159,19 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
     }
 });
   
-router.post("/upload-image", uploadImage.single('image'),  async (req, res) => {
+router.post("/upload-image", upload.single('image'),  async (req, res) => {
     const file = req.file;
 console.log('api vid img file', file)
     const result = await uploadVideoImageToS3(file);
     res.send(result);
+
+    // fs.unlink(file.path, (err) => {
+    //     if (err) {
+    //         console.error(err);
+    //     } else {
+    //         console.log(`File ${file.filename} has been deleted from local storage`);
+    //     }
+    // });
 });
 
 router.get("/video/:key", async (req, res) => {
