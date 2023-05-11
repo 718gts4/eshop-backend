@@ -18,7 +18,7 @@ const { Video } = require('../models/video');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 
-const { uploadVideoToS3, getVideoFile } = require('../s3')
+const { uploadVideoToS3, getVideoFile, uploadVideoImageToS3 } = require('../s3')
 
 require('dotenv/config');
 const multer = require('multer');
@@ -162,6 +162,13 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
     }
 });
   
+router.post("/upload-image",  async (req, res) => {
+    console.log('req body', req.body)
+    const { imagePath } = req.body;
+    const result = await uploadVideoImageToS3(imagePath);
+    res.send(result);
+});
+
 router.get("/video/:key", async (req, res) => {
     const key = req.params.key;
     const videoUrl = getVideoFile(key);

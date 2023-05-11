@@ -32,9 +32,10 @@ exports.getVideoFile = (key) => {
 }
 
 exports.uploadProfileToS3 = async (image) => {
-    const { file } = image;
+    console.log('image file', image)
+    const file = image;
     // resize image
-    const buffer = await sharp(file.buffer).rotate().resize(300).toBuffer()
+    const buffer = await sharp(file.buffer).resize(300).rotate().toBuffer()
 
     const key = `${uuid()}`;
     const command = new PutObjectCommand({
@@ -50,6 +51,27 @@ exports.uploadProfileToS3 = async (image) => {
     } catch (error) {
         return { error };
     }
+};
+
+exports.uploadVideoImageToS3 = async (imagePath) => {
+  // const { file } = image;
+  // resize image
+  const buffer = await sharp(imagePath).rotate().toBuffer()
+
+  const key = `${uuid()}`;
+  const command = new PutObjectCommand({
+      Bucket: BUCKET,
+      Key: key,
+      Body: buffer,
+      ContentType: file.mimetype,
+  });
+
+  try {
+      await s3.send(command);
+      return { key };
+  } catch (error) {
+      return { error };
+  }
 };
 
 exports.uploadVideoToS3 = async (video) => {
