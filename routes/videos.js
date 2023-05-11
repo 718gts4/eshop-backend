@@ -53,9 +53,7 @@ const storage = multer.diskStorage({
         cb(null, shortid.generate() + '-' + fileName)
     }
 })
-  
-const storageImage = multer.memoryStorage();
-const uploadImage = multer({ storageImage });
+   
 
 // const upload = multer({ 
 //     dest: 'uploads/', 
@@ -99,6 +97,7 @@ const createThumbnail = async (videoPath, thumbnailPath) => {
 
 
 router.post("/upload/:id", upload.single('video'), async (req, res) => {
+
     const file = req.file;
     const userId = req.params.id;
     const Id = mongoose.Types.ObjectId(req.params.id);
@@ -161,10 +160,10 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
     }
 });
   
-router.post("/upload-image", uploadImage.single('image'),  async (req, res) => {
-    const file = req.file;
-console.log('api vid img file', file)
-    const result = await uploadVideoImageToS3(file);
+router.post("/upload-image",  async (req, res) => {
+    console.log('req body', req.body)
+    const { imagePath } = req.body;
+    const result = await uploadVideoImageToS3(imagePath);
     res.send(result);
 });
 

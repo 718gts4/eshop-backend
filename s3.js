@@ -32,10 +32,9 @@ exports.getVideoFile = (key) => {
 }
 
 exports.uploadProfileToS3 = async (image) => {
-    console.log('image file', image)
-    const file = image;
+    const { file } = image;
     // resize image
-    const buffer = await sharp(file.buffer).resize(300).rotate().toBuffer()
+    const buffer = await sharp(file.buffer).rotate().resize(300).toBuffer()
 
     const key = `${uuid()}`;
     const command = new PutObjectCommand({
@@ -54,11 +53,9 @@ exports.uploadProfileToS3 = async (image) => {
 };
 
 exports.uploadVideoImageToS3 = async (image) => {
-
-  console.log('imagepathhh', image)
-  const file = image;
+  const file  = image;
   // resize image
-  const buffer = await sharp(file.buffer).resize(300).rotate().toBuffer()
+  const buffer = await sharp(file.buffer).rotate().resize(300).toBuffer()
 
   const key = `${uuid()}`;
   const command = new PutObjectCommand({
