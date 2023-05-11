@@ -162,13 +162,17 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
     }
 });
   
-router.post("/upload-image", upload.single('image'),  async (req, res) => {
+router.post("/upload-image", upload.single('thumbnail'),  async (req, res) => {
     console.log('REQ file', req.file)
     console.log('req body', req.body)
-    const file = req.file;
-    // const videoId = req.params.id;
+    if(req.file){
+        const file = req.file;
+        // const videoId = req.params.id;
+        const key = await uploadVideoImageToS3(file);
+    } else {
+        res.status(400).send('There was a problem uploading thumbnail file')
+    }
 
-    const key = await uploadVideoImageToS3(file);
 
 });
 
