@@ -67,7 +67,7 @@ exports.uploadProfileToS3 = async (image) => {
     }
 };
 
-exports.uploadVideoImageToS3 = upload.single('videoImage');
+exports.uploadVideoImageToS3 = upload.single('thumbnail');
 // exports.uploadVideoImageToS3 = async (image) => {
 //   console.log('s3 vid img', image);
 //   const {file}  = image;
