@@ -32,6 +32,7 @@ exports.getVideoFile = (key) => {
 }
 
 exports.uploadProfileToS3 = async (image) => {
+    console.log('profile img s3 check', image)
     const { file } = image;
     // resize image
     const buffer = await sharp(file.buffer).rotate().resize(300).toBuffer()
