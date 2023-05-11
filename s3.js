@@ -54,7 +54,7 @@ exports.uploadProfileToS3 = async (image) => {
 };
 
 exports.uploadVideoImageToS3 = async (image) => {
-  const { file } = image;
+
   console.log('imagepathhh', image)
   // resize image
   const buffer = await sharp(image).resize(300).rotate().toBuffer()
@@ -64,7 +64,7 @@ exports.uploadVideoImageToS3 = async (image) => {
       Bucket: BUCKET,
       Key: key,
       Body: buffer,
-      ContentType: file.mimetype,
+      ContentType: image.mimetype,
   });
 
   try {

@@ -162,9 +162,9 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
 });
   
 router.post("/upload-image", uploadImage.single('image'),  async (req, res) => {
-    console.log('req body', req.body)
-    const { imagePath } = req.body;
-    const result = await uploadVideoImageToS3(imagePath);
+    const file = req.file;
+console.log('chekcing vid img file', file)
+    const result = await uploadVideoImageToS3(file);
     res.send(result);
 });
 
