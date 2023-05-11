@@ -172,6 +172,30 @@ router.post("/upload-image", upload.single('image'),  async (req, res) => {
 
 });
 
+
+router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
+    const file = req.file;
+    const userId = req.params.id;
+
+    if (!file || !userId) return res.status(400).json({ message: "File or user id is not available"});
+
+    try {
+        const key = await uploadProfileToS3({file, userId});
+        if (key) {
+            const updateUser = await User.findByIdAndUpdate(
+                userId,
+                { image: key.key },
+                { new: true}
+            );   
+        
+            return res.status(201).json({key});
+        }
+        
+    } catch (error) {
+        return res.status(500).json({message: error.message});
+    }
+});
+
 router.get("/video/:key", async (req, res) => {
     const key = req.params.key;
     const videoUrl = getVideoFile(key);
