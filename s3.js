@@ -22,9 +22,7 @@ const s3 = new S3Client({
 });
 
 exports.getFile = (key) => {
-    console.log('getFile key', key)
-    const imageUrl = `${image_url}profile/${key}`;
-    console.log('getFilr imageUrl', imageUrl)
+    const imageUrl = `${image_url}${key}`;
     return imageUrl;
 }
 
@@ -40,7 +38,7 @@ exports.uploadProfileToS3 = async (image) => {
 
     const key = `${uuid()}`;
     const command = new PutObjectCommand({
-        Bucket: BUCKET+'/profile',
+        Bucket: BUCKET,
         Key: key,
         Body: buffer,
         ContentType: file.mimetype,
@@ -93,11 +91,11 @@ exports.getUserPresignedUrls = async (userId) => {
 
     const presignedUrls = await Promise.all(
       imageKeys.map((key) => {
-        const command = new GetObjectCommand({ Bucket: BUCKET+'/profile', Key: key });
+        const command = new GetObjectCommand({ Bucket: BUCKET, Key: key });
         return getSignedUrl(s3, command, { expiresIn: 600 }); // default
       })
     );
-      console.log('presignedUrls', presignedUrls)
+
     return { presignedUrls };
   } catch (error) {
     console.log(error);
@@ -149,19 +147,4 @@ exports.deleteUrl = async (key) => {
     } catch (error) {
         console.log('error', error)
     }
-};
-
-exports.deleteProfileUrl = async (key) => {
-  console.log('KEY URL', key)
-  const params = {
-      Bucket: BUCKET+'/profile',
-      Key: key
-  }
-  const s3Command = new DeleteObjectCommand(params)
-  try {
-      await s3.send(s3Command)
-      console.log(`Deleted object with key ${key} from bucket`)
-  } catch (error) {
-      console.log('error', error)
-  }
 };
