@@ -163,7 +163,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
   
 router.post("/upload-image", uploadImage.single('image'),  async (req, res) => {
     const file = req.file;
-console.log('chekcing vid img file', file)
+console.log('api vid img file', file)
     const result = await uploadVideoImageToS3(file);
     res.send(result);
 });

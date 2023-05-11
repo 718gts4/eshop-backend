@@ -56,15 +56,16 @@ exports.uploadProfileToS3 = async (image) => {
 exports.uploadVideoImageToS3 = async (image) => {
 
   console.log('imagepathhh', image)
+  const file = image;
   // resize image
-  const buffer = await sharp(image).resize(300).rotate().toBuffer()
+  const buffer = await sharp(file.buffer).resize(300).rotate().toBuffer()
 
   const key = `${uuid()}`;
   const command = new PutObjectCommand({
       Bucket: BUCKET,
       Key: key,
       Body: buffer,
-      ContentType: image.mimetype,
+      ContentType: file.mimetype,
   });
 
   try {
