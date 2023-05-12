@@ -83,10 +83,11 @@ exports.uploadVideoImageToS3 = (req, res) => {
                 Bucket: BUCKET,
                 Key: key,
             };
-            const { Body } = await s3.getObject(getObjectParams).promise();
-            console.log('BODY', Body)
+            const data = await s3.send(new GetObjectCommand(getObjectParams));
+            console.log('DATA', data)
+            const buffer = await streamToBuffer(data.Body);
             // Resize the image
-            const resizedImage = await sharp(Body)
+            const resizedImage = await sharp(buffer)
               .resize(300) // Specify the desired width (e.g., 300 pixels)
               .toBuffer();
       
@@ -101,7 +102,7 @@ exports.uploadVideoImageToS3 = (req, res) => {
                 ContentType: req.file.mimetype,
             };
       
-            await s3.putObject(uploadParams).promise();
+            await s3.send(new PutObjectCommand(uploadParams));
       
             // Update req.file with the resized image's key
             req.file.key = resizedKey;
