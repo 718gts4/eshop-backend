@@ -77,7 +77,7 @@ exports.uploadVideoImageToS3 = (req, res) => {
     try {
       // Access the uploaded file
       const file = req.file;
-
+      console.log('FILE', file)
       // Resize the thumbnail image
       const resizedImage = await sharp(file.buffer)
         .resize(300) // Specify the desired width (e.g., 300 pixels)
