@@ -77,6 +77,15 @@ exports.uploadVideoImageToS3 = (req, res) => {
         console.log('intercept req', req.file)
         // Access the uploaded file's key
         const key = req.file.key;
+        
+        const streamToBuffer = (stream) => {
+          return new Promise((resolve, reject) => {
+            const chunks = [];
+            stream.on('data', (chunk) => chunks.push(chunk));
+            stream.on('error', reject);
+            stream.on('end', () => resolve(Buffer.concat(chunks)));
+          });
+        };
 
         try {
             const getObjectParams = {
@@ -84,7 +93,7 @@ exports.uploadVideoImageToS3 = (req, res) => {
                 Key: key,
             };
             const data = await s3.send(new GetObjectCommand(getObjectParams));
-            console.log('DATA', data)
+            console.log('DATA', data.Body)
             const buffer = await streamToBuffer(data.Body);
             // Resize the image
             const resizedImage = await sharp(buffer)
