@@ -144,7 +144,14 @@ exports.uploadVideoImageToS3 = (req, res) => {
           // Update req.file with the resized image's key
           req.file.key = resizedKey;
     
-          deleteUrl(key);
+          // Delete the original file key
+          const s3Command = new DeleteObjectCommand(getObjectParams)
+          try {
+              await s3.send(s3Command)
+              console.log(`Deleted object with key ${key} from bucket`)
+          } catch (error) {
+              console.log('error', error)
+          }
           // Return the key in the response
           return res.status(200).json({ resizedKey });
       } catch (error) {
