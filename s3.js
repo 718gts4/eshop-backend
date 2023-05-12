@@ -74,17 +74,16 @@ exports.uploadVideoImageToS3 = (req, res) => {
           console.log('Error uploading video image:', error);
           return res.status(500).json({ error: 'Failed to upload video image' });
         }
-        console.log('intercept req', req.file)
         // Access the uploaded file's key
         const key = req.file.key;
-        
+
         const streamToBuffer = (stream) => {
-          return new Promise((resolve, reject) => {
-            const chunks = [];
-            stream.on('data', (chunk) => chunks.push(chunk));
-            stream.on('error', reject);
-            stream.on('end', () => resolve(Buffer.concat(chunks)));
-          });
+            return new Promise((resolve, reject) => {
+                const chunks = [];
+                stream.on('data', (chunk) => chunks.push(chunk));
+                stream.on('error', reject);
+                stream.on('end', () => resolve(Buffer.concat(chunks)));
+            });
         };
 
         try {
@@ -117,7 +116,7 @@ exports.uploadVideoImageToS3 = (req, res) => {
             req.file.key = resizedKey;
       
             // Return the key in the response
-            return res.status(200).json({ key });
+            return res.status(200).json({ resizedKey });
         } catch (error) {
             console.log('Error resizing and uploading video image:', error);
             return res.status(500).json({ error: 'Failed to resize and upload video image' });
