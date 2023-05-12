@@ -83,7 +83,6 @@ exports.uploadProfileToS3 = async (image) => {
 // };
 
 exports.uploadVideoImageToS3 = (req, res) => {
-
   upload.single('thumbnail')(req, res, async (error) => {
       if (error) {
         console.log('Error uploading video image:', error);
@@ -130,6 +129,7 @@ exports.uploadVideoImageToS3 = (req, res) => {
           // Update req.file with the resized image's key
           req.file.key = resizedKey;
     
+          deleteUrl(key);
           // Return the key in the response
           return res.status(200).json({ resizedKey });
       } catch (error) {

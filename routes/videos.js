@@ -18,7 +18,7 @@ const { Video } = require('../models/video');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 
-const { uploadVideoToS3, getVideoFile, uploadVideoImageToS3 } = require('../s3')
+const { uploadVideoToS3, getVideoFile, uploadVideoImageToS3, getFile, deleteUrl } = require('../s3')
 
 require('dotenv/config');
 const multer = require('multer');
@@ -135,17 +135,28 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
 
 router.post('/upload-image', uploadVideoImageToS3, async (req, res) => {
     try {
-      res.status(200).json({ message: 'Image uploaded successfully' });
+        res.status(200).json({ message: 'Image uploaded successfully' });
     } catch (error) {
-      res.status(500).json({ error: 'Failed to upload image' });
+        res.status(500).json({ error: 'Failed to upload image' });
     }
-  });
-
+});
 
 router.get("/video/:key", async (req, res) => {
     const key = req.params.key;
     const videoUrl = getVideoFile(key);
     res.send(videoUrl)
 });
+
+router.get("/images/:key", async (req, res) => {
+    const key = req.params.key;
+    const imageUrl = getFile(key);
+    res.send(imageUrl)
+});
+
+router.delete("/imagedelete/:key", async(req, res) => {
+    const key = req.params.key;
+    deleteUrl(key)
+    res.send()
+})
 
 module.exports = router;
