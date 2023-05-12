@@ -68,62 +68,77 @@ exports.uploadProfileToS3 = async (image) => {
 };
 
 exports.uploadVideoImageToS3 = (req, res) => {
-
-    upload.single('thumbnail')(req, res, async (error) => {
+    upload.single('thumbnail')(req, res, (error) => {
         if (error) {
           console.log('Error uploading video image:', error);
           return res.status(500).json({ error: 'Failed to upload video image' });
         }
+        
         // Access the uploaded file's key
         const key = req.file.key;
 
-        const streamToBuffer = (stream) => {
-            return new Promise((resolve, reject) => {
-                const chunks = [];
-                stream.on('data', (chunk) => chunks.push(chunk));
-                stream.on('error', reject);
-                stream.on('end', () => resolve(Buffer.concat(chunks)));
-            });
-        };
-
-        try {
-            const getObjectParams = {
-                Bucket: BUCKET,
-                Key: key,
-            };
-            const data = await s3.send(new GetObjectCommand(getObjectParams));
-            console.log('DATA', data.Body)
-            const buffer = await streamToBuffer(data.Body);
-            // Resize the image
-            const resizedImage = await sharp(buffer)
-              .resize(300) // Specify the desired width (e.g., 300 pixels)
-              .toBuffer();
-      
-            // Generate a unique key for the resized image
-            const resizedKey = `${uuid()}-resized-${req.file.originalname}`;
-      
-            // Upload the resized image to S3
-            const uploadParams = {
-                Bucket: BUCKET,
-                Key: resizedKey,
-                Body: resizedImage,
-                ContentType: req.file.mimetype,
-            };
-      
-            await s3.send(new PutObjectCommand(uploadParams));
-      
-            // Update req.file with the resized image's key
-            req.file.key = resizedKey;
-      
-            // Return the key in the response
-            return res.status(200).json({ resizedKey });
-        } catch (error) {
-            console.log('Error resizing and uploading video image:', error);
-            return res.status(500).json({ error: 'Failed to resize and upload video image' });
-        }
-        
+        // Return the key in the response
+        return res.status(200).json({ key });
     });
 };
+
+// exports.uploadVideoImageToS3 = (req, res) => {
+
+//   upload.single('thumbnail')(req, res, async (error) => {
+//       if (error) {
+//         console.log('Error uploading video image:', error);
+//         return res.status(500).json({ error: 'Failed to upload video image' });
+//       }
+//       // Access the uploaded file's key
+//       const key = req.file.key;
+
+//       const streamToBuffer = (stream) => {
+//           return new Promise((resolve, reject) => {
+//               const chunks = [];
+//               stream.on('data', (chunk) => chunks.push(chunk));
+//               stream.on('error', reject);
+//               stream.on('end', () => resolve(Buffer.concat(chunks)));
+//           });
+//       };
+
+//       try {
+//           const getObjectParams = {
+//               Bucket: BUCKET,
+//               Key: key,
+//           };
+//           const data = await s3.send(new GetObjectCommand(getObjectParams));
+//           console.log('DATA', data.Body)
+//           const buffer = await streamToBuffer(data.Body);
+//           // Resize the image
+//           const resizedImage = await sharp(buffer)
+//             .resize(300) // Specify the desired width (e.g., 300 pixels)
+//             .toBuffer();
+    
+//           // Generate a unique key for the resized image
+//           const resizedKey = `${uuid()}-resized-${req.file.originalname}`;
+    
+//           // Upload the resized image to S3
+//           const uploadParams = {
+//               Bucket: BUCKET,
+//               Key: resizedKey,
+//               Body: resizedImage,
+//               ContentType: req.file.mimetype,
+//           };
+    
+//           await s3.send(new PutObjectCommand(uploadParams));
+    
+//           // Update req.file with the resized image's key
+//           req.file.key = resizedKey;
+    
+//           // Return the key in the response
+//           return res.status(200).json({ resizedKey });
+//       } catch (error) {
+//           console.log('Error resizing and uploading video image:', error);
+//           return res.status(500).json({ error: 'Failed to resize and upload video image' });
+//       }
+      
+//   });
+// };
 
 exports.uploadVideoToS3 = async (video) => {
     const { file } = video;
