@@ -81,27 +81,6 @@ exports.uploadVideoImageToS3 = (req, res) => {
         return res.status(200).json({ key });
     });
 };
-// exports.uploadVideoImageToS3 = async (image) => {
-//   console.log('s3 vid img', image);
-//   const {file}  = image;
-
-//   const buffer = await sharp(file.buffer).rotate().resize(300).toBuffer()
-
-//   const key = `${uuid()}`;
-//   const command = new PutObjectCommand({
-//       Bucket: BUCKET,
-//       Key: key,
-//       Body: buffer,
-//       ContentType: file.mimetype,
-//   });
-
-//   try {
-//       await s3.send(command);
-//       return { key };
-//   } catch (error) {
-//       return { error };
-//   }
-// };
 
 exports.uploadVideoToS3 = async (video) => {
     const { file } = video;

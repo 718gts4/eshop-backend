@@ -52,18 +52,12 @@ const storage = multer.diskStorage({
         const fileName = file.originalname.split(' ').join('-');
         cb(null, shortid.generate() + '-' + fileName)
     }
-})
-   
-
-// const upload = multer({ 
-//     dest: 'uploads/', 
-//     limits: { fileSize: 1024 * 1024 * 50 } 
-// });
+});
 
 const upload = multer({ 
     storage: storage,
     limits: { fileSize: 1024 * 1024 * 50 } 
-})
+});
 
 router.get(`/`, getVideos);
 router.get(`/:id`, getVideo);
@@ -77,29 +71,7 @@ router.put(`/:id/updatecomments`, updateVideoComment);
 router.post(`/:id/followingVideos`, getFollowingVideos);
 router.get(`/uservideos/:id`, getVideosByUser)
 
-
-const createThumbnail = async (videoPath, thumbnailPath) => {
-    try {
-      await ffmpeg(videoPath)
-        .screenshot({
-          count: 1,
-          folder: path.dirname(thumbnailPath),
-          filename: path.basename(thumbnailPath),
-          size: '1080x1920',
-        })
-        .on('error', (err) => {
-          console.log(`Error generating thumbnail: ${err}`);
-        });
-    } catch (error) {
-      console.log(`Error generating thumbnail: ${error}`);
-    }
-  };
-
-
 router.post("/upload/:id", upload.single('video'), async (req, res) => {
-    console.log('file file', req.file)
-    console.log('IMG', req.body.image)
-    console.log('DES', req.body.description)
     const file = req.file;
     const userId = req.params.id;
     const Id = mongoose.Types.ObjectId(req.params.id);
@@ -108,7 +80,6 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         return res.status(400).json({ message: "File or user id is not available" });
     }
 
-    console.log('check point 1')
     try {
 
         const key = await uploadVideoToS3({ file, userId });
@@ -161,55 +132,15 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-  
-// router.post("/upload-image", upload.single('thumbnail'),  async (req, res) => {
-//     console.log('REQ file', req.file)
-//     console.log('req body', req.body)
-//     if(req.file){
-//         const file = req.file;
-//         // const videoId = req.params.id;
-//         const key = await uploadVideoImageToS3({file});
-//     } else {
-//         res.status(400).send('There was a problem uploading thumbnail file')
-//     }
-
-
-// });
 
 router.post('/upload-image', uploadVideoImageToS3, async (req, res) => {
     try {
-      // Access the uploaded file via req.file
-      console.log(req.file);
-      // Handle further processing or response
       res.status(200).json({ message: 'Image uploaded successfully' });
     } catch (error) {
-      console.log('Error uploading image:', error);
       res.status(500).json({ error: 'Failed to upload image' });
     }
   });
 
-router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
-    const file = req.file;
-    const userId = req.params.id;
-
-    if (!file || !userId) return res.status(400).json({ message: "File or user id is not available"});
-
-    try {
-        const key = await uploadProfileToS3({file, userId});
-        if (key) {
-            const updateUser = await User.findByIdAndUpdate(
-                userId,
-                { image: key.key },
-                { new: true}
-            );   
-        
-            return res.status(201).json({key});
-        }
-        
-    } catch (error) {
-        return res.status(500).json({message: error.message});
-    }
-});
 
 router.get("/video/:key", async (req, res) => {
     const key = req.params.key;
