@@ -68,7 +68,7 @@ exports.uploadProfileToS3 = async (image) => {
 };
 
 exports.uploadVideoImageToS3 = (req, res) => {
-    console.log('upload req', req)
+    console.log('upload req', req.file)
     upload.single('thumbnail')(req, res, (error) => {
         if (error) {
           console.log('Error uploading video image:', error);
