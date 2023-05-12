@@ -68,57 +68,20 @@ exports.uploadProfileToS3 = async (image) => {
 };
 
 exports.uploadVideoImageToS3 = (req, res) => {
-  upload.single('thumbnail')(req, res, async (error) => {
-    if (error) {
-      console.log('Error uploading video image:', error);
-      return res.status(500).json({ error: 'Failed to upload video image' });
-    }
-
-    try {
-      // Access the uploaded file
-      const file = req.file;
-      console.log('FILE', file)
-      // Resize the thumbnail image
-      const resizedImage = await sharp(file.buffer)
-        .resize(300) // Specify the desired width (e.g., 300 pixels)
-        .toBuffer();
-
-      // Generate a unique key for the resized image
-      const resizedKey = `${uuid()}-resized-${file.originalname}`;
-
-      // Upload the resized image to S3
-      const uploadParams = {
-        Bucket: BUCKET,
-        Key: resizedKey,
-        Body: resizedImage,
-        ContentType: file.mimetype,
-      };
-
-      await s3.putObject(uploadParams).promise();
-
-      // Return the resized image key in the response
-      return res.status(200).json({ key: resizedKey });
-    } catch (error) {
-      console.log('Error resizing and uploading video image:', error);
-      return res.status(500).json({ error: 'Failed to resize and upload video image' });
-    }
-  });
-};
-
-// exports.uploadVideoImageToS3 = (req, res) => {
-//     upload.single('thumbnail')(req, res, (error) => {
-//         if (error) {
-//           console.log('Error uploading video image:', error);
-//           return res.status(500).json({ error: 'Failed to upload video image' });
-//         }
+    console.log('upload req', req)
+    upload.single('thumbnail')(req, res, (error) => {
+        if (error) {
+          console.log('Error uploading video image:', error);
+          return res.status(500).json({ error: 'Failed to upload video image' });
+        }
         
-//         // Access the uploaded file's key
-//         const key = req.file.key;
+        // Access the uploaded file's key
+        const key = req.file.key;
 
-//         // Return the key in the response
-//         return res.status(200).json({ key });
-//     });
-// };
+        // Return the key in the response
+        return res.status(200).json({ key });
+    });
+};
 
 exports.uploadVideoToS3 = async (video) => {
     const { file } = video;
