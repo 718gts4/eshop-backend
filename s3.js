@@ -68,7 +68,7 @@ exports.uploadProfileToS3 = async (image) => {
 };
 
 exports.uploadVideoImageToS3 = (req, res) => {
-    console.log('upload req', req.file)
+
     upload.single('thumbnail')(req, res, async (error) => {
         if (error) {
           console.log('Error uploading video image:', error);
@@ -79,8 +79,14 @@ exports.uploadVideoImageToS3 = (req, res) => {
         const key = req.file.key;
 
         try {
+            const getObjectParams = {
+                Bucket: BUCKET,
+                Key: key,
+            };
+            const { Body } = await s3.getObject(getObjectParams).promise();
+            console.log('BODY', Body)
             // Resize the image
-            const resizedImage = await sharp(req.file.buffer)
+            const resizedImage = await sharp(Body)
               .resize(300) // Specify the desired width (e.g., 300 pixels)
               .toBuffer();
       
