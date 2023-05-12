@@ -45,6 +45,21 @@ exports.getVideoFile = (key) => {
     return videoUrl;
 }
 
+exports.deleteUrl = async (key) => {
+  console.log('KEY URL', key)
+  const params = {
+      Bucket: BUCKET,
+      Key: key
+  }
+  const s3Command = new DeleteObjectCommand(params)
+  try {
+      await s3.send(s3Command)
+      console.log(`Deleted object with key ${key} from bucket`)
+  } catch (error) {
+      console.log('error', error)
+  }
+};
+
 exports.uploadProfileToS3 = async (image) => {
     console.log('profile img s3 check', image)
     const { file } = image;
@@ -220,19 +235,4 @@ exports.getVideoPresignedUrls = async (userId) => {
     console.log(error);
     return { error };
   }
-};
-
-exports.deleteUrl = async (key) => {
-    console.log('KEY URL', key)
-    const params = {
-        Bucket: BUCKET,
-        Key: key
-    }
-    const s3Command = new DeleteObjectCommand(params)
-    try {
-        await s3.send(s3Command)
-        console.log(`Deleted object with key ${key} from bucket`)
-    } catch (error) {
-        console.log('error', error)
-    }
 };
