@@ -149,7 +149,9 @@ router.get("/video/:key", async (req, res) => {
 
 router.get("/images/:key", async (req, res) => {
     const key = req.params.key;
+    console.log('image key', key)
     const imageUrl = getFile(key);
+    console.log('image url', imageUrl)
     res.send(imageUrl)
 });
 
