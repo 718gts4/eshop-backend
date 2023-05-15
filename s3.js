@@ -135,7 +135,7 @@ exports.uploadVideoImageToS3 = (req, res) => {
           const uploadParams = {
               Bucket: BUCKET,
               Key: resizedKey,
-              Body: buffer,
+              Body: resizedImage,
               ContentType: req.file.mimetype,
           };
     
