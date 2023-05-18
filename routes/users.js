@@ -57,7 +57,7 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
 });
 
 router.get("/images/profiles/:key", async (req, res) => {
-    console.log('image key', req.params.key)
+    console.log('image key!!!!', req.params.key)
     const key = req.params.key;
     const imageUrl = getFile(key);
     res.send(imageUrl)

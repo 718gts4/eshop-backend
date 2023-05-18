@@ -38,6 +38,7 @@ const upload = multer({
 exports.getFile = (key) => {
     console.log('getFile key', key)
     const imageUrl = `${image_url}${key}`;
+    console.log('IMGA URL', imageUrl)
     return imageUrl;
 }
 
