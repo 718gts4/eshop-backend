@@ -66,7 +66,7 @@ exports.uploadProfileToS3 = async (image) => {
 
     const buffer = await sharp(file.buffer).rotate().resize(300).toBuffer()
 
-    const key = `${uuid()}`;
+    const key = `profiles/${uuid()}`;
     const command = new PutObjectCommand({
         Bucket: BUCKET,
         Key: key,
@@ -81,21 +81,6 @@ exports.uploadProfileToS3 = async (image) => {
         return { error };
     }
 };
-
-// exports.uploadVideoImageToS3 = (req, res) => {
-//     upload.single('thumbnail')(req, res, (error) => {
-//         if (error) {
-//           console.log('Error uploading video image:', error);
-//           return res.status(500).json({ error: 'Failed to upload video image' });
-//         }
-        
-//         // Access the uploaded file's key
-//         const key = req.file.key;
-
-//         // Return the key in the response
-//         return res.status(200).json({ key });
-//     });
-// };
 
 exports.uploadVideoImageToS3 = (req, res) => {
   upload.single('thumbnail')(req, res, async (error) => {
@@ -121,7 +106,6 @@ exports.uploadVideoImageToS3 = (req, res) => {
               Key: key,
           };
           const data = await s3.send(new GetObjectCommand(getObjectParams));
-          console.log('DATA', data.Body)
           const buffer = await streamToBuffer(data.Body);
           // Resize the image
           const resizedImage = await sharp(buffer)
