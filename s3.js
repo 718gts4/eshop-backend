@@ -8,6 +8,7 @@ const sharp = require('sharp');
 const fs = require('fs');
 
 const BUCKET = process.env.AWS_BUCKET_NAME;
+const BUCKET_PROFILE = process.env.AWS_BUCKET_PROFILE;
 const region = process.env.AWS_REGION;
 const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
@@ -47,6 +48,22 @@ exports.getVideoFile = (key) => {
     const videoUrl = `${video_url}${key}`;
     return videoUrl;
 }
+
+exports.deleteProfileUrl = async (key) => {
+  console.log('KEY URL', key)
+
+  const params = {
+      Bucket: BUCKET_PROFILE,
+      Key: key
+  }
+  const s3Command = new DeleteObjectCommand(params)
+  try {
+      await s3.send(s3Command)
+      console.log(`Deleted object with key ${key} from bucket`)
+  } catch (error) {
+      console.log('error', error)
+  }
+};
 
 exports.deleteUrl = async (key) => {
   console.log('KEY URL', key)
