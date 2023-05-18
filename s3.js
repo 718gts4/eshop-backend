@@ -8,7 +8,6 @@ const sharp = require('sharp');
 const fs = require('fs');
 
 const BUCKET = process.env.AWS_BUCKET_NAME;
-const BUCKET_PROFILE = process.env.AWS_BUCKET_PROFILE;
 const region = process.env.AWS_REGION;
 const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
@@ -51,10 +50,10 @@ exports.getVideoFile = (key) => {
 
 exports.deleteProfileUrl = async (key) => {
   console.log('KEY URL', key)
-
+  const profileKey = 'profiles/' + key;
   const params = {
-      Bucket: BUCKET_PROFILE,
-      Key: key
+      Bucket: BUCKET,
+      Key: profileKey,
   }
   const s3Command = new DeleteObjectCommand(params)
   try {
