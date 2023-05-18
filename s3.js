@@ -14,6 +14,7 @@ const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 
 const image_url = process.env.AWS_CDN_URL;
 const video_url = process.env.AWS_CDN_URL;
+const profile_url = process.env.AWS_CDN_PROFILE_URL;
 
 const s3 = new S3Client({
   region,
@@ -37,7 +38,7 @@ const upload = multer({
 
 exports.getFile = (key) => {
     console.log('getFile key', key)
-    const imageUrl = `${image_url}${key}`;
+    const imageUrl = `${profile_url}${key}`;
     console.log('IMGA URL', imageUrl)
     return imageUrl;
 }
