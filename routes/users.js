@@ -63,8 +63,9 @@ router.get("/images/:key", async (req, res) => {
     res.send(imageUrl)
 });
 
-router.delete("/imagedelete/:key", async(req, res) => {
+router.delete("/imagedelete/profiles/:key", async(req, res) => {
     const key = req.params.key;
+    console.log('DELETE KEY', key)
     deleteProfileUrl(key)
     res.send()
 })
