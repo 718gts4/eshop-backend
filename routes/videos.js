@@ -39,20 +39,22 @@ const FILE_TYPE_MAP = {
     'video/x-msvideo': 'avi'
 };
   
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const isValid = FILE_TYPE_MAP[file.mimetype];
-        let uploadError = new Error('.mp4, .mpeg, .mov and .avi 파일만 가능합니다!');
-        if(isValid){
-            uploadError = null
-        }
-        cb(uploadError, path.join(path.dirname(__dirname), 'uploads'))
-    },
-    filename: function (req, file, cb) {
-        const fileName = file.originalname.split(' ').join('-');
-        cb(null, shortid.generate() + '-' + fileName)
-    }
-});
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         const isValid = FILE_TYPE_MAP[file.mimetype];
+//         let uploadError = new Error('.mp4, .mpeg, .mov and .avi 파일만 가능합니다!');
+//         if(isValid){
+//             uploadError = null
+//         }
+//         cb(uploadError, path.join(path.dirname(__dirname), 'uploads'))
+//     },
+//     filename: function (req, file, cb) {
+//         const fileName = file.originalname.split(' ').join('-');
+//         cb(null, shortid.generate() + '-' + fileName)
+//     }
+// });
+
+const storage = multer.memoryStorage()
 
 const upload = multer({ 
     storage: storage,
@@ -149,9 +151,7 @@ router.get("/video/:key", async (req, res) => {
 
 router.get("/images/:key", async (req, res) => {
     const key = req.params.key;
-    console.log('image key', key)
     const imageUrl = getFile(key);
-    console.log('image url', imageUrl)
     res.send(imageUrl)
 });
 

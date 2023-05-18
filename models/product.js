@@ -52,10 +52,6 @@ const productSchema = mongoose.Schema({
         ref: 'Category',
         required: true
     },
-    createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    },
     reviews: [
         {
             userId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
@@ -163,10 +159,27 @@ const productSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
+    display: {
+        type: Boolean,
+        default: true
+    },
+    soldout: {
+        type: Boolean,
+        default: false
+    },
     justin: {
         type: Boolean,
         default: false
-    }
+    },
+    saleDuration: {
+        startDate: Date,
+        endDate: Date,
+        deliveryDate: Date
+    },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
 })
 
 

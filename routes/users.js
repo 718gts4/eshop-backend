@@ -16,7 +16,19 @@ require('dotenv/config');
 
 const storage = multer.memoryStorage()
 
-const upload = multer({ storage: storage })
+const fileFilter = (req, file, cd) => {
+    if (file.mimetype.spolit("/")[0] === "image"){
+        cb(null, true);
+    } else {
+        cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE"), false);
+    }
+};
+
+const upload = multer({ 
+    storage: storage,
+    fileFilter,
+    limits: {fileSize: 2000000000}
+})
 
 router.get('/', getUsers);
 router.get('/:id', getUserId);

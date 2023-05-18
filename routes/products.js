@@ -43,7 +43,7 @@ const upload = multer({ storage })
 
 router.get(`/`, getProducts);
 router.get(`/:id`, getProduct);
-router.post(`/create`, upload.single('image'), requireSignin, adminMiddleware, createProduct);
+router.post(`/create`, upload.array('image'), requireSignin, adminMiddleware, createProduct);
 router.put(`/:id`, upload.single('image'), requireSignin, adminMiddleware, updateProduct);
 router.put(`/gallery-images/:id`, upload.array('productImages', 10), updateGalleryImages, requireSignin, adminMiddleware);
 router.delete(`/:id`, requireSignin, adminMiddleware, deleteProduct);
