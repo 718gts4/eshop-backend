@@ -16,7 +16,7 @@ const multer = require('multer');
 const shortid = require('shortid');
 const path = require('path');
 const { requireSignin, adminMiddleware } = require('../common-middleware');
-const { uploadProductImageToS3 } = require('../s3');
+const { uploadProductImageToS3, getProductImageFile, deleteProductUrl } = require('../s3');
 const {Product} = require('../models/product');
 const {Category} = require('../models/category');
 const slugify = require('slugify');
@@ -129,6 +129,17 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
     }
 });
 
+router.get("/images/:key", async (req, res) => {
+    const key = req.params.key;
+    const imageUrl = getProductImageFile(key);
+    res.send(imageUrl)
+});
+
+router.delete("/imagedelete/:key", async(req, res) => {
+    const key = req.params.key;
+    deleteProductUrl(key)
+    res.send()
+})
 // get only the count number of featured products
 router.get(`/get/featured/:count`, getFeaturedProductsOfCounts);
 

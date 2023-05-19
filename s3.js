@@ -15,6 +15,7 @@ const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 const image_url = process.env.AWS_CDN_URL;
 const video_url = process.env.AWS_CDN_URL;
 const profile_url = process.env.AWS_CDN_PROFILE_URL;
+const product_url = process.env.AWS_CDN_PRODUCT_URL;
 
 const s3 = new S3Client({
   region,
@@ -50,6 +51,26 @@ exports.getVideoFile = (key) => {
     const videoUrl = `${video_url}${key}`;
     return videoUrl;
 }
+
+exports.getProductImageFile = (key) => {
+  const productUrl = `${product_url}${key}`;
+  return productUrl;
+}
+
+exports.deleteProductUrl = async (key) => {
+  const productKey = 'products/' + key;
+  const params = {
+      Bucket: BUCKET,
+      Key: productKey,
+  }
+  const s3Command = new DeleteObjectCommand(params)
+  try {
+      await s3.send(s3Command)
+      console.log(`Deleted object with key ${key} from bucket`)
+  } catch (error) {
+      console.log('error', error)
+  }
+};
 
 exports.deleteProfileUrl = async (key) => {
   const profileKey = 'profiles/' + key;
