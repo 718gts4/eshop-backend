@@ -41,7 +41,11 @@ exports.createProduct = async (req, res) => {
     return res.status(400).send('The name of the product already exists. Please use a different name.');
 
     if (checkProduct.length ===0){
-        const file = req.file;
+        const {
+            name, price, description, richDescription, brand, category, countInStock
+        } = req.body;
+
+        const file = req.files;
         if (!file) return res.status(400).send('이미지 파일을 추가하시기 바랍니다');
     
         const fileName = file.filename;
@@ -49,16 +53,16 @@ exports.createProduct = async (req, res) => {
         const imageUrl = `${basePath}${fileName}`; // "http://localhost:3000/public/upload/image-2323232"
 
         let product = new Product({
-            name: req.body.name,
+            name: name,
             slug: nameSlug,
-            description: req.body.description,
-            richDescription: req.body.richDescription,
+            description: description,
+            richDescription: richDescription,
             productImages: req.body.productImages,
             image: imageUrl,
-            brand: req.body.brand,
-            price: req.body.price,
+            brand: brand,
+            price: price,
             category: category,
-            countInStock: req.body.countInStock,
+            countInStock: countInStock,
             isFeatured: req.body.isFeatured,
             createdBy: req.user.userId, //user data from middleware
             likes: {},

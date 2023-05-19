@@ -37,10 +37,13 @@ const upload = multer({
 });
 
 exports.getFile = (key) => {
-    console.log('getFile key', key)
     const imageUrl = `${profile_url}${key}`;
-    console.log('IMGA URL', imageUrl)
     return imageUrl;
+}
+
+exports.getVideoImageFile = (key) => {
+  const imageUrl = `${image_url}${key}`;
+  return imageUrl;
 }
 
 exports.getVideoFile = (key) => {
@@ -49,7 +52,6 @@ exports.getVideoFile = (key) => {
 }
 
 exports.deleteProfileUrl = async (key) => {
-  console.log('KEY URL', key)
   const profileKey = 'profiles/' + key;
   const params = {
       Bucket: BUCKET,
@@ -65,7 +67,6 @@ exports.deleteProfileUrl = async (key) => {
 };
 
 exports.deleteUrl = async (key) => {
-  console.log('KEY URL', key)
   const params = {
       Bucket: BUCKET,
       Key: key
@@ -80,7 +81,6 @@ exports.deleteUrl = async (key) => {
 };
 
 exports.uploadProfileToS3 = async (image) => {
-    console.log('profile img s3 check', image)
     const { file } = image;
 
     const buffer = await sharp(file.buffer).rotate().resize(300).toBuffer()
