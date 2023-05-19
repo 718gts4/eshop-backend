@@ -20,6 +20,7 @@ const { uploadProductImageToS3 } = require('../s3');
 const {Product} = require('../models/product');
 const {Category} = require('../models/category');
 const slugify = require('slugify');
+const fs = require('fs');
 
 const FILE_TYPE_MAP = {
   'image/png': 'png',
@@ -67,7 +68,7 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
 
     try {
         const images = req.files.map((file) => ({
-            file: file.buffer,
+            file: fs.readFileSync(file.path),
         }));
 
         console.log('images check', images)
