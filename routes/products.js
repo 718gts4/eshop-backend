@@ -53,7 +53,13 @@ router.get(`/get/count`, getProductCount);
 router.get(`/admin/:id`, getAdminProducts);
 router.patch('/:id/like', likeProduct, requireSignin);
 router.put('/:id/sale', editSaleDuration, requireSignin);
-router.post(`/create`, upload.array('image'), requireSignin, adminMiddleware, async (req, res) => {
+router.post(`/create`, upload.fields([
+    { name: 'image1', maxCount: 1 },
+    { name: 'image2', maxCount: 1 },
+    { name: 'image3', maxCount: 1 },
+    { name: 'image4', maxCount: 1 },
+    { name: 'image5', maxCount: 1 },
+]), requireSignin, adminMiddleware, async (req, res) => {
     const {
         name, price, description, richDescription, brand, category, countInStock, isFeatured
     } = req.body;
@@ -100,7 +106,7 @@ router.post(`/create`, upload.array('image'), requireSignin, adminMiddleware, as
                 subOption3: req.body.subOption3,
             });
             console.log('Product sale', product.sale);
-            
+
             if (product.sale) {
                 const endTime = new Date(req.body.sale.endTime);
                 const currentTime = new Date();
