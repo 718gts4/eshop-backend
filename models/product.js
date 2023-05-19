@@ -37,7 +37,7 @@ const productSchema = mongoose.Schema({
         default: ''
     },
     productImages: [{
-        img: { type: Object }
+        type: String 
     }],
     brand: {
         type: String,
@@ -86,7 +86,7 @@ const productSchema = mongoose.Schema({
         {
             productColor: {
                 type: String,
-                required: true
+                // required: true
             },   
             hexColor: {
                 type: String,
@@ -95,7 +95,7 @@ const productSchema = mongoose.Schema({
                 {
                     size: {
                         type: String,
-                        required: true
+                        // required: true
                     },
                     stock: {
                         type: Number,
@@ -107,13 +107,13 @@ const productSchema = mongoose.Schema({
     subOption1: {
         name: {
             type: String,
-            required: true
+            // required: true
         },
         values: [
             {
                 name: {
                     type: String,
-                    required: true
+                    // required: true
                 }
             }
         ]
@@ -121,7 +121,7 @@ const productSchema = mongoose.Schema({
     subOption2: {
         name: {
             type: String,
-            required: true
+            // required: true
         },
         values: [
             {
@@ -135,13 +135,13 @@ const productSchema = mongoose.Schema({
     subOption3: {
         name: {
             type: String,
-            required: true
+            // required: true
         },
         values: [
             {
                 name: {
                     type: String,
-                    required: true
+                    // required: true
                 }
             }
         ]
