@@ -70,10 +70,11 @@ router.post(`/create`, upload.array('image'), requireSignin, adminMiddleware, as
         const imageUploadPromises = images.map((image) => uploadProductImageToS3(image));
 
         const uploadedImages = await Promise.all(imageUploadPromises);
+        console.log('uploadeIMGS', uploadedImages);
         const imageUrls = uploadedImages.map((result) => result.key);
-
-        const productData = req.body;
-        productData.images = imageUrls;
+        console.log('imageURLS', imageUrls)
+        // const productData = req.body;
+        // productData.images = imageUrls;
 
         // res.status(201).json({ success: true, productData});
 
@@ -84,7 +85,7 @@ router.post(`/create`, upload.array('image'), requireSignin, adminMiddleware, as
                 description,
                 richDescription,
                 productImages: imageUrls,
-                image: imageUrl,
+                // image: imageUrl,
                 brand,
                 price,
                 category,
@@ -98,6 +99,8 @@ router.post(`/create`, upload.array('image'), requireSignin, adminMiddleware, as
                 subOption2: req.body.subOption2,
                 subOption3: req.body.subOption3,
             });
+            console.log('Product sale', product.sale);
+            
             if (product.sale) {
                 const endTime = new Date(req.body.sale.endTime);
                 const currentTime = new Date();

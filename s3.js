@@ -80,6 +80,28 @@ exports.deleteUrl = async (key) => {
   }
 };
 
+exports.uploadProductImageToS3 = async (image) => {
+  console.log('S3 image file:', image);
+  const { file } = image;
+
+  const buffer = await sharp(file.buffer).rotate().resize(300).toBuffer()
+
+  const key = `products/${uuid()}`;
+  const command = new PutObjectCommand({
+      Bucket: BUCKET,
+      Key: key,
+      Body: buffer,
+      ContentType: file.mimetype,
+  });
+
+  try {
+      await s3.send(command);
+      return { key };
+  } catch (error) {
+      return { error };
+  }
+};
+
 exports.uploadProfileToS3 = async (image) => {
     const { file } = image;
 
