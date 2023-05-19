@@ -19,6 +19,7 @@ const { requireSignin, adminMiddleware } = require('../common-middleware');
 const uploadProductImageToS3 = require('../s3');
 const {Product} = require('../models/product');
 const {Category} = require('../models/category');
+const slugify = require('slugify');
 
 const FILE_TYPE_MAP = {
   'image/png': 'png',
@@ -53,13 +54,7 @@ router.get(`/get/count`, getProductCount);
 router.get(`/admin/:id`, getAdminProducts);
 router.patch('/:id/like', likeProduct, requireSignin);
 router.put('/:id/sale', editSaleDuration, requireSignin);
-router.post(`/create`, upload.fields([
-    { name: 'image1', maxCount: 1 },
-    { name: 'image2', maxCount: 1 },
-    { name: 'image3', maxCount: 1 },
-    { name: 'image4', maxCount: 1 },
-    { name: 'image5', maxCount: 1 },
-]), requireSignin, adminMiddleware, async (req, res) => {
+router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
     const {
         name, price, description, richDescription, brand, category, countInStock, isFeatured
     } = req.body;
