@@ -16,6 +16,9 @@ const multer = require('multer');
 const shortid = require('shortid');
 const path = require('path');
 const { requireSignin, adminMiddleware } = require('../common-middleware');
+const uploadProductImageToS3 = require('../s3');
+const {Product} = require('../models/product');
+const {Category} = require('../models/category');
 
 const FILE_TYPE_MAP = {
   'image/png': 'png',
@@ -43,7 +46,6 @@ const upload = multer({ storage })
 
 router.get(`/`, getProducts);
 router.get(`/:id`, getProduct);
-router.post(`/create`, upload.array('image'), requireSignin, adminMiddleware, createProduct);
 router.put(`/:id`, upload.single('image'), requireSignin, adminMiddleware, updateProduct);
 router.put(`/gallery-images/:id`, upload.array('productImages', 10), updateGalleryImages, requireSignin, adminMiddleware);
 router.delete(`/:id`, requireSignin, adminMiddleware, deleteProduct);
@@ -51,6 +53,73 @@ router.get(`/get/count`, getProductCount);
 router.get(`/admin/:id`, getAdminProducts);
 router.patch('/:id/like', likeProduct, requireSignin);
 router.put('/:id/sale', editSaleDuration, requireSignin);
+router.post(`/create`, upload.array('image'), requireSignin, adminMiddleware, async (req, res) => {
+    const {
+        name, price, description, richDescription, brand, category, countInStock, isFeatured
+    } = req.body;
+    const nameSlug = slugify(req.body.name);
+    const checkProduct = await Product.find({ slug: { $eq: nameSlug } });
+    if (checkProduct.length > 0)
+      return res.status(400).send('The name of the product already exists. Please use a different name.');
+
+    try {
+        const images = req.files.map((file) => ({
+            file: file.buffer,
+        }));
+
+        const imageUploadPromises = images.map((image) => uploadProductImageToS3(image));
+
+        const uploadedImages = await Promise.all(imageUploadPromises);
+        const imageUrls = uploadedImages.map((result) => result.key);
+
+        const productData = req.body;
+        productData.images = imageUrls;
+
+        // res.status(201).json({ success: true, productData});
+
+        if (checkProduct.length === 0) {
+            let product = new Product({
+                name,
+                slug: nameSlug,
+                description,
+                richDescription,
+                productImages: imageUrls,
+                image: imageUrl,
+                brand,
+                price,
+                category,
+                countInStock,
+                isFeatured,
+                createdBy: req.user.userId, // user data from middleware
+                likes: {},
+                options: req.body.options || null,
+                sale: req.body.sale || null,
+                subOption1: req.body.subOption1,
+                subOption2: req.body.subOption2,
+                subOption3: req.body.subOption3,
+            });
+            if (product.sale) {
+                const endTime = new Date(req.body.sale.endTime);
+                const currentTime = new Date();
+                if (endTime <= currentTime) {
+                    return res.status(400).json({ message: 'Sale이 마감되었습니다' });
+                }
+                product.sale.endTime = endTime;
+            }
+      
+            product = await product.save();
+      
+            if (!product) {
+                return res.status(500).send('재품을 생성할 수 없습니다');
+            }      
+
+            res.status(201).json({ product });
+        }
+    } catch (error){
+        console.log(error);
+        res.status(500).json({error:'Server error adding product'});
+    }
+});
 
 // get only the count number of featured products
 router.get(`/get/featured/:count`, getFeaturedProductsOfCounts);
