@@ -100,9 +100,9 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
                 likes: {},
                 options: req.body.options || null,
                 sale: req.body.sale || null,
-                subOption1: req.body.subOption1,
-                subOption2: req.body.subOption2,
-                subOption3: req.body.subOption3,
+                subOption1: req.body.subOption1 || null,
+                subOption2: req.body.subOption2 || null,
+                subOption3: req.body.subOption3 || null,
             });
             console.log('Product sale', product.sale);
 
