@@ -18,9 +18,10 @@ function createCategories(categories, parentId = null, parentName = null){
             parentName: parentName,
             children: createCategories(categories, cate._id, cate.name)
         };
+        categoryList.push(categoryObj);
     }
-    categoryList.push(categoryObj);
     
+
     return categoryList;
 };
 
