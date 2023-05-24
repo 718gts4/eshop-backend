@@ -32,8 +32,8 @@ exports.getProduct = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
 
-    const category = await Category.findById(req.body.category);
-    if(!category) return res.status(400).send('Invalid Category');
+    // const category = await Category.findById(req.body.category);
+    // if(!category) return res.status(400).send('Invalid Category');
 
     const nameSlug = slugify(req.body.name);
     const checkProduct = await Product.find({slug: { $eq: nameSlug}});
@@ -66,7 +66,7 @@ exports.createProduct = async (req, res) => {
             isFeatured: req.body.isFeatured,
             createdBy: req.user.userId, //user data from middleware
             likes: {},
-            options: req.body.options || null,
+            colorOptions: req.body.colorOptions || null,
             sale: req.body.sale || null,
             subOption1: req.body.subOption1,
             subOption2: req.body.subOption2,
@@ -129,7 +129,7 @@ exports.updateProduct = async (req, res) => {
             rating: req.body.rating,
             numReviews: req.body.numReviews,
             isFeatured: req.body.isFeatured,
-            options: req.body.options,
+            colorOptions: req.body.colorOptions,
             subOption1: req.body.subOption1,
             subOption2: req.body.subOption2,
             subOption3: req.body.subOption3

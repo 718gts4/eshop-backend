@@ -82,7 +82,7 @@ const productSchema = mongoose.Schema({
         type: Map,
         of: Boolean
     },
-    options: [
+    colorOptions: [
         {
             productColor: {
                 type: String,
@@ -99,6 +99,7 @@ const productSchema = mongoose.Schema({
                     },
                     stock: {
                         type: Number,
+                        default: 10000
                     }   
                 }
             ],
