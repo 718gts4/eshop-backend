@@ -57,11 +57,6 @@ const productSchema = mongoose.Schema({
             review: String
         }
     ],
-    countInStock: {
-        type: Number,
-        min: 0,
-        max: 255
-    },
     rating: {
         type: Number,
         default: 0
@@ -179,6 +174,11 @@ const productSchema = mongoose.Schema({
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
+    },
+    countInStock: {
+        type: Number,
+        min: 0,
+        max: 10000
     },
 })
 
