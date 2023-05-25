@@ -5,7 +5,6 @@ const slugify = require('slugify');
 
 
 exports.getProducts = async (req, res) => {
-    // localhost:3000/api/v1/products?categories=123412,321124
     let filter = {};
 
     if(req.query.categories)
@@ -13,7 +12,7 @@ exports.getProducts = async (req, res) => {
         filter = {category: req.query.categories.split(',')}
     }
 
-    const productList = await Product.find(filter).populate('category');
+    const productList = await Product.find(filter).populate('category').sort({'dateCreated': -1});
 
     if(!productList){
         res.status(500).json({success:false})
@@ -42,7 +41,7 @@ exports.createProduct = async (req, res) => {
 
     if (checkProduct.length ===0){
         const {
-            name, price, description, richDescription, brand, category, countInStock
+            name, price, description, richDescription, brand, category
         } = req.body;
 
         const file = req.files;
@@ -62,7 +61,6 @@ exports.createProduct = async (req, res) => {
             brand: brand,
             price: price,
             category: category,
-            countInStock: countInStock,
             isFeatured: req.body.isFeatured,
             createdBy: req.user.userId, //user data from middleware
             likes: {},
@@ -125,7 +123,6 @@ exports.updateProduct = async (req, res) => {
             brand: req.body.brand,
             price: req.body.price,
             category: req.body.category,
-            countInStock: req.body.countInStock,
             rating: req.body.rating,
             numReviews: req.body.numReviews,
             isFeatured: req.body.isFeatured,

@@ -175,11 +175,6 @@ const productSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-    countInStock: {
-        type: Number,
-        min: 0,
-        max: 10000
-    },
 })
 
 
