@@ -30,7 +30,7 @@ exports.getProduct = async (req, res) => {
 }
 
 exports.createProduct = async (req, res) => {
-
+    console.log('REQ BODY COLOR OPTIONS', req.body.colorOptions)
     // const category = await Category.findById(req.body.category);
     // if(!category) return res.status(400).send('Invalid Category');
 
@@ -41,7 +41,7 @@ exports.createProduct = async (req, res) => {
 
     if (checkProduct.length ===0){
         const {
-            name, price, description, richDescription, brand, category
+            name, price, description, richDescription, brand, category, colorOptions
         } = req.body;
 
         const file = req.files;
@@ -64,7 +64,7 @@ exports.createProduct = async (req, res) => {
             isFeatured: req.body.isFeatured,
             createdBy: req.user.userId, //user data from middleware
             likes: {},
-            colorOptions: req.body.colorOptions || null,
+            colorOptions: colorOptions,
             sale: req.body.sale || null,
             subOption1: req.body.subOption1,
             subOption2: req.body.subOption2,

@@ -51,7 +51,7 @@ exports.getVideosByUser = async (req, res) => {
 };
 
 exports.postVideo = async (req, res) => {
-    console.log('req body', req.body)
+
     let video = new Video({
         videoItems: req.body.videoItems,
         createdBy: req.body.createdBy,
@@ -188,7 +188,6 @@ exports.updateVideoComment = async (req, res) => {
 exports.deleteVideo = async (req, res) => {
     Video.findByIdAndRemove(req.params.id).then(video =>{
         if(video) {
-            console.log('VIDEO DELETE', video)
             deleteUrl(video.videoUrl);
             deleteUrl(video.image);
             return res.status(200).json({success: true, message: 'the video is deleted!'})
