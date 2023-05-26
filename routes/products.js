@@ -97,7 +97,7 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
                 isFeatured,
                 createdBy: req.user.userId, // user data from middleware
                 likes: {},
-                colorOptions: colorOptions,
+                colorOptions: JSON.parse(colorOptions),
                 subOption1: req.body.subOption1 || null,
                 subOption2: req.body.subOption2 || null,
                 subOption3: req.body.subOption3 || null,
