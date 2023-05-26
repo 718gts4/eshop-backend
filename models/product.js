@@ -77,8 +77,7 @@ const productSchema = mongoose.Schema({
         type: Map,
         of: Boolean
     },
-    colorOptions: [
-        {
+    colorOptions: {
             productColor: {
                 type: String,
                 // required: true
@@ -98,8 +97,7 @@ const productSchema = mongoose.Schema({
                     }   
                 }
             ],
-        }
-    ],
+    },
     subOption1: {
         name: {
             type: String,
