@@ -29,66 +29,66 @@ exports.getProduct = async (req, res) => {
     res.send(product);
 }
 
-exports.createProduct = async (req, res) => {
-    console.log('REQ BODY COLOR OPTIONS', req.body.colorOptions)
-    // const category = await Category.findById(req.body.category);
-    // if(!category) return res.status(400).send('Invalid Category');
+// exports.createProduct = async (req, res) => {
+//     console.log('REQ BODY COLOR OPTIONS', req.body.colorOptions)
+//     // const category = await Category.findById(req.body.category);
+//     // if(!category) return res.status(400).send('Invalid Category');
 
-    const nameSlug = slugify(req.body.name);
-    const checkProduct = await Product.find({slug: { $eq: nameSlug}});
-    if(checkProduct.length > 0) 
-    return res.status(400).send('The name of the product already exists. Please use a different name.');
+//     const nameSlug = slugify(req.body.name);
+//     const checkProduct = await Product.find({slug: { $eq: nameSlug}});
+//     if(checkProduct.length > 0) 
+//     return res.status(400).send('The name of the product already exists. Please use a different name.');
 
-    if (checkProduct.length ===0){
-        const {
-            name, price, description, richDescription, brand, category, colorOptions
-        } = req.body;
+//     if (checkProduct.length ===0){
+//         const {
+//             name, price, description, richDescription, brand, category, colorOptions
+//         } = req.body;
 
-        const file = req.files;
-        if (!file) return res.status(400).send('이미지 파일을 추가하시기 바랍니다');
+//         const file = req.files;
+//         if (!file) return res.status(400).send('이미지 파일을 추가하시기 바랍니다');
     
-        const fileName = file.filename;
-        const basePath = `${req.protocol}://${req.get('host')}/uploads/`;
-        const imageUrl = `${basePath}${fileName}`; // "http://localhost:3000/public/upload/image-2323232"
+//         const fileName = file.filename;
+//         const basePath = `${req.protocol}://${req.get('host')}/uploads/`;
+//         const imageUrl = `${basePath}${fileName}`; // "http://localhost:3000/public/upload/image-2323232"
 
-        let product = new Product({
-            name: name,
-            slug: nameSlug,
-            description: description,
-            richDescription: richDescription,
-            productImages: req.body.productImages,
-            image: imageUrl,
-            brand: brand,
-            price: price,
-            category: category,
-            isFeatured: req.body.isFeatured,
-            createdBy: req.user.userId, //user data from middleware
-            likes: {},
-            colorOptions: colorOptions,
-            sale: req.body.sale || null,
-            subOption1: req.body.subOption1,
-            subOption2: req.body.subOption2,
-            subOption3: req.body.subOption3,
-        });
+//         let product = new Product({
+//             name: name,
+//             slug: nameSlug,
+//             description: description,
+//             richDescription: richDescription,
+//             productImages: req.body.productImages,
+//             image: imageUrl,
+//             brand: brand,
+//             price: price,
+//             category: category,
+//             isFeatured: req.body.isFeatured,
+//             createdBy: req.user.userId, //user data from middleware
+//             likes: {},
+//             colorOptions: colorOptions,
+//             sale: req.body.sale || null,
+//             subOption1: req.body.subOption1,
+//             subOption2: req.body.subOption2,
+//             subOption3: req.body.subOption3,
+//         });
 
-        if (product.sale) {
-            const endTime = new Date(req.body.sale.endTime);
-            const currentTime = new Date();
-            if (endTime <= currentTime){
-                return res.status(400).json({message: "Sale이 마감되었습니다"});
-            }
-            product.sale.endTime = endTime;
-        }
+//         if (product.sale) {
+//             const endTime = new Date(req.body.sale.endTime);
+//             const currentTime = new Date();
+//             if (endTime <= currentTime){
+//                 return res.status(400).json({message: "Sale이 마감되었습니다"});
+//             }
+//             product.sale.endTime = endTime;
+//         }
     
-        product = await product.save();
+//         product = await product.save();
     
-        if(!product)
-        return res.status(500).send('재품을 생성할 수 없습니다')
+//         if(!product)
+//         return res.status(500).send('재품을 생성할 수 없습니다')
     
-        res.status(201).json({product});
-    }
+//         res.status(201).json({product});
+//     }
 
-}
+// }
 
 exports.updateProduct = async (req, res) => {
     if(!mongoose.isValidObjectId(req.params.id)){

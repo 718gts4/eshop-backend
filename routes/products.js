@@ -56,10 +56,10 @@ router.get(`/admin/:id`, getAdminProducts);
 router.patch('/:id/like', likeProduct, requireSignin);
 router.put('/:id/sale', editSaleDuration, requireSignin);
 router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
-    console.log('REQ FILES', req.files)
+    console.log('REQ BODY', req.body)
 
     const {
-        name, price, description, richDescription, brand, category, countInStock, isFeatured
+        name, price, description, richDescription, brand, category, isFeatured, colorOptions
     } = req.body;
     const nameSlug = slugify(req.body.name);
     const checkProduct = await Product.find({ slug: { $eq: nameSlug } });
@@ -94,11 +94,10 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
                 brand,
                 price,
                 category,
-                countInStock,
                 isFeatured,
                 createdBy: req.user.userId, // user data from middleware
                 likes: {},
-                colorOptions: req.body.colorOptions || null,
+                colorOptions: colorOptions,
                 subOption1: req.body.subOption1 || null,
                 subOption2: req.body.subOption2 || null,
                 subOption3: req.body.subOption3 || null,
