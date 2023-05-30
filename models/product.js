@@ -78,64 +78,73 @@ const productSchema = mongoose.Schema({
         of: Boolean
     },
     colorOptions: {
-            productColor: {
-                type: String,
-                // required: true
-            },   
-            hexColor: {
-                type: String,
-            },
-            sizes:[
-                {
-                    size: {
-                        type: String,
-                        // required: true
-                    },
-                    stock: {
-                        type: Number,
-                        default: 10000
-                    }   
-                }
-            ],
-    },
-    subOption1: {
-        name: {
+        productColor: {
             type: String,
             // required: true
+        },   
+        hexColor: {
+            type: String,
         },
-        values: [
+        sizes:[
+            {
+                size: {
+                    type: String,
+                    // required: true
+                },
+                stock: {
+                    type: Number,
+                    default: 10000
+                }   
+            }
+        ],
+    },
+    subOption1: {
+        title: {
+            type: String,
+            default: '옵션 1'
+        },
+        options: [
             {
                 name: {
                     type: String,
                     // required: true
+                },
+                value : {
+                    type: String,
                 }
             }
         ]
     },
     subOption2: {
-        name: {
+        title: {
             type: String,
-            // required: true
+            default: '옵션 2'
         },
-        values: [
+        options: [
             {
                 name: {
                     type: String,
-                    required: true
+                    // required: true
+                },
+                value : {
+                    type: String,
                 }
             }
         ]
     },
     subOption3: {
-        name: {
+        title: {
             type: String,
-            // required: true
+            default: '옵션 3'
         },
-        values: [
+        options: [
             {
                 name: {
                     type: String,
                     // required: true
+                },
+                value : {
+                    type: String,
                 }
             }
         ]

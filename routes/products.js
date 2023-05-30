@@ -78,10 +78,7 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
         console.log('uploadeIMGS', uploadedImages);
         const imageUrls = uploadedImages.map((result) => result.key);
         console.log('imageURLS', imageUrls)
-        // const productData = req.body;
-        // productData.images = imageUrls;
-
-        // res.status(201).json({ success: true, productData});
+ 
 
         if (checkProduct.length === 0) {
             let product = new Product({
