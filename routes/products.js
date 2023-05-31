@@ -76,44 +76,43 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
         console.log('imageURLS', imageUrls)
  
 
-        if (checkProduct.length === 0) {
-            let product = new Product({
-                name,
-                description,
-                richDescription,
-                productImages: imageUrls,
-                image: imageUrls[0],
-                brand,
-                price,
-                category,
-                isFeatured,
-                createdBy: req.user.userId, // user data from middleware
-                likes: {},
-                colorOptions: JSON.parse(colorOptions),
-                subOption1: JSON.parse(subOption1) || null,
-                subOption2: JSON.parse(subOption2) || null,
-                subOption3: JSON.parse(subOption3) || null,
-                sale: req.body.sale || null,
-            });
-            console.log('Product sale', product.sale);
+        let product = new Product({
+            name,
+            description,
+            richDescription,
+            productImages: imageUrls,
+            image: imageUrls[0],
+            brand,
+            price,
+            category,
+            isFeatured,
+            createdBy: req.user.userId, // user data from middleware
+            likes: {},
+            colorOptions: JSON.parse(colorOptions),
+            subOption1: JSON.parse(subOption1) || null,
+            subOption2: JSON.parse(subOption2) || null,
+            subOption3: JSON.parse(subOption3) || null,
+            sale: req.body.sale || null,
+        });
+        console.log('Product sale', product.sale);
 
-            if (product.sale) {
-                const endTime = new Date(req.body.sale.endTime);
-                const currentTime = new Date();
-                if (endTime <= currentTime) {
-                    return res.status(400).json({ message: 'Sale이 마감되었습니다' });
-                }
-                product.sale.endTime = endTime;
+        if (product.sale) {
+            const endTime = new Date(req.body.sale.endTime);
+            const currentTime = new Date();
+            if (endTime <= currentTime) {
+                return res.status(400).json({ message: 'Sale이 마감되었습니다' });
             }
-      
-            product = await product.save();
-      
-            if (!product) {
-                return res.status(500).send('재품을 생성할 수 없습니다');
-            }      
-
-            res.status(201).json({ product });
+            product.sale.endTime = endTime;
         }
+    
+        product = await product.save();
+    
+        if (!product) {
+            return res.status(500).send('재품을 생성할 수 없습니다');
+        }      
+
+        res.status(201).json({ product });
+   
     } catch (error){
         console.log(error);
         res.status(500).json({error:'Server error adding product'});
