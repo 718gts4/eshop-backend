@@ -19,7 +19,7 @@ const { requireSignin, adminMiddleware } = require('../common-middleware');
 const { uploadProductImageToS3, getProductImageFile, deleteProductUrl } = require('../s3');
 const {Product} = require('../models/product');
 const {Category} = require('../models/category');
-const slugify = require('slugify');
+
 const fs = require('fs');
 
 const FILE_TYPE_MAP = {
@@ -61,10 +61,6 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
     const {
         name, price, description, richDescription, brand, category, isFeatured, colorOptions, subOption1, subOption2, subOption3
     } = req.body;
-    const nameSlug = slugify(req.body.name);
-    const checkProduct = await Product.find({ slug: { $eq: nameSlug } });
-    if (checkProduct.length > 0)
-      return res.status(400).send('The name of the product already exists. Please use a different name.');
 
     try {
         const images = req.files.map((file) => ({
@@ -83,7 +79,6 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
         if (checkProduct.length === 0) {
             let product = new Product({
                 name,
-                slug: nameSlug,
                 description,
                 richDescription,
                 productImages: imageUrls,
