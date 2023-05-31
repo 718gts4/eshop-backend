@@ -59,7 +59,7 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
     console.log('REQ BODY', req.body)
 
     const {
-        name, price, description, richDescription, brand, category, isFeatured, colorOptions
+        name, price, description, richDescription, brand, category, isFeatured, colorOptions, subOption1, subOption2, subOption3
     } = req.body;
     const nameSlug = slugify(req.body.name);
     const checkProduct = await Product.find({ slug: { $eq: nameSlug } });
@@ -95,9 +95,9 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
                 createdBy: req.user.userId, // user data from middleware
                 likes: {},
                 colorOptions: JSON.parse(colorOptions),
-                subOption1: req.body.subOption1 || null,
-                subOption2: req.body.subOption2 || null,
-                subOption3: req.body.subOption3 || null,
+                subOption1: JSON.parse(subOption1) || null,
+                subOption2: JSON.parse(subOption2) || null,
+                subOption3: JSON.parse(subOption3) || null,
                 sale: req.body.sale || null,
             });
             console.log('Product sale', product.sale);
