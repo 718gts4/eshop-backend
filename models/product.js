@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const { v4: uuid } = require("uuid");
 
 const saleSchema = new mongoose.Schema({
     discount: {
@@ -19,7 +19,7 @@ const productSchema = mongoose.Schema({
     },
     slug: {
         type: String,
-        default: Date.now,
+        default: uuid(),
     },
     description: {
         type: String,
