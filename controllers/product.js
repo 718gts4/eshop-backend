@@ -66,7 +66,9 @@ exports.updateProduct = async (req, res) => {
             colorOptions: req.body.colorOptions,
             subOption1: req.body.subOption1,
             subOption2: req.body.subOption2,
-            subOption3: req.body.subOption3
+            subOption3: req.body.subOption3,
+            display: req.body.display,
+            soldout: req.body.soldout
         },
         { new: true}
     );
