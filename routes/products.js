@@ -56,7 +56,6 @@ router.get(`/admin/:id`, getAdminProducts);
 router.patch('/:id/like', likeProduct, requireSignin);
 router.put('/:id/sale', editSaleDuration, requireSignin);
 router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
-    console.log('REQ BODY', req.body)
 
     const {
         name, price, description, richDescription, brand, category, isFeatured, colorOptions, subOption1, subOption2, subOption3
@@ -67,14 +66,11 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
             file: fs.readFileSync(file.path),
         }));
 
-        console.log('images check', images)
         const imageUploadPromises = images.map((image) => uploadProductImageToS3(image));
 
         const uploadedImages = await Promise.all(imageUploadPromises);
-        console.log('uploadeIMGS', uploadedImages);
+
         const imageUrls = uploadedImages.map((result) => result.key);
-        console.log('imageURLS', imageUrls)
- 
 
         let product = new Product({
             name,
@@ -94,7 +90,6 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
             subOption3: JSON.parse(subOption3) || null,
             sale: req.body.sale || null,
         });
-        console.log('Product sale', product.sale);
 
         if (product.sale) {
             const endTime = new Date(req.body.sale.endTime);
