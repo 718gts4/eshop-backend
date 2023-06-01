@@ -17,6 +17,10 @@ const productSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    slug: {
+        type: String,
+        default: Date.now,
+    },
     description: {
         type: String,
         required: true,
