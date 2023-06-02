@@ -21,33 +21,33 @@ exports.getUserId = async (req, res) => {
     res.status(200).send(user);
 }
 
-exports.postNewUser = async (req, res) => {
-    let user = new User({
-        name: req.body.name,
-        username: req.body.username,
-        email: req.body.email,
-        passwordHash: bcrypt.hashSync(req.body.password, 10),
-        phone: req.body.phone,
-        isAdmin: req.body.isAdmin,
-        image: req.body.image,
-        role: req.body.role,
-        brand: req.body.brand,
-        brandDescription: req.body.brandDescription,
-        likes: {},
-        followers: {},
-        following: {},
-        savedVideos: [],
-        savedProducts: [],
-        videos: [],
-        link: req.body.link,
-    })
-    user = await user.save();
+// exports.postNewUser = async (req, res) => {
+//     let user = new User({
+//         name: req.body.name,
+//         username: req.body.username,
+//         email: req.body.email,
+//         passwordHash: bcrypt.hashSync(req.body.password, 10),
+//         phone: req.body.phone,
+//         isAdmin: req.body.isAdmin,
+//         image: req.body.image,
+//         role: req.body.role,
+//         brand: req.body.brand,
+//         brandDescription: req.body.brandDescription,
+//         likes: {},
+//         followers: {},
+//         following: {},
+//         savedVideos: [],
+//         savedProducts: [],
+//         videos: [],
+//         link: req.body.link,
+//     })
+//     user = await user.save();
 
-    if(!user)
-    return res.status(400).send('the user cannot be created!')
+//     if(!user)
+//     return res.status(400).send('the user cannot be created!')
     
-    res.send(user);
-}
+//     res.send(user);
+// }
 
 exports.updateUser = async (req, res)=> {
     const userExist = await User.findById(req.params.id);
