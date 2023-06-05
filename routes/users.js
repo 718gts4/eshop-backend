@@ -1,4 +1,4 @@
-const { register, login, getUsers, getUserId, postNewUser, deleteUser, getUserCount, updateUser, subscribeUser, likeUser } = require('../controllers/user');
+const { register, login, getUsers, getUserId, deleteUser, getUserCount, updateUser, subscribeUser, likeUser } = require('../controllers/user');
 const express = require('express');
 const router = express.Router();
 const { validateRegisterRequest, validateLoginRequest, isRequestValidated } = require('../validators/auth');
@@ -20,7 +20,7 @@ const upload = multer({ storage: storage })
 
 router.get('/', getUsers);
 router.get('/:id', getUserId);
-router.post(`/`, postNewUser);
+// router.post(`/`, postNewUser);
 router.post('/login', validateLoginRequest, isRequestValidated, login);
 router.post('/register', validateRegisterRequest, isRequestValidated, register);
 router.put('/:id', updateUser); 

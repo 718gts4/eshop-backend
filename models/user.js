@@ -11,11 +11,12 @@ const userSchema = mongoose.Schema({
     },
     email: {
         type: String,
+        unique: true,
         required: true,
     },
     username: {
         type: String,
-        default: ''
+        unique:true,
     },
     passwordHash: {
         type: String,
@@ -82,6 +83,13 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Address'
     }],
+});
+
+userSchema.pre('save', function (next) {
+    if (!this.username) {
+      this.username = this.email;
+    }
+    next();
 });
 
 userSchema.virtual('id').get(function () {
