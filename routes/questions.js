@@ -1,24 +1,18 @@
+const { getAllQuestions, getQuestionById, createQuestion, deleteQuestion, createReply, deleteReply, getRepliesByQuestionId } = require('../controllers/question');
 const express = require('express');
 const router = express.Router();
-const {
-    getAllQuestions,
-    getQuestionById,
-    createQuestion,
-    createReply,
-    deleteQuestion,
-    deleteReply,
-    getRepliesByQuestionId
-} = require('../controllers/question');
 
 // Question routes
-router.get('/questions', getAllQuestions);
-router.get('/questions/:id', getQuestionById);
-router.post('/questions', createQuestion);
-router.delete('/questions/:id', deleteQuestion);
+router.get('/', getAllQuestions);
+router.get(`/:id`, getQuestionById);
+router.post('/', createQuestion);
+router.delete(`/:id`, deleteQuestion);
 
 // Reply routes
-router.post('/questions/:questionId/replies', createReply);
-router.get('/questions/:questionId/replies', getRepliesByQuestionId);
-router.delete('/questions/:questionId/replies/:replyId', deleteReply);
+router.post(`/:questionId/replies`, createReply);
+router.get(`/:questionId/replies`, getRepliesByQuestionId);
+router.delete(`/:questionId/replies/:replyId`, deleteReply);
 
 module.exports = router;
+
+
