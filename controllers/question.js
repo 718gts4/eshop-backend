@@ -27,14 +27,15 @@ exports.getQuestionById = async (req, res) => {
 
 // Create a new question
 exports.createQuestion = async (req, res) => {
+    console.log('req body', req.body)
   try {
     const { userId, title, detail, vendorId } = req.body;
-    let productId = '';
-    if (req.body.productId){
-        productId = req.body.productId;
-    };
+    // let productId = '';
+    // if (req.body.productId){
+    //     productId = req.body.productId;
+    // };
 
-    const question = new Question({ userId, title, detail, vendorId, productId });
+    const question = new Question({ userId, title, detail, vendorId });
     await question.save();
     res.status(201).json(question);
   } catch (error) {
