@@ -207,3 +207,28 @@ exports.likeProduct = async (req, res) => {
     }
 }
 
+// exports.likesVideo = async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const { userId } = req.body;
+//         const product = await Product.findById(id);
+//         const likes = Product.likes || new Map();
+//         const isLiked = likes.get(userId);
+
+//         if(isLiked){
+//             likes.delete(userId);
+//         } else {
+//             likes.set(userId, true);
+//         }
+
+//         const updatedProduct = await Product.findByIdAndUpdate(
+//             id,
+//             { likes: likes },
+//             { new: true }
+//         );
+
+//         res.status(200).json(updatedProduct);
+//     } catch (err) {
+//         res.status(404).json({message:err.message})
+//     }
+// }

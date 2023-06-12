@@ -28,6 +28,7 @@ const videoCommentRoutes = require('./routes/video-comments');
 const bookmarkRoutes = require('./routes/bookmark');
 const addressRoutes = require('./routes/address');
 const cardRoutes = require('./routes/card');
+const questionRoutes = require('./routes/questions');
 
 const api = process.env.API_URL;
 
@@ -42,6 +43,7 @@ app.use(`${api}/videocomments`, videoCommentRoutes);
 app.use(`${api}/bookmarks`, bookmarkRoutes);
 app.use(`${api}/address`, addressRoutes);
 app.use(`${api}/card`, cardRoutes);
+app.use(`${api}/questions`, questionRoutes);
 
 
 mongoose.connect(process.env.CONNECTION_STRING)
