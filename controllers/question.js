@@ -14,20 +14,20 @@ exports.getAllQuestions = async (req, res) => {
 
 // Get a single question by ID
 exports.getQuestionById = async (req, res) => {
-  try {
-    const question = await Question.findById(req.params.id).populate('replies');
-    if (!question) {
-      return res.status(404).json({ error: 'Question not found' });
+    console.log('req params', req.params)
+    try {
+        const question = await Question.findOne({_id: req.params.id}).populate('replies');
+        if (!question) {
+            return res.status(404).json({ error: 'Question not found' });
+        }
+        res.json(question);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
     }
-    res.json(question);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
 };
 
 // Create a new question
 exports.createQuestion = async (req, res) => {
-    // console.log('req body', req.body)
     try {
         const { userId, title, detail, vendorId, productId } = req.body;
         const objectUserId = mongoose.Types.ObjectId(userId);
@@ -39,8 +39,6 @@ exports.createQuestion = async (req, res) => {
             title, 
             detail, 
         };
-
-        console.log('questionData', questionData);
 
         if (productId){
             questionData.productId = mongoose.Types.ObjectId(productId);
