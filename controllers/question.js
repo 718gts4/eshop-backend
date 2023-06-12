@@ -3,7 +3,7 @@ const { Question, Reply } = require('../models/question');
 // Question Controllers
 
 // Get all questions
-const getAllQuestions = async (req, res) => {
+exports.getAllQuestions = async (req, res) => {
   try {
     const questions = await Question.find().populate('replies');
     res.json(questions);
@@ -13,7 +13,7 @@ const getAllQuestions = async (req, res) => {
 };
 
 // Get a single question by ID
-const getQuestionById = async (req, res) => {
+exports.getQuestionById = async (req, res) => {
   try {
     const question = await Question.findById(req.params.id).populate('replies');
     if (!question) {
@@ -26,7 +26,7 @@ const getQuestionById = async (req, res) => {
 };
 
 // Create a new question
-const createQuestion = async (req, res) => {
+exports.createQuestion = async (req, res) => {
   try {
     const { userId, title, detail, vendorId } = req.body;
     let productId = null;
@@ -43,7 +43,7 @@ const createQuestion = async (req, res) => {
 };
 
 // Delete a question by ID
-const deleteQuestion = async (req, res) => {
+exports.deleteQuestion = async (req, res) => {
     try {
         const question = await Question.findById(req.params.id);
         if (!question) {
@@ -59,7 +59,7 @@ const deleteQuestion = async (req, res) => {
 
 // Reply Controllers
 // Create a new reply for a question
-const createReply = async (req, res) => {
+exports.createReply = async (req, res) => {
   try {
     const { questionId, userId, vendorId, content } = req.body;
     const question = await Question.findById(questionId);
@@ -77,7 +77,7 @@ const createReply = async (req, res) => {
 };
 
 // Delete a reply by ID
-const deleteReply = async (req, res) => {
+exports.deleteReply = async (req, res) => {
     try {
         const reply = await Reply.findById(req.params.replyId);
         if (!reply) {
@@ -96,18 +96,12 @@ const deleteReply = async (req, res) => {
     }
 };
 
-// Get a single reply by ID
-const getReplyById = async (req, res) => {
+// Get all replies for a question
+exports.getRepliesByQuestionId = async (req, res) => {
     try {
-        const reply = await Reply.findById(req.params.replyId);
-        if (!reply) {
-            return res.status(404).json({ error: 'Reply not found' });
-        }
-        res.json(reply);
+        const replies = await Reply.find({ questionId: req.params.questionId });
+        res.json(replies);
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
     }
   };
-  
-
-module.exports = { getAllQuestions, getQuestionById, createQuestion, deleteQuestion, createReply, deleteReply, getReplyById };
