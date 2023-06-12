@@ -28,27 +28,29 @@ exports.getQuestionById = async (req, res) => {
 // Create a new question
 exports.createQuestion = async (req, res) => {
     console.log('req body', req.body)
-  try {
-    const { userId, title, detail, vendorId } = req.body;
-    const objectUserId = mongoose.Types.ObjectId(userId);
-    const objectVendorId = mongoose.Types.ObjectId(vendorId);
-    let productId = '';
-    if (req.body.productId){
-        productId = mongoose.Types.ObjectId(req.body.productId);
-    };
+    try {
+        const { userId, title, detail, vendorId, productId } = req.body;
+        const objectUserId = mongoose.Types.ObjectId(userId);
+        const objectVendorId = mongoose.Types.ObjectId(vendorId);
+        
+        let questionData = { 
+            userId:objectUserId, 
+            title, 
+            detail, 
+            vendorId:objectVendorId, 
+            productId 
+        };
+        
+        if (productId){
+            questionData.productId = mongoose.Types.ObjectId(productId);
+        };
 
-    const question = new Question({ 
-        userId:objectUserId, 
-        title, 
-        detail, 
-        vendorId:objectVendorId, 
-        productId 
-    });
-    await question.save();
-    res.status(201).json(question);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
+        const question = new Question(questionData);
+        await question.save();
+        res.status(201).json(question);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
 };
 
 // Delete a question by ID
