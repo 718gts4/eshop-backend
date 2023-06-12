@@ -27,7 +27,9 @@ exports.getQuestionById = async (req, res) => {
 
 exports.getQuestionsByUserId = async (req, res) => {
     try {
-        const questions = await Question.find({ userId: req.params.userId }).populate('replies');
+        const questions = await Question.find({ userId: req.params.userId })
+            .populate('replies')
+            .sort({'dateCreated': -1});
         res.json(questions);
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
