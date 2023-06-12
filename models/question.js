@@ -26,7 +26,7 @@ const questionSchema = new mongoose.Schema({
     },
     readByVendor: {
         type: Boolean,
-        default: 'false'
+        default: false
     },
     replies: [{
         type: mongoose.Schema.Types.ObjectId,
