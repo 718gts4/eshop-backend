@@ -17,6 +17,7 @@ const questionSchema = new mongoose.Schema({
     productId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
+        default: {}
     },
     vendorId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -25,7 +26,7 @@ const questionSchema = new mongoose.Schema({
     },
     readByVendor: {
         type: Boolean,
-        required: true
+        default: 'false'
     },
     replies: [{
         type: mongoose.Schema.Types.ObjectId,
