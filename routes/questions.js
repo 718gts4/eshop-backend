@@ -6,7 +6,8 @@ const {
     createQuestion,
     createReply,
     deleteQuestion,
-    deleteReply
+    deleteReply,
+    getRepliesByQuestionId
 } = require('../controllers/question');
 
 // Question routes
@@ -17,6 +18,7 @@ router.delete('/questions/:id', deleteQuestion);
 
 // Reply routes
 router.post('/questions/:questionId/replies', createReply);
+router.get('/questions/:questionId/replies', getRepliesByQuestionId);
 router.delete('/questions/:questionId/replies/:replyId', deleteReply);
 
 module.exports = router;

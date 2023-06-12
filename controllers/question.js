@@ -58,14 +58,13 @@ const deleteQuestion = async (req, res) => {
 };
 
 // Reply Controllers
-
 // Create a new reply for a question
 const createReply = async (req, res) => {
   try {
     const { questionId, userId, vendorId, content } = req.body;
     const question = await Question.findById(questionId);
     if (!question) {
-      return res.status(404).json({ error: '질문을 찾을 수 없습니다' });
+        return res.status(404).json({ error: '질문을 찾을 수 없습니다' });
     }
     const reply = new Reply({ questionId, userId, vendorId, content });
     await reply.save();
@@ -76,6 +75,7 @@ const createReply = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
 // Delete a reply by ID
 const deleteReply = async (req, res) => {
     try {
@@ -96,4 +96,18 @@ const deleteReply = async (req, res) => {
     }
 };
 
-module.exports = { getAllQuestions, getQuestionById, createQuestion, deleteQuestion, createReply, deleteReply };
+// Get a single reply by ID
+const getReplyById = async (req, res) => {
+    try {
+        const reply = await Reply.findById(req.params.replyId);
+        if (!reply) {
+            return res.status(404).json({ error: 'Reply not found' });
+        }
+        res.json(reply);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+  };
+  
+
+module.exports = { getAllQuestions, getQuestionById, createQuestion, deleteQuestion, createReply, deleteReply, getReplyById };
