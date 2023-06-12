@@ -16,7 +16,7 @@ exports.getAllQuestions = async (req, res) => {
 exports.getQuestionById = async (req, res) => {
     console.log('req params', req.params)
     try {
-        const question = await Question.findOne({_id: req.params.id}).populate('replies');
+        const question = await Question.findOne({userId: req.params.id}).populate('replies');
         if (!question) {
             return res.status(404).json({ error: 'Question not found' });
         }
