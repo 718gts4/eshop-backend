@@ -27,7 +27,7 @@ exports.getQuestionById = async (req, res) => {
 
 // Create a new question
 exports.createQuestion = async (req, res) => {
-    console.log('req body', req.body)
+    // console.log('req body', req.body)
     try {
         const { userId, title, detail, vendorId, productId } = req.body;
         const objectUserId = mongoose.Types.ObjectId(userId);
@@ -39,11 +39,13 @@ exports.createQuestion = async (req, res) => {
             title, 
             detail, 
         };
+
+        console.log('questionData', questionData);
+        
         if (productId){
             questionData.productId = mongoose.Types.ObjectId(productId);
         };
 
-        console.log('questionData', questionData);
         const question = new Question(questionData);
         await question.save();
         res.status(201).json(question);
