@@ -35,20 +35,20 @@ exports.createQuestion = async (req, res) => {
         
         let questionData = { 
             userId:objectUserId, 
+            vendorId:objectVendorId,
             title, 
             detail, 
-            vendorId:objectVendorId
         };
-        
         if (productId){
             questionData.productId = mongoose.Types.ObjectId(productId);
         };
 
+        console.log('questionData', questionData);
         const question = new Question(questionData);
         await question.save();
         res.status(201).json(question);
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error});
     }
 };
 
