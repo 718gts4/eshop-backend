@@ -29,7 +29,7 @@ exports.getQuestionById = async (req, res) => {
 exports.createQuestion = async (req, res) => {
   try {
     const { userId, title, detail, vendorId } = req.body;
-    let productId = null;
+    let productId = '';
     if (req.body.productId){
         productId = req.body.productId;
     };
