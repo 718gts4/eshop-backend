@@ -1,5 +1,5 @@
 const { Question, Reply } = require('../models/question');
-
+const mongoose = require('mongoose');
 // Question Controllers
 
 // Get all questions
@@ -41,7 +41,7 @@ exports.createQuestion = async (req, res) => {
         };
 
         console.log('questionData', questionData);
-        
+
         if (productId){
             questionData.productId = mongoose.Types.ObjectId(productId);
         };
