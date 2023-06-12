@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# Install the missing libraries
+apt-get update
+apt-get install -y libpulse0 libavcodec58 libavdevice58 libavfilter7 libavformat58 libavutil56 libswresample3 libswscale5
+
+chmod +x bin/compile
+

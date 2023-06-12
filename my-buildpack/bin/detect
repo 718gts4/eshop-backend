@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# Check if the project requires FFmpeg
+if [ -f "requirements.txt" ] && grep -q "ffmpeg" "requirements.txt"; then
+  echo "This is a Python project that requires FFmpeg"
+  exit 0
+else
+  echo "This is not a Python project or does not require FFmpeg"
+  exit 1
+fi
+
+chmod +x bin/detect

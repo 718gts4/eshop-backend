@@ -15,7 +15,7 @@ exports.getAllQuestions = async (req, res) => {
 // Get a single question by ID
 exports.getQuestionById = async (req, res) => {
   try {
-    const question = await Question.findById(req.params.id).populate('replies');
+    const question = await Question.findById(req.params.id).populate('replies').populate('vendorId', ['name', 'image', '_id']).populate('productId',['name', 'image', '_id']);
     if (!question) {
       return res.status(404).json({ error: 'Question not found' });
     }
