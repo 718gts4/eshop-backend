@@ -16,8 +16,7 @@ const questionSchema = new mongoose.Schema({
     },
     productId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
-        default: {}
+        ref: 'Product'
     },
     vendorId: {
         type: mongoose.Schema.Types.ObjectId,
