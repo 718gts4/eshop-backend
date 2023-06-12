@@ -1,10 +1,11 @@
-const { getAllQuestions, getQuestionById, createQuestion, deleteQuestion, createReply, deleteReply, getRepliesByQuestionId } = require('../controllers/question');
+const { getAllQuestions, getQuestionById, createQuestion, deleteQuestion, createReply, deleteReply, getRepliesByQuestionId, getQuestionsByUserId } = require('../controllers/question');
 const express = require('express');
 const router = express.Router();
 
 // Question routes
 router.get('/', getAllQuestions);
 router.get(`/:id`, getQuestionById);
+router.get(`/user/:userId`, getQuestionsByUserId);
 router.post('/', createQuestion);
 router.delete(`/:id`, deleteQuestion);
 

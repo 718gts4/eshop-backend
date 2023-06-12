@@ -14,13 +14,21 @@ exports.getAllQuestions = async (req, res) => {
 
 // Get a single question by ID
 exports.getQuestionById = async (req, res) => {
-    console.log('req params', req.params)
+  try {
+    const question = await Question.findById(req.params.id).populate('replies');
+    if (!question) {
+      return res.status(404).json({ error: 'Question not found' });
+    }
+    res.json(question);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.getQuestionsByUserId = async (req, res) => {
     try {
-        const question = await Question.findOne({userId: req.params.id}).populate('replies');
-        if (!question) {
-            return res.status(404).json({ error: 'Question not found' });
-        }
-        res.json(question);
+        const questions = await Question.find({ userId: req.params.userId }).populate('replies');
+        res.json(questions);
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
     }
