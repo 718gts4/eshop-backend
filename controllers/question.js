@@ -37,8 +37,7 @@ exports.createQuestion = async (req, res) => {
             userId:objectUserId, 
             title, 
             detail, 
-            vendorId:objectVendorId, 
-            productId 
+            vendorId:objectVendorId
         };
         
         if (productId){
