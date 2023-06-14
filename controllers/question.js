@@ -39,6 +39,19 @@ exports.getQuestionsByUserId = async (req, res) => {
     }
 };
 
+exports.getQuestionsByVendorId = async (req, res) => {
+    try {
+        const questions = await Question.find({ vendorId: req.params.vendorId })
+            .populate('replies')
+            .populate('productId',['name', 'image', '_id'])
+            .populate('userId', ['image', 'image', 'name', 'username'])
+            .sort({'dateCreated': -1});
+        res.json(questions);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 // Create a new question
 exports.createQuestion = async (req, res) => {
     try {
