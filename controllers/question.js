@@ -43,8 +43,9 @@ exports.getQuestionsByVendorId = async (req, res) => {
     try {
         const questions = await Question.find({ vendorId: req.params.vendorId })
             .populate('replies')
+            .populate('vendorId', ['image', 'name', 'username'])
             .populate('productId',['name', 'image', '_id'])
-            .populate('userId', ['image', 'image', 'name', 'username'])
+            .populate('userId', ['image', 'name', 'username'])
             .sort({'dateCreated': -1});
         res.json(questions);
     } catch (error) {
