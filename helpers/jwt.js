@@ -21,7 +21,7 @@ function authJwt() {
             {url: /\/api\/v1\/orders(.*)/ , methods: ['GET','POST','DELETE','PUT','OPTIONS'] },
             {url: /\/api\/v1\/bookmarks(.*)/ , methods: ['POST','GET','DELETE','OPTIONS'] },
             {url: /\/api\/v1\/users(.*)/ , methods: ['POST','GET','PATCH','PUT', 'DELETE','OPTIONS'] },
-            {url: /\/api\/v1\/questions(.*)/ , methods: ['POST','GET','DELETE','OPTIONS'] },
+            {url: /\/api\/v1\/questions(.*)/ , methods: ['POST','GET','DELETE','PUT', 'OPTIONS'] },
             `${api}/users/login`,
             `${api}/users/register`,
             `${api}/admin/register`,
