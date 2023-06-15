@@ -97,20 +97,42 @@ exports.deleteQuestion = async (req, res) => {
 // Reply Controllers
 // Create a new reply for a question
 exports.createReply = async (req, res) => {
-  try {
-    const { questionId, userId, vendorId, content } = req.body;
-    const question = await Question.findById(questionId);
-    if (!question) {
-        return res.status(404).json({ error: '질문을 찾을 수 없습니다' });
+    try {
+        const { questionId, userId, vendorId, content } = req.body;
+        const question = await Question.findById(questionId);
+        if (!question) {
+            return res.status(404).json({ error: '질문을 찾을 수 없습니다' });
+        }
+        const reply = new Reply({ questionId, userId, vendorId, content });
+        await reply.save();
+        question.replies.push(reply._id);
+        await question.save();
+        res.status(201).json(reply);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
     }
-    const reply = new Reply({ questionId, userId, vendorId, content });
-    await reply.save();
-    question.replies.push(reply._id);
-    await question.save();
-    res.status(201).json(reply);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
+};
+
+// Edit a reply by ID
+exports.editReply = async (req, res) => {
+    console.log('req replyId', req.params.replyId)
+    console.log('req.body', req.body)
+    try {
+        const { replyId } = req.params;
+        const { content } = req.body;
+
+        const reply = await Reply.findById(replyId);
+        if (!reply) {
+            return res.status(404).json({ error: 'Reply not found' });
+        }
+
+        reply.content = content;
+        await reply.save();
+
+        res.json(reply);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
 };
 
 // Delete a reply by ID
