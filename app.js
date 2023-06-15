@@ -55,12 +55,12 @@ mongoose.connect(process.env.CONNECTION_STRING)
 })
 
 // Development
-app.listen(process.env.PORT, ()=>{
-    console.log(`server is running on http://localhost:${process.env.PORT}`);
-})
+// app.listen(process.env.PORT, ()=>{
+//     console.log(`server is running on http://localhost:${process.env.PORT}`);
+// })
 
 // Production
-// var server = app.listen(process.env.PORT || 3000, function() {
-//     var port = server.address().port;
-//     console.log("Express is working on port " + port)
-// })
+var server = app.listen(process.env.PORT || 3000, function() {
+    var port = server.address().port;
+    console.log("Express is working on port " + port)
+})
