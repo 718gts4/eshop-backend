@@ -57,6 +57,10 @@ const replySchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    readByUser: {
+        type: Boolean,
+        default: false
+    },
     dateCreated: {
         type: Date,
         default: Date.now
