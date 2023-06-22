@@ -117,7 +117,7 @@ exports.createReply = async (req, res) => {
 exports.editReply = async (req, res) => {
     try {
         const { replyId } = req.params;
-        const { content } = req.body;
+        const { content, readByUser } = req.body;
 
         const reply = await Reply.findById(replyId);
         if (!reply) {
@@ -125,6 +125,7 @@ exports.editReply = async (req, res) => {
         }
 
         reply.content = content;
+        reply.readByUser = readByUser;
         await reply.save();
 
         res.json(reply);
