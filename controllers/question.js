@@ -120,7 +120,7 @@ exports.editReply = async (req, res) => {
     const { content, readByUser } = req.body;
 
     try {
-        const reply = await Reply.findByIdAndUpdate(replyId, { readByUser: readByUser }, { new: true });
+        const reply = await Reply.findByIdAndUpdate(replyId, { readByUser: true }, { new: true });
         if (!reply) {
             return res.status(404).json({ error: 'Reply not found' });
         }
