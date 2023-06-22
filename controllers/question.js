@@ -116,11 +116,11 @@ exports.createReply = async (req, res) => {
 // Edit a reply by ID
 exports.editReply = async (req, res) => {
 
+    const { replyId } = req.params;
+    const { content, readByUser } = req.body;
+
     try {
-        const { replyId } = req.params;
-        const { content, readByUser } = req.body;
-        console.log('readbyUser checking true', readByUser)
-        const reply = await Reply.findById(replyId);
+        const reply = await Reply.findByIdAndUpdate(replyId, { readByUser: readByUser }, { new: true });
         if (!reply) {
             return res.status(404).json({ error: 'Reply not found' });
         }
@@ -129,7 +129,7 @@ exports.editReply = async (req, res) => {
         if (content){
             reply.content = content;
         }
-        reply.readByUser = readByUser;
+
         await reply.save();
 
         res.json(reply);
@@ -137,6 +137,19 @@ exports.editReply = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+exports.updateDefaultCard = async (req, res) => {
+    const {id} = req.params;
+    const {userId} = req.body;
+
+    try {
+        await Card.updateMany({userId:userId}, {$set: {isDefault:false}});
+        const updatedCard = await Card.findByIdAndUpdate(id, {$set:{isDefault:true}},{new:true});
+        res.send(updatedCard);
+    } catch (error) {
+        res.status(400).send(error);
+    }
+}
 
 // Delete a reply by ID
 exports.deleteReply = async (req, res) => {
