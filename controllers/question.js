@@ -117,21 +117,15 @@ exports.createReply = async (req, res) => {
 exports.editReply = async (req, res) => {
 
     const { replyId } = req.params;
-    const { content, readByUser } = req.body;
+    const { readByUser } = req.body;
 
     try {
         const reply = await Reply.findByIdAndUpdate(replyId, { readByUser: true }, { new: true });
         if (!reply) {
             return res.status(404).json({ error: 'Reply not found' });
         }
-        console.log('content', content)
-
-        if (content){
-            reply.content = content;
-        }
 
         await reply.save();
-
         res.json(reply);
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
