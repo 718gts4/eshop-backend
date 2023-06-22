@@ -125,8 +125,8 @@ exports.editReply = async (req, res) => {
         if (!reply) {
             return res.status(404).json({ error: 'Reply not found' });
         }
-
-        reply.content = content;
+        console.log('content', content)
+        // reply.content = content;
         reply.readByUser = readByUser;
         await reply.save();
 
