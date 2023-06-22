@@ -115,6 +115,8 @@ exports.createReply = async (req, res) => {
 
 // Edit a reply by ID
 exports.editReply = async (req, res) => {
+    console.log('checking replyId', req.params);
+    console.log('readByUser', req.body)
     try {
         const { replyId } = req.params;
         const { content, readByUser } = req.body;
