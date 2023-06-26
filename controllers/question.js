@@ -82,11 +82,9 @@ exports.createQuestion = async (req, res) => {
 // Edit a reply by ID
 exports.editQuestion = async (req, res) => {
     const { questionId } = req.params;
-    console.log('qid', questionId)
     const { repliedByVendor } = req.body;
-    console.log("repliebyvendor", repliedByVendor);
     try {
-        const question = await Reply.findByIdAndUpdate(questionId, { repliedByVendor: true }, { new: true });
+        const question = await Question.findByIdAndUpdate(questionId, { repliedByVendor: repliedByVendor }, { new: true });
         if (!question) {
             return res.status(404).json({ error: 'Question not found' });
         }
