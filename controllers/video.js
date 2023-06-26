@@ -41,9 +41,6 @@ exports.getVideos = async (req, res) => {
             as: 'videoItems',
           },
         },
-        {
-          $unwind: '$videoItems',
-        },
       ]);
 
     if(!videoList){
