@@ -8,12 +8,36 @@ exports.getVideos = async (req, res) => {
     let limit = 10;
     let skip = parseInt(req.query.skip) || 0;
 
-    const videoList = await Video.find()
-    .populate('createdBy')
-    .populate('videoItems')
-    .sort({'dateCreated': -1})
-    .skip(skip)
-    .limit(limit);
+    // const videoList = await Video.find()
+    // .populate('createdBy')
+    // .populate('videoItems')
+    // .sort({'dateCreated': -1})
+    // .skip(skip)
+    // .limit(limit);
+
+    // To fetch videos randomly from database
+    const videoList = await Video.aggregate([
+        { $sample: { size: limit } },
+        { $sort: { dateCreated: -1 } },
+        { $skip: skip },
+        { $limit: limit },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'createdBy',
+            foreignField: '_id',
+            as: 'createdBy',
+          },
+        },
+        {
+          $lookup: {
+            from: 'videoItems',
+            localField: 'videoItems',
+            foreignField: '_id',
+            as: 'videoItems',
+          },
+        },
+    ]);
 
     if(!videoList){
         res.status(500).json({success:false})
