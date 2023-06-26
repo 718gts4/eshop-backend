@@ -79,6 +79,24 @@ exports.createQuestion = async (req, res) => {
     }
 };
 
+// Edit a reply by ID
+exports.editQuestion = async (req, res) => {
+    const { questionId } = req.params;
+    const { readByVendor } = req.body;
+
+    try {
+        const question = await Reply.findByIdAndUpdate(questionId, { readByVendor: true }, { new: true });
+        if (!question) {
+            return res.status(404).json({ error: 'Question not found' });
+        }
+
+        await question.save();
+        res.json(question);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 // Delete a question by ID
 exports.deleteQuestion = async (req, res) => {
     try {
