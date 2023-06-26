@@ -23,7 +23,7 @@ const questionSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    readByVendor: {
+    repliedByVendor: {
         type: Boolean,
         default: false
     },
