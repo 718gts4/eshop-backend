@@ -82,8 +82,9 @@ exports.createQuestion = async (req, res) => {
 // Edit a reply by ID
 exports.editQuestion = async (req, res) => {
     const { questionId } = req.params;
+    console.log('qid', questionId)
     const { repliedByVendor } = req.body;
-
+    console.log("repliebyvendor", repliedByVendor);
     try {
         const question = await Reply.findByIdAndUpdate(questionId, { repliedByVendor: true }, { new: true });
         if (!question) {
