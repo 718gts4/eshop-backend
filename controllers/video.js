@@ -17,6 +17,7 @@ exports.getVideos = async (req, res) => {
 
     // To fetch videos randomly from database
     const videoList = await Video.aggregate([
+        { $match: {} }, // Add any desired filters here
         { $sample: { size: limit } },
         { $sort: { dateCreated: -1 } },
         { $skip: skip },
@@ -30,6 +31,9 @@ exports.getVideos = async (req, res) => {
           },
         },
         {
+          $unwind: '$createdBy',
+        },
+        {
           $lookup: {
             from: 'videoItems',
             localField: 'videoItems',
@@ -37,7 +41,10 @@ exports.getVideos = async (req, res) => {
             as: 'videoItems',
           },
         },
-    ]);
+        {
+          $unwind: '$videoItems',
+        },
+      ]);
 
     if(!videoList){
         res.status(500).json({success:false})
