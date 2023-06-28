@@ -28,8 +28,26 @@ const orderSchema = mongoose.Schema({
     dateOrdered: {
         type: Date,
         default: Date.now,
-    },    
-})
+    }, 
+    orderStatus: [
+        {
+            type: {
+                type: String,
+                enum: ["ordered", "processing", "packed", "shipped", "delivered"],
+                default: "ordered",
+            }, 
+            date: {
+                type: Date
+            },
+            isCompleted: {
+                type: Boolean,
+                default: false,
+            },
+        },
+    ],   
+},
+{timestamps: true}
+);
 
 orderSchema.virtual('id').get(function(){
     return this._id.toHexString();
