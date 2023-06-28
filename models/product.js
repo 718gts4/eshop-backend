@@ -168,6 +168,10 @@ const productSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
+    isSelling: {
+        type: Boolean,
+        default: true
+    },
     justin: {
         type: Boolean,
         default: false
