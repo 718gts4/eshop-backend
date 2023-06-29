@@ -176,6 +176,10 @@ const productSchema = mongoose.Schema({
         endDate: Date,
         deliveryDate: Date
     },
+    dropDate:{
+        type: Date,
+        default: Date.now
+    },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

@@ -91,6 +91,7 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
             sale: req.body.sale || null,
             soldout: req.body.soldout || false,
             display: req.body.display || true,
+            dropDate: req.body.dropDate || null,
         });
 
         if (product.sale) {
