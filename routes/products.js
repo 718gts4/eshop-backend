@@ -58,7 +58,7 @@ router.put('/:id/sale', editSaleDuration, requireSignin);
 router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
 
     const {
-        name, price, description, richDescription, brand, category, isFeatured, colorOptions, subOption1, subOption2, subOption3, soldout, isSelling
+        name, price, description, richDescription, brand, category, isFeatured, colorOptions, subOption1, subOption2, subOption3, soldout, display, dropDate, sale
     } = req.body;
 
     try {
@@ -88,10 +88,10 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
             subOption1: JSON.parse(subOption1) || null,
             subOption2: JSON.parse(subOption2) || null,
             subOption3: JSON.parse(subOption3) || null,
-            sale: req.body.sale || null,
-            soldout: req.body.soldout || false,
-            display: req.body.display || true,
-            dropDate: req.body.dropDate || null,
+            sale: sale || null,
+            soldout: soldout || false,
+            display: display || true,
+            dropDate,
         });
 
         if (product.sale) {
