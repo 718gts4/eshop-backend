@@ -90,7 +90,7 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
             subOption3: JSON.parse(subOption3) || null,
             sale: req.body.sale || null,
             soldout: req.body.soldout || false,
-            isSelling: req.body.isSelling || true,
+            display: req.body.display || true,
         });
 
         if (product.sale) {
