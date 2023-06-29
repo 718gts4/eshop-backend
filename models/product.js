@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-
 const saleSchema = new mongoose.Schema({
     discount: {
         type: Number,
@@ -167,10 +166,6 @@ const productSchema = mongoose.Schema({
     soldout: {
         type: Boolean,
         default: false
-    },
-    isSelling: {
-        type: Boolean,
-        default: true
     },
     justin: {
         type: Boolean,
