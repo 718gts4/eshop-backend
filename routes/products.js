@@ -61,6 +61,7 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
         name, price, description, richDescription, brand, category, isFeatured, colorOptions, subOption1, subOption2, subOption3, soldout, display, dropDate, sale, dropProduct
     } = req.body;
 console.log('dropDATE', req.body.dropDate);
+console.log('dropProduct', req.body.dropProduct);
     try {
         const images = req.files.map((file) => ({
             file: fs.readFileSync(file.path),
@@ -91,7 +92,7 @@ console.log('dropDATE', req.body.dropDate);
             sale: sale || null,
             soldout: soldout || false,
             display: display || true,
-            dropDate,
+            dropDate: req.body.dropDate,
             dropProduct,
         });
 
