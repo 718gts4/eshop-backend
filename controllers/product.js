@@ -28,6 +28,15 @@ exports.getProduct = async (req, res) => {
     res.send(product);
 }
 
+
+exports.getProductsByDropProducts = async () => {
+    const products = await Product.find({ dropProduct: true}).populate('category');
+    if(!products){
+        res.status(500).json({success:false})
+    }
+    res.send(products);
+}
+
 exports.updateProduct = async (req, res) => {
     if(!mongoose.isValidObjectId(req.params.id)){
         res.status(400).send('Invalid Product ID');
@@ -183,14 +192,6 @@ exports.getAdminProducts = async (req, res) => {
     res.send(product);
 }
 
-exports.getProductsByDropProducts = async () => {
-    try {
-        const products = await Product.find({ dropProduct: true}).populate('category');
-        return products;
-    } catch (error) {
-        throw new Error('Failed to fetch products with dropProduct equal to true');
-    }
-}
 
 exports.likeProduct = async (req, res) => {
     try {
