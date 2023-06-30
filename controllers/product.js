@@ -183,6 +183,15 @@ exports.getAdminProducts = async (req, res) => {
     res.send(product);
 }
 
+exports.getProductsByDropProducts = async () => {
+    try {
+        const products = await Product.find({ dropProduct: true}).populate('category');
+        return products;
+    } catch (error) {
+        throw new Error('Failed to fetch products with dropProduct equal to true');
+    }
+}
+
 exports.likeProduct = async (req, res) => {
     try {
         const { id } = req.params;

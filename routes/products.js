@@ -8,7 +8,8 @@ const { getProducts,
   updateGalleryImages,
   getAdminProducts,
   likeProduct,
-  editSaleDuration
+  editSaleDuration,
+  getProductsByDropProducts
 } = require('../controllers/product');
 const express = require('express');
 const router = express.Router();
@@ -48,6 +49,7 @@ const upload = multer({ storage })
 
 router.get(`/`, getProducts);
 router.get(`/:id`, getProduct);
+router.get(`/drop`, getProductsByDropProducts);
 router.put(`/:id`, upload.single('image'), requireSignin, adminMiddleware, updateProduct);
 router.put(`/gallery-images/:id`, upload.array('productImages', 10), updateGalleryImages, requireSignin, adminMiddleware);
 router.delete(`/:id`, requireSignin, adminMiddleware, deleteProduct);
@@ -55,12 +57,12 @@ router.get(`/get/count`, getProductCount);
 router.get(`/admin/:id`, getAdminProducts);
 router.patch('/:id/like', likeProduct, requireSignin);
 router.put('/:id/sale', editSaleDuration, requireSignin);
+
 router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
     const {
         name, price, description, richDescription, brand, category, isFeatured, colorOptions, subOption1, subOption2, subOption3, soldout, display, dropDate, sale, dropProduct
     } = req.body;
-console.log('dropDATE', req.body.dropDate);
-console.log('dropProduct', req.body.dropProduct);
+
     try {
         const images = req.files.map((file) => ({
             file: fs.readFileSync(file.path),
@@ -91,7 +93,7 @@ console.log('dropProduct', req.body.dropProduct);
             sale: sale || null,
             soldout: soldout || false,
             display: display || true,
-            dropDate: req.body.dropDate,
+            dropDate,
             dropProduct,
         });
 
