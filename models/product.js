@@ -176,6 +176,10 @@ const productSchema = mongoose.Schema({
         endDate: Date,
         deliveryDate: Date
     },
+    dropProduct: {
+        type: Boolean,
+        default: false
+    },
     dropDate:{
         type: Date,
         default: Date.now

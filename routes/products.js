@@ -58,9 +58,9 @@ router.put('/:id/sale', editSaleDuration, requireSignin);
 router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
 
     const {
-        name, price, description, richDescription, brand, category, isFeatured, colorOptions, subOption1, subOption2, subOption3, soldout, display, dropDate, sale
+        name, price, description, richDescription, brand, category, isFeatured, colorOptions, subOption1, subOption2, subOption3, soldout, display, dropDate, sale, dropProduct
     } = req.body;
-console.log('dropDATE', req.body);
+console.log('dropDATE', req.body.dropDate);
     try {
         const images = req.files.map((file) => ({
             file: fs.readFileSync(file.path),
@@ -92,6 +92,7 @@ console.log('dropDATE', req.body);
             soldout: soldout || false,
             display: display || true,
             dropDate,
+            dropProduct,
         });
 
         if (product.sale) {
