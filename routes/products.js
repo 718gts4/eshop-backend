@@ -56,7 +56,6 @@ router.get(`/admin/:id`, getAdminProducts);
 router.patch('/:id/like', likeProduct, requireSignin);
 router.put('/:id/sale', editSaleDuration, requireSignin);
 router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
-
     const {
         name, price, description, richDescription, brand, category, isFeatured, colorOptions, subOption1, subOption2, subOption3, soldout, display, dropDate, sale, dropProduct
     } = req.body;
@@ -93,7 +92,7 @@ console.log('dropProduct', req.body.dropProduct);
             soldout: soldout || false,
             display: display || true,
             dropDate: req.body.dropDate,
-            dropProduct,
+            dropProduct: req.body.dropProduct === 'true' ? true : false,
         });
 
         if (product.sale) {
