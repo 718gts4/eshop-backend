@@ -92,7 +92,7 @@ console.log('dropProduct', req.body.dropProduct);
             soldout: soldout || false,
             display: display || true,
             dropDate: req.body.dropDate,
-            dropProduct: req.body.dropProduct === 'true' ? true : false,
+            dropProduct,
         });
 
         if (product.sale) {
