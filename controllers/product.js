@@ -31,7 +31,7 @@ exports.getProduct = async (req, res) => {
 
 exports.getProductsByDropProducts = async (req, res) => {
     try {
-        const products = await Product.find({ dropProduct: true});
+        const products = await Product.find();
         res.send(products);
     } catch (error) {
         res.status(500).json({success: false, error: 'Server error'});
