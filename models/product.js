@@ -63,6 +63,10 @@ const productSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
+    dropProduct: {
+        type: Boolean,
+        default: false
+    },
     isFeatured:{
         type: Boolean,
         default: false
@@ -175,10 +179,6 @@ const productSchema = mongoose.Schema({
         startDate: Date,
         endDate: Date,
         deliveryDate: Date
-    },
-    dropProduct: {
-        type: Boolean,
-        default: false
     },
     dropDate:{
         type: Date,
