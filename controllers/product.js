@@ -29,12 +29,13 @@ exports.getProduct = async (req, res) => {
 }
 
 
-exports.getProductsByDropProducts = async () => {
-    const products = await Product.find({ dropProduct: true}).populate('category');
-    if(!products){
-        res.status(500).json({success:false})
+exports.getProductsByDropProducts = async (req, res) => {
+    try {
+        const products = await Product.find({ dropProduct: true}).populate('category');
+        res.send(products);
+    } catch (error) {
+        res.status(500).json({success: false, error: 'Server error'});
     }
-    res.send(products);
 }
 
 exports.updateProduct = async (req, res) => {
