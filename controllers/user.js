@@ -21,34 +21,6 @@ exports.getUserId = async (req, res) => {
     res.status(200).send(user);
 }
 
-// exports.postNewUser = async (req, res) => {
-//     let user = new User({
-//         name: req.body.name,
-//         username: req.body.username,
-//         email: req.body.email,
-//         passwordHash: bcrypt.hashSync(req.body.password, 10),
-//         phone: req.body.phone,
-//         isAdmin: req.body.isAdmin,
-//         image: req.body.image,
-//         role: req.body.role,
-//         brand: req.body.brand,
-//         brandDescription: req.body.brandDescription,
-//         likes: {},
-//         followers: {},
-//         following: {},
-//         savedVideos: [],
-//         savedProducts: [],
-//         videos: [],
-//         link: req.body.link,
-//     })
-//     user = await user.save();
-
-//     if(!user)
-//     return res.status(400).send('the user cannot be created!')
-    
-//     res.send(user);
-// }
-
 exports.updateUser = async (req, res)=> {
     const userExist = await User.findById(req.params.id);
 
@@ -237,5 +209,17 @@ exports.likeUser = async (req, res) => {
         res.status(200).json(updatedUser);
     } catch (err) {
         res.status(404).json({message:err.message})
+    }
+}
+
+exports.getSearchUsers = async (req, res) => {
+    try {
+        const { search } = req.query;
+        const users = await User.find({ name: {$regex: search, $options: 'i'}});
+
+        res.json(users);
+    } catch (error) {
+        console.error('Error', error);
+        res.status(500).json({message: 'Server Error'});
     }
 }
