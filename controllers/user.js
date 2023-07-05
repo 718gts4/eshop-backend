@@ -215,7 +215,7 @@ exports.likeUser = async (req, res) => {
 exports.getSearchUsers = async (req, res) => {
     try {
         const { search } = req.query;
-        const users = await User.find({ name: {$regex: search, $options: 'i'}, isAdmin: true})
+        const users = await User.find({ username: {$regex: search, $options: 'i'}, isAdmin: true})
             .select(['_id', 'name', 'brand', 'image', 'phone', 'username']);
 
         res.json(users);
