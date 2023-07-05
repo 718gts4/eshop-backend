@@ -216,8 +216,7 @@ exports.getSearchUsers = async (req, res) => {
     try {
         const { search } = req.query;
         const users = await User.find({ name: {$regex: search, $options: 'i'}})
-            .select(['_id name brand image phone username'])
-            .exec();
+            .select(['_id', 'name', 'brand', 'image', 'phone', 'username']);
 
         res.json(users);
     } catch (error) {
