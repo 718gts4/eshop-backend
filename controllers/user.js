@@ -213,25 +213,15 @@ exports.likeUser = async (req, res) => {
 }
 
 exports.getSearchUsers = async (req, res) => {
-    console.log('req.query', req.query);
     try {
         const { search } = req.query;
-        const users = await User.find({ name: {$regex: search, $options: 'i'}}).populate(['_id', 'name', 'brand', 'image', 'phone', 'username']);
+        const users = await User.find({ name: {$regex: search, $options: 'i'}})
+            .select(['_id name brand image phone username'])
+            .exec();
 
         res.json(users);
     } catch (error) {
         console.error('Error', error);
         res.status(500).json({message: 'Server Error'});
     }
-}
-
-exports.getVideo = async (req, res) => {
-    const video = await Video.findById(req.params.id)
-    .populate('videoItems')
-    .populate('createdBy', ['name', 'email', 'phone', 'isAdmin', 'image', 'username', 'numComments']) // populate only items in array
-
-    if(!video){
-        res.status(500).json({success:false})
-    }
-    res.send(video);
 }
