@@ -303,3 +303,15 @@ exports.getProductsBySlug = (req, res) => {
         }
     });
 };
+
+exports.getSearchProducts = async (req, res) => {
+    try {
+        const { search } = req.query;
+        const products = await Product.find({ name: {$regex: search, $options: 'i'}});
+
+        res.json(products);
+    } catch (error) {
+        console.error('Error', error);
+        res.status(500).json({message: 'Server Error'});
+    }
+}

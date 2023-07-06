@@ -1,4 +1,14 @@
-const { register, login, getUsers, getUserId, deleteUser, getUserCount, updateUser, subscribeUser, likeUser, getSearchUsers } = require('../controllers/user');
+const { 
+    register, 
+    login, 
+    getUsers, 
+    getUserId, 
+    deleteUser, 
+    getUserCount, 
+    updateUser, 
+    subscribeUser, 
+    likeUser, 
+    getSearchUsers } = require('../controllers/user');
 const express = require('express');
 const router = express.Router();
 const { validateRegisterRequest, validateLoginRequest, isRequestValidated } = require('../validators/auth');

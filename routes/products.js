@@ -9,7 +9,8 @@ const { getProducts,
   getAdminProducts,
   likeProduct,
   editSaleDuration,
-  getProductsByDropProducts
+  getProductsByDropProducts,
+  getSearchProducts
 } = require('../controllers/product');
 const express = require('express');
 const router = express.Router();
@@ -55,6 +56,7 @@ router.put(`/gallery-images/:id`, upload.array('productImages', 10), updateGalle
 router.delete(`/:id`, requireSignin, adminMiddleware, deleteProduct);
 router.get(`/get/count`, getProductCount);
 router.get(`/admin/:id`, getAdminProducts);
+router.get(`/search/products`, getSearchProducts);
 router.patch('/:id/like', likeProduct, requireSignin);
 router.put('/:id/sale', editSaleDuration, requireSignin);
 

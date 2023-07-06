@@ -217,7 +217,7 @@ exports.getSearchUsers = async (req, res) => {
         const { search } = req.query;
         const users = await User.find({ username: {$regex: search, $options: 'i'}, isAdmin: true})
             .select(['_id', 'name', 'brand', 'image', 'phone', 'username', 'email', 'brandDescription', 'videos', 'following', 'followers', 'likes', 'link', 'addresses']);
-
+console.log('users', users);
         res.json(users);
     } catch (error) {
         console.error('Error', error);
