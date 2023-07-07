@@ -28,4 +28,4 @@ const dropSchema = mongoose.Schema({
     },
 }, {timestamps: true});
 
-exports.Drop = mongoose.model("OrderItem", dropSchema);
+exports.Drop = mongoose.model("Drop", dropSchema);
