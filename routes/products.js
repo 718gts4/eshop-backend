@@ -10,7 +10,8 @@ const { getProducts,
   likeProduct,
   editSaleDuration,
   getProductsByDropProducts,
-  getSearchProducts
+  getSearchProducts,
+  createSale
 } = require('../controllers/product');
 const express = require('express');
 const router = express.Router();
@@ -59,6 +60,7 @@ router.get(`/admin/:id`, getAdminProducts);
 router.get(`/search/products`, getSearchProducts);
 router.patch('/:id/like', likeProduct, requireSignin);
 router.put('/:id/sale', editSaleDuration, requireSignin);
+router.post('/post/sale', createSale);
 
 router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
     const {

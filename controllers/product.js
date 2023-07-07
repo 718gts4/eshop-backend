@@ -91,30 +91,6 @@ exports.updateProduct = async (req, res) => {
 }
 
 
-exports.editSaleDuration = async (req, res) => {
-    const productId = req.params.id;
-    const newEndTime = new Date(req.body.endTime);
-  
-    try {
-        const product = await Product.findById(productId);
-        if (!product) {
-            return res.status(404).json({ message: 'Product not found' });
-        }
-        if (!product.sale) {
-            return res.status(400).json({ message: 'Product is not on sale' });
-        }
-        const currentTime = new Date();
-        if (newEndTime <= currentTime) {
-            return res.status(400).json({ message: 'Sale end time must be in the future' });
-        }
-        product.sale.endTime = newEndTime;
-        const updatedProduct = await product.save();
-        res.json(updatedProduct);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
-};
-
 exports.updateGalleryImages = async (req, res) => {
     // check if the product id is correct
     if(!mongoose.isValidObjectId(req.params.id)){
@@ -184,7 +160,6 @@ exports.getFeaturedProductsOfCounts = async (req, res) => {
 
 
 exports.getAdminProducts = async (req, res) => {
-    console.log('seller id', req.params)
     const product = await Product.find({createdBy: req.params.id}).populate('category').sort({'dateCreated': -1});
     if(!product){
         res.status(500).json({success:false})
@@ -218,33 +193,6 @@ exports.likeProduct = async (req, res) => {
         res.status(404).json({message:err.message})
     }
 }
-
-// exports.likesVideo = async (req, res) => {
-//     try {
-//         const { id } = req.params;
-//         const { userId } = req.body;
-//         const product = await Product.findById(id);
-//         const likes = Product.likes || new Map();
-//         const isLiked = likes.get(userId);
-
-//         if(isLiked){
-//             likes.delete(userId);
-//         } else {
-//             likes.set(userId, true);
-//         }
-
-//         const updatedProduct = await Product.findByIdAndUpdate(
-//             id,
-//             { likes: likes },
-//             { new: true }
-//         );
-
-//         res.status(200).json(updatedProduct);
-//     } catch (err) {
-//         res.status(404).json({message:err.message})
-//     }
-// }
-
 
 // the below code is a test implementation
 exports.getProductsBySlug = (req, res) => {
@@ -315,3 +263,49 @@ exports.getSearchProducts = async (req, res) => {
         res.status(500).json({message: 'Server Error'});
     }
 }
+
+exports.createSale = async (req, res) => {
+    try {
+        const { productId, discount, duration } = req.body;
+        const product = await Product.findById(productId);
+        const discountedPrice = product.price - (product.price * discount);
+
+        const sale = {
+            discount : discount,
+            endTime: new Date(Date.now() + duration * 24 * 60 * 60 * 1000)
+        };
+
+        product.price = discountedPrice;
+        product.sale = sale;
+
+        await product.save();
+
+        res.status(200).json({message: 'Sale created successfully', product});
+    } catch (error) {
+        res.status(500).json({error: 'Failed to create sale', message: error.message});
+    }
+}
+
+exports.editSaleDuration = async (req, res) => {
+    const productId = req.params.id;
+    const newEndTime = new Date(req.body.endTime);
+  
+    try {
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        if (!product.sale) {
+            return res.status(400).json({ message: 'Product is not on sale' });
+        }
+        const currentTime = new Date();
+        if (newEndTime <= currentTime) {
+            return res.status(400).json({ message: 'Sale end time must be in the future' });
+        }
+        product.sale.endTime = newEndTime;
+        const updatedProduct = await product.save();
+        res.json(updatedProduct);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+};
