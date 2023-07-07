@@ -5,7 +5,7 @@ const Keyword = require('../models/keyword');
 router.post('/keyword', async (req, res) => {
     console.log('req.body', req.body);
     try {
-        const { keyword } = req.body;
+        const { keyword } = req.body.value;
         const existingKeyword = await Keyword.findOne({ keyword });
 
         if (existingKeyword) {
