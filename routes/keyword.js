@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Keyword = require('../models/keyword');
+const {Keyword} = require('../models/keyword');
 
 router.post('/keyword', async (req, res) => {
     console.log('req.body', req.body);
