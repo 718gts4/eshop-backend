@@ -4,10 +4,10 @@ const {Keyword} = require('../models/keyword');
 const mongoose = require('mongoose');
 
 router.post('/:id', async (req, res) => {
-    console.log('req.body', req.body);
+    console.log('REQ BODY', req.body);
     try {
-        const { keyword, userID } = req.body;
-        const objUserId = mongoose.Types.ObjectId(userID);
+        const { keyword, userId } = req.body;
+        const objUserId = mongoose.Types.ObjectId(userId);
 
         const existingKeyword = await Keyword.findOne({ keyword });
 
