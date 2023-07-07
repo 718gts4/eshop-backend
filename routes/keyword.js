@@ -4,7 +4,6 @@ const {Keyword} = require('../models/keyword');
 const mongoose = require('mongoose');
 
 router.post('/:id', async (req, res) => {
-    console.log('REQ BODY', req.body);
     const objUserId = mongoose.Types.ObjectId(req.body.userId);
 
     let keywordObj = new Keyword({
@@ -22,10 +21,11 @@ router.post('/:id', async (req, res) => {
 });
 
 router.get('/keywords', async (req, res) => {
+    const userId = req.body.userId;
     try {
         // Fetch all keywords from the database
-        const keywords = await Keyword.find();
-    
+        const keywords = await Keyword.find({user: userId});
+        res.status(200).json({ keywords });
         res.json(keywords);
     } catch (error) {
         console.error('Error:', error);
