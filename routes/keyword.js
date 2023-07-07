@@ -24,7 +24,7 @@ router.get('/:id', async (req, res) => {
     const userId = req.params.id;
     try {
         // Fetch all keywords from the database
-        const keywords = await Keyword.find({user: userId});
+        const keywords = await Keyword.find({user: userId}).sort({ _id: -1 });
         res.status(200).json({ keywords });
     } catch (error) {
         console.error('Error:', error);
