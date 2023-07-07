@@ -26,7 +26,6 @@ router.get('/:id', async (req, res) => {
         // Fetch all keywords from the database
         const keywords = await Keyword.find({user: userId});
         res.status(200).json({ keywords });
-        res.json(keywords);
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ message: 'Server Error' });
