@@ -1,18 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const {Keyword} = require('../models/keyword');
+const mongoose = require('mongoose');
 
-router.post('/keyword', async (req, res) => {
+router.post('/:id', async (req, res) => {
     console.log('req.body', req.body);
     try {
-        const { keyword } = req.body;
+        const { keyword, userId } = req.body;
+        const objUserId = mongoose.Types.ObjectId(userId);
+
         const existingKeyword = await Keyword.findOne({ keyword });
 
         if (existingKeyword) {
             return res.status(400).json({ message: 'Keyword already exists' });
         }
 
-        const newKeyword = new Keyword({ keyword });
+        let keywordData = {
+            user: objUserId,
+            keyword: keyword
+        }
+
+        const newKeyword = new Keyword({ keywordData });
         await newKeyword.save();
 
         res.status(201).json({ message: 'Keyword saved successfully'});
