@@ -33,10 +33,11 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.delete('/keywords', async (req, res) => {
+router.delete('/:id', async (req, res) => {
+    const userId = req.params.id;
     try {
         // Delete all keywords from the database
-        await Keyword.deleteMany();
+        await Keyword.deleteMany({user: userId});
     
         res.json({ message: 'All keywords have been deleted' });
     } catch (error) {
