@@ -4,8 +4,7 @@ const {Keyword} = require('../models/keyword');
 const mongoose = require('mongoose');
 
 router.post('/:id', async (req, res) => {
-    console.log('req param', req.params)
-    const objUserId = mongoose.Types.ObjectId(req.params.userId);
+    const objUserId = mongoose.Types.ObjectId(req.params.id);
 
     let keywordObj = new Keyword({
         keyword: req.body.keyword,
