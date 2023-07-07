@@ -7,12 +7,13 @@ router.post('/:id', async (req, res) => {
     console.log('REQ BODY', req.body);
     const objUserId = mongoose.Types.ObjectId(req.body.userId);
 
-    let keyword = new Keyword({
+    let keywordObj = new Keyword({
         keyword: req.body.keyword,
         user: objUserId
     })
 
-    keyword = await keyword.save();
+    const keyword = new Keyword(keywordObj);
+    await keyword.save();
 
     if(!keyword)
     return res.status(500).send('The keyword cannot be created')
