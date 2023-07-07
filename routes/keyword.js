@@ -35,14 +35,17 @@ router.get('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     const userId = req.params.id;
+
     try {
-        // Delete all keywords from the database
-        await Keyword.deleteMany({user: userId});
-    
-        res.json({ message: 'All keywords have been deleted' });
+        // Delete all keywords with the specified user ID
+        await Keyword.deleteMany({ user: userId });
+
+        // Send a response indicating successful deletion
+        return res.json({ message: 'All keywords for the user have been deleted' });
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).json({ message: 'Server Error' });
+        // Send an error response if an error occurs
+        return res.status(500).json({ message: 'Server Error' });
     }
 });
 
