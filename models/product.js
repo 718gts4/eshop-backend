@@ -63,6 +63,10 @@ const productSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
+    parentCategory: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+    },
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',

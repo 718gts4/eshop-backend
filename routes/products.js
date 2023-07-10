@@ -68,7 +68,7 @@ router.get('/category/:categoryId', getProductsByCategoryId)
 
 router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
     const {
-        name, price, description, richDescription, brand, category, isFeatured, colorOptions, subOption1, subOption2, subOption3, soldout, display, dropDate, sale, dropProduct
+        name, price, description, richDescription, brand, parentCategory, category, isFeatured, colorOptions, subOption1, subOption2, subOption3, soldout, display, dropDate, sale, dropProduct
     } = req.body;
 
     try {
@@ -90,6 +90,7 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
             image: imageUrls[0],
             brand,
             price,
+            parentCategory,
             category,
             isFeatured,
             createdBy: req.user.userId, // user data from middleware
