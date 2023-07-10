@@ -207,7 +207,7 @@ const productSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-    dateCreated:{
+    dateProductCreated:{
         type: Date,
         default: Date.now
     },
