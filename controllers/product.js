@@ -29,10 +29,10 @@ exports.getProduct = async (req, res) => {
 }
 
 exports.getProductsByCategoryId = async (req, res) => {
-    console.log('req.params.', req.params.cateogryId)
+    console.log('req.params.', req.params.categoryId)
     try {
         const categoryId = mongoose.Types.ObjectId(req.params.categoryId);
-        const products = await Product.find({ category: categoryId});
+        const products = await Product.find({ parentCategory: categoryId});
 
         res.status(200).json(products);
     } catch (error) {
@@ -81,6 +81,7 @@ exports.updateProduct = async (req, res) => {
             image: imagepath,
             brand: req.body.brand,
             price: req.body.price,
+            parentCategory: req.body.parentCategory,
             category: req.body.category,
             rating: req.body.rating,
             numReviews: req.body.numReviews,
