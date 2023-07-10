@@ -207,6 +207,10 @@ const productSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
+    salesQuantity: {
+        type: Number,
+        default: 0,
+    },
 })
 
 
