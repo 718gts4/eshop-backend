@@ -266,6 +266,7 @@ exports.getSearchProducts = async (req, res) => {
 
 exports.createSale = async (req, res) => {
     try {
+        // discount is decimal value and duration is number of days
         const { productId, discount, duration } = req.body;
         const product = await Product.findById(productId);
         const discountedPrice = product.price - (product.price * discount);
@@ -307,5 +308,18 @@ exports.editSaleDuration = async (req, res) => {
         res.json(updatedProduct);
     } catch (err) {
         res.status(400).json({ message: err.message });
+    }
+};
+
+exports.getRecentProducts = async (req, res) => {
+    try {
+        const oneWeekAgo = new Date();
+
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        const recentProducts = await Product.find({dateCreated: { $gte: oneWeekAgo } })
+
+        res.json(recentProducts);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch recent products'});
     }
 };
