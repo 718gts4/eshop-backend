@@ -12,7 +12,8 @@ const { getProducts,
   getProductsByDropProducts,
   getSearchProducts,
   createSale,
-  getRecentProducts
+  getRecentProducts,
+  getProductsByCategoryId
 } = require('../controllers/product');
 const express = require('express');
 const router = express.Router();
@@ -63,6 +64,7 @@ router.patch('/:id/like', likeProduct, requireSignin);
 router.put('/:id/sale', editSaleDuration, requireSignin);
 router.post('/post/sale', createSale);
 router.get('/recent/products', getRecentProducts)
+router.get('/category/:categoryId', getRecentProducts)
 
 router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
     const {
