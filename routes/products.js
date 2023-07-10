@@ -62,7 +62,7 @@ router.get(`/search/products`, getSearchProducts);
 router.patch('/:id/like', likeProduct, requireSignin);
 router.put('/:id/sale', editSaleDuration, requireSignin);
 router.post('/post/sale', createSale);
-router.get('/recent-products', getRecentProducts)
+router.get('/recent/products', getRecentProducts)
 
 router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
     const {
