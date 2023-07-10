@@ -316,7 +316,7 @@ exports.getRecentProducts = async (req, res) => {
         const oneWeekAgo = new Date();
 
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-        const recentProducts = await Product.find({dateCreated: { $gte: oneWeekAgo } })
+        const recentProducts = await Product.find({dateProductCreated: { $gte: oneWeekAgo } })
 
         res.json(recentProducts);
     } catch (error) {
