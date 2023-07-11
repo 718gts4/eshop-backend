@@ -44,7 +44,6 @@ app.use(`${api}/bookmarks`, bookmarkRoutes);
 app.use(`${api}/address`, addressRoutes);
 app.use(`${api}/card`, cardRoutes);
 app.use(`${api}/questions`, questionRoutes);
-app.use(`${api}/keywords`, keywordRoutes);
 
 
 mongoose.connect(process.env.CONNECTION_STRING)
