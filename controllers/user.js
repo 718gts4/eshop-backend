@@ -233,7 +233,7 @@ exports.addSearchWord = async (req, res) => {
     try {
         const { searchWord } = req.body;
         const { userId } = req.params;
-
+console.log('search wrod', searchWord)
         const user = await User.findById(userId);
         if(!user) {
             return res.status(404).json({message: 'User is not found'});
