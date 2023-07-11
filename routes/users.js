@@ -9,6 +9,8 @@ const {
     subscribeUser, 
     likeUser, 
     getSearchUsers,
+    addSearchWord,
+    getSearchWords,
 } = require('../controllers/user');
 const express = require('express');
 const router = express.Router();
@@ -26,7 +28,6 @@ const { uploadProfileToS3, getFile, deleteProfileUrl } = require('../s3')
 require('dotenv/config');
 
 const storage = multer.memoryStorage()
-
 const upload = multer({ storage: storage })
 
 router.get('/', getUsers);
@@ -37,6 +38,8 @@ router.post('/login', validateLoginRequest, isRequestValidated, login);
 router.post('/register', validateRegisterRequest, isRequestValidated, register);
 router.put('/:id', updateUser); 
 router.delete(`/:id`, deleteUser);
+router.post(`/:userId/searchwords`, addSearchWord);
+router.get(`/:userId/searcwords`, getSearchWords);
 
 router.post('/profile', requireSignin, (req, res)=>{
     res.status(200).json({user: 'profile'})
