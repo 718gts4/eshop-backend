@@ -83,6 +83,10 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Address'
     }],
+    searchWords: {
+        type: [String],
+        default: [],
+    }
 });
 
 userSchema.pre('save', function (next) {

@@ -228,3 +228,19 @@ exports.getSearchUsers = async (req, res) => {
         res.status(500).json({message: 'Server Error'});
     }
 }
+
+exports.addSearchWord = async (req, res) => {
+    try {
+        const { userId, searchWord } = req.body;
+        const user = await User.findById(userId);
+        if(!user) {
+            return res.status(404).json({message: 'User is not found'});
+        };
+        user.seachWords.unshift(searchWord);
+        await user.save();
+
+        res.status(200).json({message: 'Search word added successfully'});
+    } catch (error) {
+        res.status(500).json({message: '서버에 문제가 발생했습니다.'})
+    };
+}
