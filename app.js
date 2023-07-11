@@ -29,7 +29,6 @@ const bookmarkRoutes = require('./routes/bookmark');
 const addressRoutes = require('./routes/address');
 const cardRoutes = require('./routes/card');
 const questionRoutes = require('./routes/questions');
-const keywordRoutes = require('./routes/keyword');
 
 const api = process.env.API_URL;
 
