@@ -11,6 +11,7 @@ const {
     getSearchUsers,
     addSearchWord,
     getSearchWords,
+    deleteAllSearchWords,
 } = require('../controllers/user');
 const express = require('express');
 const router = express.Router();
@@ -39,7 +40,8 @@ router.post('/register', validateRegisterRequest, isRequestValidated, register);
 router.put('/:id', updateUser); 
 router.delete(`/:id`, deleteUser);
 router.post(`/:userId/searchwords`, addSearchWord);
-router.get(`/:userId/searcwords`, getSearchWords);
+router.get(`/:userId/searchwords`, getSearchWords);
+router.delete(`/:userId/searchwords`, deleteAllSearchWords);
 
 router.post('/profile', requireSignin, (req, res)=>{
     res.status(200).json({user: 'profile'})
