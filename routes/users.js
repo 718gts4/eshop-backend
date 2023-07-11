@@ -8,7 +8,9 @@ const {
     updateUser, 
     subscribeUser, 
     likeUser, 
-    getSearchUsers } = require('../controllers/user');
+    getSearchUsers,
+    getSearchUserBrands,
+} = require('../controllers/user');
 const express = require('express');
 const router = express.Router();
 const { validateRegisterRequest, validateLoginRequest, isRequestValidated } = require('../validators/auth');
@@ -32,6 +34,7 @@ router.get('/', getUsers);
 router.get('/:id', getUserId);
 router.get(`/get/count`, getUserCount);
 router.get(`/search/users`, getSearchUsers);
+router.get(`/search/brands`, getSearchUserBrands);
 router.post('/login', validateLoginRequest, isRequestValidated, login);
 router.post('/register', validateRegisterRequest, isRequestValidated, register);
 router.put('/:id', updateUser); 
@@ -67,7 +70,6 @@ router.post("/:id/profile-image", upload.single('image'), async (req, res) => {
 });
 
 router.get("/images/:key", async (req, res) => {
-    console.log('image key!!!!', req.params.key)
     const key = req.params.key;
     const imageUrl = getFile(key);
     res.send(imageUrl)
@@ -75,7 +77,6 @@ router.get("/images/:key", async (req, res) => {
 
 router.delete("/imagedelete/profiles/:key", async(req, res) => {
     const key = req.params.key;
-    console.log('DELETE KEY', key)
     deleteProfileUrl(key)
     res.send()
 })
