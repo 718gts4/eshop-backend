@@ -113,7 +113,7 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
         });
 
         const savedVideo = await video.save();
-        console.log('File Path', file.path);
+        
         fs.unlink(file.path, (err) => {
             if (err) {
                 console.error(err);

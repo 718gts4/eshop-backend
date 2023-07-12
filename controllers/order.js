@@ -53,6 +53,29 @@ exports.postOrder = async (req, res) => {
         status: req.body.status,
         totalPrice: totalPrice,
         user: req.body.user,
+        orderStatus: req.body.orderStatus = [
+            {
+                type: "ordered",
+                date: new Date(),
+                isCompleted: true,
+            },
+            {
+                type: "processing",
+                isCompleted: false,
+            },
+            {
+                type: "packed",
+                isCompleted: false,
+            },
+            {
+                type: "shipped",
+                isCompleted: false,
+            },
+            {
+                type: "delivered",
+                isCompleted: false,
+            }
+        ]
     })
     order = await order.save();
 
