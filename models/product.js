@@ -101,6 +101,10 @@ const productSchema = mongoose.Schema({
         type: Map,
         of: Boolean
     },
+    bookmarks: {
+        type: Map,
+        of: Boolean
+    },
     colorOptions: {
         productColor: {
             type: String,

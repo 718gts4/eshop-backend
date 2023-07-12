@@ -207,6 +207,31 @@ exports.likeProduct = async (req, res) => {
     }
 }
 
+exports.bookmarkProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { userId } = req.body;
+        const product = await Product.findById(id);
+        const isBookmarked = product.bookmarks.get(userId);
+
+        if(isBookmarked){
+            product.bookmarks.delete(userId);
+        } else {
+            product.bookmarks.set(userId, true);
+        }
+
+        const updatedProduct = await Product.findByIdAndUpdate(
+            id,
+            { bookmarks: product.bookmarks },
+            { new: true }
+        );
+
+        res.status(200).json(updatedProduct);
+    } catch (err) {
+        res.status(404).json({message:err.message})
+    }
+}
+
 // the below code is a test implementation
 exports.getProductsBySlug = (req, res) => {
     const { slug } = req.params;

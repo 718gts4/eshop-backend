@@ -13,7 +13,8 @@ const { getProducts,
   getSearchProducts,
   createSale,
   getRecentProducts,
-  getProductsByCategoryId
+  getProductsByCategoryId,
+  bookmarkProduct,
 } = require('../controllers/product');
 const express = require('express');
 const router = express.Router();
@@ -61,6 +62,7 @@ router.get(`/get/count`, getProductCount);
 router.get(`/admin/:id`, getAdminProducts);
 router.get(`/search/products`, getSearchProducts);
 router.patch('/:id/like', likeProduct, requireSignin);
+router.patch('/:id/bookmark', bookmarkProduct, requireSignin);
 router.put('/:id/sale', editSaleDuration, requireSignin);
 router.post('/post/sale', createSale);
 router.get('/recent/products', getRecentProducts)
