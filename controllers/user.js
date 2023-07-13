@@ -289,8 +289,7 @@ exports.deleteAllSearchWords = async (req, res) => {
 
 exports.bookmarkProduct = async (req, res) => {
     try {
-        const { productId } = req.params;
-        const { userId } = req.body;
+        const { productId, userId } = req.params;
         
         const user = await User.findById(userId); // Use userId to find the user, not productId
         
