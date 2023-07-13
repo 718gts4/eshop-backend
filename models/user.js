@@ -59,6 +59,11 @@ const userSchema = mongoose.Schema({
         type: Map,
         of: Boolean
     },
+    bookmarkProducts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+        default: []
+    }],
     savedVideos: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Video'

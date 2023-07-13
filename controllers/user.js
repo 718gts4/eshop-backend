@@ -291,8 +291,15 @@ exports.bookmarkProduct = async (req, res) => {
     try {
         const { productId, userId } = req.params;
         const user = await User.findById(userId);
-        const bookmarkIndex = user.bookmarkProducts.findIndex(id => id.toString() === productId);
-        
+
+        let bookmarkIndex = -1;
+        for (let i = 0; i < user.bookmarkProducts.length; i++) {
+            if (user.bookmarkProducts[i].toString() === productId) {
+                bookmarkIndex = i;
+                break;
+            }
+        }
+
         if (bookmarkIndex > -1) {
             // If the product is already bookmarked, remove it from the array
             user.bookmarkProducts.splice(bookmarkIndex, 1);
@@ -300,11 +307,10 @@ exports.bookmarkProduct = async (req, res) => {
             // If the product is not bookmarked, add it to the array
             user.bookmarkProducts.push(productId);
         }
-        
+
         const updatedUser = await user.save();
-        
         res.status(200).json(updatedUser);
     } catch (err) {
         res.status(404).json({ message: err.message });
     }
-}
+};
