@@ -290,18 +290,18 @@ exports.deleteAllSearchWords = async (req, res) => {
 exports.bookmarkProduct = async (req, res) => {
     try {
         const { productId, userId } = req.params;
+        const user = await User.findById(userId);
+        const bookmarkIndex = user.bookmarkProducts.findIndex(id => id.toString() === productId);
         
-        const user = await User.findById(userId); // Use userId to find the user, not productId
-        
-        if (user.bookmarkProducts.includes(productId)) {
+        if (bookmarkIndex > -1) {
             // If the product is already bookmarked, remove it from the array
-            user.bookmarkProducts = user.bookmarkProducts.filter(id => id !== productId);
+            user.bookmarkProducts.splice(bookmarkIndex, 1);
         } else {
             // If the product is not bookmarked, add it to the array
             user.bookmarkProducts.push(productId);
         }
         
-        const updatedUser = await user.save(); // Save the updated user
+        const updatedUser = await user.save();
         
         res.status(200).json(updatedUser);
     } catch (err) {
