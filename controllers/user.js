@@ -293,7 +293,7 @@ exports.bookmarkProduct = async (req, res) => {
         const user = await User.findById(userId);
 
         let bookmarkIndex = -1;
-        for (let i = 0; i < user.bookmarkProducts.length; i++) {
+        for (let i = 0; i < user.bookmarkProducts?.length; i++) {
             if (user.bookmarkProducts[i].toString() === productId) {
                 bookmarkIndex = i;
                 break;
@@ -314,3 +314,21 @@ exports.bookmarkProduct = async (req, res) => {
         res.status(404).json({ message: err.message });
     }
 };
+
+exports.getBookmarkedProducts = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await User.findById(userId).populate('bookmarkProducts');
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const bookmarkedProducts = user.bookmarkProducts.reverse();
+
+        res.status(200).json(bookmarkedProducts);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
