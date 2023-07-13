@@ -61,6 +61,7 @@ exports.updateUser = async (req, res)=> {
             following: req.body.following,
             likes: req.body.likes,
             savedVideos: req.body.savedVideos,
+            bookmarkProducts: req.body.bookmarkProducts,
             savedProducts: req.body.savedProducts,
             videos: req.body.videos,
             link: req.body.link,
@@ -103,6 +104,7 @@ exports.register = async (req, res) => {
         role: req.body.role,
         brand: req.body.brand,
         brandDescription: req.body.brandDescription,
+        bookmarkProducts: req.body.bookmarkProducts,
         followers: {},
         following: {},
         likes: {}
@@ -233,7 +235,7 @@ exports.addSearchWord = async (req, res) => {
     try {
         const { searchWord } = req.body;
         const { userId } = req.params;
-console.log('search wrod', searchWord)
+
         const user = await User.findById(userId);
         if(!user) {
             return res.status(404).json({message: 'User is not found'});
@@ -284,3 +286,26 @@ exports.deleteAllSearchWords = async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 };
+
+exports.bookmarkProduct = async (req, res) => {
+    try {
+        const { productId } = req.params;
+        const { userId } = req.body;
+        
+        const user = await User.findById(userId); // Use userId to find the user, not productId
+        
+        if (user.bookmarkProducts.includes(productId)) {
+            // If the product is already bookmarked, remove it from the array
+            user.bookmarkProducts = user.bookmarkProducts.filter(id => id !== productId);
+        } else {
+            // If the product is not bookmarked, add it to the array
+            user.bookmarkProducts.push(productId);
+        }
+        
+        const updatedUser = await user.save(); // Save the updated user
+        
+        res.status(200).json(updatedUser);
+    } catch (err) {
+        res.status(404).json({ message: err.message });
+    }
+}

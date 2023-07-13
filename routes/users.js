@@ -12,6 +12,7 @@ const {
     addSearchWord,
     getSearchWords,
     deleteAllSearchWords,
+    bookmarkProduct
 } = require('../controllers/user');
 const express = require('express');
 const router = express.Router();
@@ -42,6 +43,7 @@ router.delete(`/:id`, deleteUser);
 router.post(`/:userId/searchwords`, addSearchWord);
 router.get(`/:userId/searchwords`, getSearchWords);
 router.delete(`/:userId/searchwords`, deleteAllSearchWords);
+router.patch('/:userId/bookmarks/:productId', bookmarkProduct);
 
 router.post('/profile', requireSignin, (req, res)=>{
     res.status(200).json({user: 'profile'})
