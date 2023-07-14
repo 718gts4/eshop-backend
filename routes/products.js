@@ -62,7 +62,7 @@ router.delete(`/:id`, requireSignin, adminMiddleware, deleteProduct);
 router.get(`/get/count`, getProductCount);
 router.get(`/admin/:id`, getAdminProducts);
 router.get(`/search/products`, getSearchProducts);
-router.get(`/category/products`, getCategoryProducts);
+// router.get(`/category/products`, getCategoryProducts);
 
 router.patch('/:id/like', likeProduct, requireSignin);
 router.patch('/:id/bookmark', bookmarkProduct, requireSignin);
