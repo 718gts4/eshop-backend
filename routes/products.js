@@ -15,7 +15,7 @@ const { getProducts,
     getRecentProducts,
     getProductsByCategoryId,
     bookmarkProduct,
-    getCategoryProducts
+    getCategoryProducts,
 } = require('../controllers/product');
 const express = require('express');
 const router = express.Router();
@@ -62,7 +62,8 @@ router.delete(`/:id`, requireSignin, adminMiddleware, deleteProduct);
 router.get(`/get/count`, getProductCount);
 router.get(`/admin/:id`, getAdminProducts);
 router.get(`/search/products`, getSearchProducts);
-router.get(`/category/products/search`, getCategoryProducts);
+router.get(`/category/search/products`, getCategoryProducts);
+
 router.patch('/:id/like', likeProduct, requireSignin);
 router.patch('/:id/bookmark', bookmarkProduct, requireSignin);
 router.put('/:id/sale', editSaleDuration, requireSignin);

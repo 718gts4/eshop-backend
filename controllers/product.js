@@ -302,6 +302,18 @@ exports.getSearchProducts = async (req, res) => {
     }
 }
 
+exports.getCategoryProducts = async (req, res) => {
+    try {
+        const { search } = req.query;
+        const products = await Product.find({ category: { $regex: search, $options: 'i' } });
+    
+        res.json(products);
+    } catch (error) {
+        console.error('Error', error);
+        res.status(500).json({ message: 'Server Error' });
+    }   
+}
+
 exports.createSale = async (req, res) => {
     try {
         // discount is decimal value and duration is number of days
