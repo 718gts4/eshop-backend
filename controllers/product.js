@@ -305,7 +305,8 @@ exports.getSearchProducts = async (req, res) => {
 exports.getCategoryProducts = async (req, res) => {
     try {
         const { search } = req.query;
-        const products = await Product.find({ category: { $regex: search, $options: 'i' } });
+        const regex = new RegExp(search, 'i');
+        const products = await Product.find({ category: regex });
     
         res.json(products);
     } catch (error) {
