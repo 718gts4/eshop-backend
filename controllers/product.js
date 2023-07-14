@@ -314,17 +314,17 @@ exports.getSearchProducts = async (req, res) => {
     }
 }
 
-exports.getCategoryProducts = async (req, res) => {
-    try {
-        const { categoryId } = req.query;
-        const products = await Product.find({ category: categoryId });
+// exports.getCategoryProducts = async (req, res) => {
+//     try {
+//         const { categoryId } = req.query;
+//         const products = await Product.find({ category: categoryId });
     
-        res.json(products);
-    } catch (error) {
-        console.error('Error', error);
-        res.status(500).json({ message: 'Server Error' });
-    }   
-}
+//         res.json(products);
+//     } catch (error) {
+//         console.error('Error', error);
+//         res.status(500).json({ message: 'Server Error' });
+//     }   
+// }
 
 exports.createSale = async (req, res) => {
     try {
