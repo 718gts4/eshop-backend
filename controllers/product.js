@@ -40,6 +40,18 @@ exports.getProductsByCategoryId = async (req, res) => {
     }
 }
 
+exports.getProductsByChildCategoryId = async (req, res) => {
+    console.log('req.params.', req.params.categoryId)
+    try {
+        const categoryId = mongoose.Types.ObjectId(req.params.categoryId);
+        const products = await Product.find({ category: categoryId});
+
+        res.status(200).json(products);
+    } catch (error) {
+        res.status(500).json({error: 'Failed to retrieve category products'});
+    }
+}
+
 
 exports.getProductsByDropProducts = async (req, res) => {
     try {
@@ -304,9 +316,8 @@ exports.getSearchProducts = async (req, res) => {
 
 exports.getCategoryProducts = async (req, res) => {
     try {
-        const { search } = req.query;
-        const products = await Product.find({ category: { $regex: search, $options: 'i' } });
-
+        const { categoryId } = req.query;
+        const products = await Product.find({ category: categoryId });
     
         res.json(products);
     } catch (error) {
