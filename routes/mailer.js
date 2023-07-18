@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const transporter = require('../helpers/mailer');
 const router = express.Router();
 
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgotpassword', async (req, res) => {
     const { email } = req.body;
 
     const resetToken = crypto.randomBytes(20).toString('hex');
