@@ -29,6 +29,7 @@ const bookmarkRoutes = require('./routes/bookmark');
 const addressRoutes = require('./routes/address');
 const cardRoutes = require('./routes/card');
 const questionRoutes = require('./routes/questions');
+const testRoutes = require('./routes/test');
 
 const api = process.env.API_URL;
 
@@ -44,6 +45,7 @@ app.use(`${api}/bookmarks`, bookmarkRoutes);
 app.use(`${api}/address`, addressRoutes);
 app.use(`${api}/card`, cardRoutes);
 app.use(`${api}/questions`, questionRoutes);
+app.use(`${api}/test`, testRoutes);
 
 
 mongoose.connect(process.env.CONNECTION_STRING)
