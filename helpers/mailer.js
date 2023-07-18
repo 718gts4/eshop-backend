@@ -4,7 +4,7 @@ const transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
         user: 'contact@voutiq.co.kr',
-        pass: process.env.MY_PASSWORD,
+        password: process.env.MY_PASSWORD,
     },
 });
 
