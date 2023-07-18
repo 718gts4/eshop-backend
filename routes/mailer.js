@@ -5,11 +5,11 @@ const router = express.Router();
 
 router.post('/forgotpassword', async (req, res) => {
     const { email } = req.body;
-
+console.log('email', email)
     const resetToken = crypto.randomBytes(20).toString('hex');
 
     const mailOptions = {
-        from: process.env.MY_EMAIL,
+        from: 'contact@voutiq.co.kr',
         to: email,
         subject: '비밀번호 재설정',
         text: '비밀번호 재설정을위해 이메일을 전해드립니다. 아래 링크를 클릭해서 이메일 비밀번호를 재설정하세요.',
