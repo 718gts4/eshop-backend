@@ -1,8 +1,8 @@
 const express = require('express');
+const transporter = require('../helpers/mailer');
 const router = express.Router();
 
-
-router.get("/test", async (req, res) => {
+router.post("/test", async (req, res) => {
     console.log('test console', req.body)
 });
 
