@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.post('/forgotpassword', async (req, res) => {
     const { email } = req.body;
+    console.log('CHEKCING')
 console.log('email', email)
     const resetToken = crypto.randomBytes(20).toString('hex');
 
