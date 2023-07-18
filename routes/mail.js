@@ -3,7 +3,8 @@ const transporter = require('../helpers/mailer');
 const router = express.Router();
 
 router.post("/test", async (req, res) => {
-    console.log('test console', req.body)
+    const { email } = req.body
+    console.log('email', email)
 });
 
 module.exports = router;
