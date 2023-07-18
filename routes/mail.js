@@ -14,13 +14,13 @@ router.post("/test", async (req, res) => {
         html: `<a href="https://your-app.com/reset-password/">Reset Password</a>`,
     };
     
-    try {
-        await transporter.sendMail(mailOptions);
-        res.status(200).json({ message: 'Password reset email sent' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to send password reset email' });
-    };
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log('Error occurred:', error.message);
+        } else {
+          console.log('Email sent successfully:', info.response);
+        }
+    });
 });
 
 module.exports = router;
