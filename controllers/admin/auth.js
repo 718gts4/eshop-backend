@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 // const { validationResult} = require('express-validator');
 
-
 exports.register = async (req, res) => {
     const registerUser = await User.findOne({ email: req.body.email});
     if(registerUser)

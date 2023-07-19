@@ -13,7 +13,8 @@ const {
     getSearchWords,
     deleteAllSearchWords,
     bookmarkProduct,
-    getBookmarkedProducts
+    getBookmarkedProducts,
+    resetPassword
 } = require('../controllers/user');
 const express = require('express');
 const router = express.Router();
@@ -87,5 +88,8 @@ router.delete("/imagedelete/profiles/:key", async(req, res) => {
     deleteProfileUrl(key)
     res.send()
 })
+
+
+router.post('/resetPassword', resetPassword);
 
 module.exports = router;
