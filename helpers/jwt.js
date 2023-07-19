@@ -23,7 +23,6 @@ function authJwt() {
             {url: /\/api\/v1\/users(.*)/ , methods: ['POST','GET','PATCH','PUT', 'DELETE','OPTIONS'] },
             {url: /\/api\/v1\/questions(.*)/ , methods: ['POST','GET','DELETE','PUT','OPTIONS'] },
             {url: /\/api\/v1\/keywords(.*)/ , methods: ['POST','GET','DELETE','PUT','OPTIONS'] },
-            {url: /\/api\/v1\/mailer(.*)/ , methods: ['POST','GET','PUT','OPTIONS'] },
             `${api}/users/login`,
             `${api}/users/register`,
             `${api}/admin/register`,
