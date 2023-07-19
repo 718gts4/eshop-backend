@@ -100,7 +100,7 @@ router.post('/resetPassword', async(req, res) => {
     console.log('email', userEmail);
 
     let config = {
-        host: "gmail",
+        service: "gmail",
         auth: {
             user: process.env.EMAIL,
             pass: process.env.EMAIL_PASSWORD,
