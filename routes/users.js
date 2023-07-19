@@ -111,36 +111,11 @@ router.post('/resetPassword', async(req, res) => {
 
     let message = await transporter.sendMail({
             from: process.env.EMAIL, // sender address
-            to: userEmail, // list of receivers
+            to: "gafrong@gmail.com", // list of receivers
             subject: "Hello ✔", // Subject line
             text: "Hello world?", // plain text body
             html: "<b>Hello world?</b>", // html body
-        });
-
-    // let MailGenerator = MailGen({
-    //     theme: "default",
-    //     product: {
-    //         name: "MailGen",
-    //         link: 'https://mailgen.js'
-    //     }
-    // })
-
-    // let response = {
-    //     body: {
-    //         name: "",
-    //         intro: "Test email",
-    //         outro: "Bye bye"
-    //     }
-    // }
-
-    // let mail = MailGenerator.generate(response)
-
-    // let message = {
-    //     from: process.env.EMAIL,
-    //     to: userEmail,
-    //     subject: "Testing 123",
-    //     html: mail
-    // }
+    });
 
     transporter.sendMail(message).then((info) => {
         return res.status(201).json({
