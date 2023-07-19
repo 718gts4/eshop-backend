@@ -109,38 +109,38 @@ router.post('/resetPassword', async(req, res) => {
 
     let transporter = nodemailer.createTransport(config);
 
-    // let message = await transporter.sendMail({
-    //         from: '"Fred Foo 👻" <foo@example.com>', // sender address
-    //         to: "bar@example.com, baz@example.com", // list of receivers
-    //         subject: "Hello ✔", // Subject line
-    //         text: "Hello world?", // plain text body
-    //         html: "<b>Hello world?</b>", // html body
-    //     });
+    let message = await transporter.sendMail({
+            from: '"Fred Foo 👻" <foo@example.com>', // sender address
+            to: "bar@example.com, baz@example.com", // list of receivers
+            subject: "Hello ✔", // Subject line
+            text: "Hello world?", // plain text body
+            html: "<b>Hello world?</b>", // html body
+        });
 
-    let MailGenerator = MailGen({
-        theme: "default",
-        product: {
-            name: "MailGen",
-            link: 'https://mailgen.js'
-        }
-    })
+    // let MailGenerator = MailGen({
+    //     theme: "default",
+    //     product: {
+    //         name: "MailGen",
+    //         link: 'https://mailgen.js'
+    //     }
+    // })
 
-    let response = {
-        body: {
-            name: "",
-            intro: "Test email",
-            outro: "Bye bye"
-        }
-    }
+    // let response = {
+    //     body: {
+    //         name: "",
+    //         intro: "Test email",
+    //         outro: "Bye bye"
+    //     }
+    // }
 
-    let mail = MailGenerator.generate(response)
+    // let mail = MailGenerator.generate(response)
 
-    let message = {
-        from: process.env.EMAIL,
-        to: userEmail,
-        subject: "Testing 123",
-        html: mail
-    }
+    // let message = {
+    //     from: process.env.EMAIL,
+    //     to: userEmail,
+    //     subject: "Testing 123",
+    //     html: mail
+    // }
 
     transporter.sendMail(message).then((info) => {
         return res.status(201).json({
