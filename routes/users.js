@@ -111,7 +111,7 @@ router.post('/resetPassword', async(req, res) => {
 
     let message = await transporter.sendMail({
             from: process.env.EMAIL, // sender address
-            to: "gafrong@gmail.com", // list of receivers
+            to: userEmail, // list of receivers
             subject: "Hello ✔", // Subject line
             text: "Hello world?", // plain text body
             html: "<b>Hello world?</b>", // html body
