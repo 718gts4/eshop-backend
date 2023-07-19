@@ -101,8 +101,6 @@ router.post('/resetPassword', async(req, res) => {
 
     let config = {
         host: "gmail",
-        port: 27,
-        secure: false,
         auth: {
             user: process.env.EMAIL,
             pass: process.env.EMAIL_PASSWORD,
