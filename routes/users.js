@@ -108,33 +108,41 @@ router.post('/resetPassword', async(req, res) => {
             pass: process.env.EMAIL_PASSWORD,
         }
     }
-    console.log('config', config)
+
     let transporter = nodemailer.createTransport(config);
 
-    let MailGenerator = MailGen({
-        theme: "default",
-        product: {
-            name: "MailGen",
-            link: 'https://mailgen.js'
-        }
-    })
+    let message = await transporter.sendMail({
+            from: '"Fred Foo 👻" <foo@example.com>', // sender address
+            to: "bar@example.com, baz@example.com", // list of receivers
+            subject: "Hello ✔", // Subject line
+            text: "Hello world?", // plain text body
+            html: "<b>Hello world?</b>", // html body
+        });
 
-    let response = {
-        body: {
-            name: "",
-            intro: "Test email",
-            outro: "Bye bye"
-        }
-    }
+    // let MailGenerator = MailGen({
+    //     theme: "default",
+    //     product: {
+    //         name: "MailGen",
+    //         link: 'https://mailgen.js'
+    //     }
+    // })
 
-    let mail = MailGenerator.generate(response)
+    // let response = {
+    //     body: {
+    //         name: "",
+    //         intro: "Test email",
+    //         outro: "Bye bye"
+    //     }
+    // }
 
-    let message = {
-        from: process.env.EMAIL,
-        to: userEmail,
-        subject: "Testing 123",
-        html: mail
-    }
+    // let mail = MailGenerator.generate(response)
+
+    // let message = {
+    //     from: process.env.EMAIL,
+    //     to: userEmail,
+    //     subject: "Testing 123",
+    //     html: mail
+    // }
 
     transporter.sendMail(message).then((info) => {
         return res.status(201).json({
