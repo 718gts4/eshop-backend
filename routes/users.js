@@ -26,6 +26,11 @@ const multerS3 = require('multer-s3');
 const { S3Client } = require('@aws-sdk/client-s3');
 const path = require('path');
 
+
+const nodemailer = require('nodemailer');
+const MailGen = require('mailgen');
+
+
 const { User } = require('../models/user');
 const { uploadProfileToS3, getFile, deleteProfileUrl } = require('../s3')
 
