@@ -95,38 +95,6 @@ router.delete("/imagedelete/profiles/:key", async(req, res) => {
 })
 
 
-router.post('/resetPassword', async(req, res) => {
-    const { userEmail } = req.body;
-    console.log('email', userEmail);
-
-    let config = {
-        service: "gmail",
-        auth: {
-            user: process.env.EMAIL,
-            pass: process.env.EMAIL_PASSWORD,
-        }
-    }
-
-    let transporter = nodemailer.createTransport(config);
-
-    let message = await transporter.sendMail({
-            from: process.env.EMAIL, // sender address
-            to: userEmail, // list of receivers
-            subject: "Hello ✔", // Subject line
-            text: "Hello world?", // plain text body
-            html: "<b>Hello world?</b>", // html body
-    });
-
-    transporter.sendMail(message).then((info) => {
-        return res.status(201).json({
-            message: "You've got mail",
-            info: info.messageId,
-            preview: nodemailer.getTestMessageUrl(info)
-        })
-    }).catch(error => {
-        return res.status(500).json({ error })
-    })
-    
-});
+router.post('/resetPassword', resetPassword);
 
 module.exports = router;
