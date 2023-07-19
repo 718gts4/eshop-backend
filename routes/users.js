@@ -90,6 +90,57 @@ router.delete("/imagedelete/profiles/:key", async(req, res) => {
 })
 
 
-router.post('/resetPassword', resetPassword);
+router.post('/resetPassword', async(req, res) => {
+    const { userEmail } = req.body;
+    console.log('email', userEmail);
+
+    let config = {
+        host: "gmail",
+        port: 27,
+        secure: false,
+        auth: {
+            user: process.env.EMAIL,
+            pass: process.env.EMAIL_PASSWORD,
+        }
+    }
+    console.log('config', config)
+    let transporter = nodemailer.createTransport(config);
+
+    let MailGenerator = MailGen({
+        theme: "default",
+        product: {
+            name: "MailGen",
+            link: 'https://mailgen.js'
+        }
+    })
+
+    let response = {
+        body: {
+            name: "",
+            intro: "Test email",
+            outro: "Bye bye"
+        }
+    }
+
+    let mail = MailGenerator.generate(response)
+
+    let message = {
+        from: process.env.EMAIL,
+        to: userEmail,
+        subject: "Testing 123",
+        html: mail
+    }
+
+    transporter.sendMail(message).then((info) => {
+        return res.status(201).json({
+            message: "You've got mail",
+            info: info.messageId,
+            preview: nodemailer.getTestMessageUrl(info)
+        })
+    }).catch(error => {
+        return res.status(500).json({ error })
+    })
+    
+});
 
 module.exports = router;
