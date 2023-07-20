@@ -89,6 +89,8 @@ exports.deleteUser = (req, res) => {
     })
 }
 
+
+// used for sign up as first time user
 exports.register = async (req, res) => {
 
     const registerUser = await User.findOne({ email: req.body.email});
