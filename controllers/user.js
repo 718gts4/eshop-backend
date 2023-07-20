@@ -172,6 +172,8 @@ exports.verifyEmail = async (req, res) => {
 
     await VerificationToken.findByIdAndRemove(token._id);
     await user.save();
+
+    res.json({success: true, message: "Email is verified", user: user})
 }
 
 exports.login = async (req, res) => {
