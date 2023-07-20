@@ -1,9 +1,11 @@
-const {User} = require('../models/user');
+const { User } = require('../models/user');
+const { VerificationToken } = require('../models/verificationToken')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
-const MailGen = require('mailgen');
+
+const { generateOTP } = require('../utils/mail');
 
 exports.getUsers = async (req, res) => {
     const userList = await User.find().select('-passwordHash');
@@ -94,7 +96,7 @@ exports.deleteUser = (req, res) => {
 exports.register = async (req, res) => {
 
     const registerUser = await User.findOne({ email: req.body.email});
-    console.log('check register!!')
+
     if(registerUser)
     return res.status(400).json({
         message: '이미 등록된 이메일 주소입니다!!!'
@@ -114,6 +116,15 @@ exports.register = async (req, res) => {
         following: {},
         likes: {}
     })
+
+    const OTP = generateOTP()
+    console.log('otp', OTP)
+    const verificationToken = new VerificationToken({
+        owner: user._id,
+        token: OTP
+    })
+console.log('verif token', verificationToken);
+    await verificationToken.save();
     user = await user.save();
 
     if(!user)
