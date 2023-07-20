@@ -133,7 +133,7 @@ exports.register = async (req, res) => {
     mailTransport().sendMail({
         from: process.env.EMAIL,
         to: user.email,
-        subject:"PIN 번호를 확인 후 앱에 입력하세요",
+        subject:"VOUTIQ 가입 PIN 번호 이메일입니다",
         html: generateEmailTemplate(OTP),
     })
 
