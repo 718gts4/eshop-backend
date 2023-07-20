@@ -131,7 +131,7 @@ exports.register = async (req, res) => {
     return res.status(400).send('회원가입에 문제가 발생했습니다. 정보를 확인해주세요.')
 
     mailTransport().sendMail({
-        from: proceess.env.EMAIL,
+        from: process.env.EMAIL,
         to: user.email,
         subject:"Verify your email account",
         html: `<h1>${OTP}</h1>`
