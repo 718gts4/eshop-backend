@@ -18,35 +18,32 @@ exports.mailTransport = () =>
         }
 });
     
-
-
-
-// const { userEmail } = req.body;
-
-// let config = {
-//     service: "gmail",
-//     auth: {
-//         user: process.env.EMAIL,
-//         pass: process.env.EMAIL_PASSWORD,
-//     }
-// }
-
-// let transporter = nodemailer.createTransport(config);
-
-// let message = await transporter.sendMail({
-//     from: process.env.EMAIL, // sender address
-//     to: userEmail, // list of receivers
-//     subject: "VOUTIQ 비밀번호 재설정 이메일입니다.", // Subject line
-//     text: "안녕하세요", // plain text body
-//     html: "<p>VOUTIQ 비밀번호 재설정을위해 아래 링크를 클릭해주시기 바랍니다.</p>", // html body
-// });
-
-// transporter.sendMail(message).then((info) => {
-//     return res.status(201).json({
-//         message: "You've got mail",
-//         info: info.messageId,
-//         preview: nodemailer.getTestMessageUrl(info)
-//     })
-// }).catch(error => {
-//     return res.status(500).json({ error })
-// })  
+exports.generateEmailTemplate = code => {
+    return `
+        <!DOCTYPE html>
+        <html lang="kr">
+        <head>
+            <meta charset="UTF-8">
+            <meat http-equiv="X-UA-Compatible" content="IE=edge">
+            <style>
+            @media only screen and (max-width: 620px){
+                h1 {
+                    font-size: 20px;
+                    padding: 5px;
+                }
+            }
+            </style>
+        </head>
+        <body>
+        <div>
+            <div style="max-width: 620px; margin: 0 auto; font-family: sans-serif; color:#272727;">
+                <h1 style="background: #f6f6f6; padding: 10px; text-align: center; color: #272727;">환영합니다!</h1>
+                <p>4자리 PIN 번호를 확인 후 앱에 입력하세요</p>
+                <p style="width: 80px; margin: 0 auto; font-weight: bold; text-align: center; background: #f6f6f6; border-radius: 5px; font-size: 25px;
+                >${code}</p>
+            </div>
+        </div>
+        </body>
+        </html>
+    `;
+};

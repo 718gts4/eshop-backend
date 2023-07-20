@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
 
-const { generateOTP, mailTransport } = require('../utils/mail');
+const { generateOTP, mailTransport, generateEmailTemplate } = require('../utils/mail');
 
 exports.getUsers = async (req, res) => {
     const userList = await User.find().select('-passwordHash');
@@ -133,8 +133,8 @@ exports.register = async (req, res) => {
     mailTransport().sendMail({
         from: process.env.EMAIL,
         to: user.email,
-        subject:"Verify your email account",
-        html: `<h1>${OTP}</h1>`
+        subject:"PIN 번호를 확인 후 앱에 입력하세요",
+        html: generateEmailTemplate(OTP),
     })
 
     res.send(user);
