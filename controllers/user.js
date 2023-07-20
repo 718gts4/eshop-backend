@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
 
-const { generateOTP } = require('../utils/mail');
+const { generateOTP, mailTransport } = require('../utils/mail');
 
 exports.getUsers = async (req, res) => {
     const userList = await User.find().select('-passwordHash');
@@ -118,17 +118,24 @@ exports.register = async (req, res) => {
     })
 
     const OTP = generateOTP()
-    console.log('otp', OTP)
+
     const verificationToken = new VerificationToken({
         owner: user._id,
         token: OTP
     })
-console.log('verif token', verificationToken);
+
     await verificationToken.save();
     user = await user.save();
 
     if(!user)
     return res.status(400).send('회원가입에 문제가 발생했습니다. 정보를 확인해주세요.')
+
+    mailTransport().sendMail({
+        from: proceess.env.EMAIL,
+        to: user.email,
+        subject:"Verify your email account",
+        html: `<h1>${OTP}</h1>`
+    })
 
     res.send(user);
 }
