@@ -20,7 +20,7 @@ const verificationTokenSchema = mongoose.Schema({
 
 verificationTokenSchema.pre("save", async function(next){
     if(this.isModified("token")){
-        const hash = bcrypt.hash(this.token, 8);
+        const hash = await bcrypt.hash(this.token, 8);
         this.token = hash;
     }
     next();
