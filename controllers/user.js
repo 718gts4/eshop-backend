@@ -92,9 +92,10 @@ exports.deleteUser = (req, res) => {
 exports.register = async (req, res) => {
 
     const registerUser = await User.findOne({ email: req.body.email});
+    console.log('check register!!')
     if(registerUser)
     return res.status(400).json({
-        message: '이미 등록된 이메일 주소입니다.'
+        message: '이미 등록된 이메일 주소입니다!!!'
     });
 
     let user = new User({
@@ -363,6 +364,14 @@ exports.resetPassword =  async(req, res) => {
         })
     }).catch(error => {
         return res.status(500).json({ error })
-    })
-    
+    })  
+};
+
+exports.verifyEmail = async (otp, userId) => {
+    // try {
+    //     const {data} = await client.post('/user/verify-email', {otp, userId});
+    //     return data;
+    // } catch (error) {
+    //     return catchError(error);
+    // }
 };
