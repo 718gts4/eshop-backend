@@ -91,6 +91,11 @@ const userSchema = mongoose.Schema({
     searchWords: {
         type: [String],
         default: [],
+    },
+    verified: {
+        type: Boolean,
+        default: false,
+        required: true,
     }
 });
 
