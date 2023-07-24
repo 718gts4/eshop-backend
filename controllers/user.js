@@ -144,6 +144,11 @@ exports.register = async (req, res) => {
 
 exports.checkEmail = (req, res) => {
     console.log('hello')
+    const {userId, otp} = req.body;
+    console.log('userID', userId);
+    console.log('otp', otp);
+    const { id} = route.params;
+    console.log('id', id)
 }
 
 exports.verifyEmail = async (req, res) => {
