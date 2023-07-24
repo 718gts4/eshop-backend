@@ -142,6 +142,10 @@ exports.register = async (req, res) => {
     res.send(user);
 }
 
+exports.checkEmail = (req, res) => {
+    console.log('hello')
+}
+
 exports.verifyEmail = async (req, res) => {
     const {userId, otp} = req.body;
     console.log('userID', userId);

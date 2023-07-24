@@ -15,7 +15,8 @@ const {
     bookmarkProduct,
     getBookmarkedProducts,
     resetPassword,
-    verifyEmail
+    verifyEmail,
+    checkEmail
 } = require('../controllers/user');
 const express = require('express');
 const router = express.Router();
@@ -49,6 +50,7 @@ router.delete(`/:userId/searchwords`, deleteAllSearchWords);
 router.patch('/:userId/bookmarks/:productId', bookmarkProduct);
 router.get('/:userId/bookmarks', getBookmarkedProducts);
 router.post('/:userId/verifyemail', verifyEmail);
+router.post(`/checkEmail`, checkEmail);
 
 router.post('/profile', requireSignin, (req, res)=>{
     res.status(200).json({user: 'profile'})
