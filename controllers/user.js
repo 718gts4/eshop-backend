@@ -7,7 +7,7 @@ const nodemailer = require('nodemailer');
 const { isValidObjectId } = require('mongoose');
 
 const { generateOTP, mailTransport, generateEmailTemplate } = require('../utils/mail');
-// const { compareToken } = require('../models/verificationToken')
+const { compareToken } = require('../models/verificationToken')
 
 exports.getUsers = async (req, res) => {
     const userList = await User.find().select('-passwordHash');
@@ -156,7 +156,7 @@ exports.checkEmail = async (req, res) => {
     // }
 
     const user = await User.findById(userId);
-console.log('user', user.verified)
+console.log('user verified', user.verified)
     if(!user) 
     return res.status(400).send('회원을 찾을 수 없습니다.');
 
@@ -164,9 +164,10 @@ console.log('user', user.verified)
     return res.status(400).send('PIN 번호가 확인된 이메일입니다.');
 
     const token = await VerificationToken.findOne({owner: user._id})
+    console.log('token', token)
     if(!token) 
     return res.status(400).send('Sorry, user not found!');
-console.log('token', token)
+
     const isMatched = await token.compareToken(otp)
     if(!isMatched)
     return res.status(400).send('PIN 번호가 잘못되었습니다');
