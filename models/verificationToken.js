@@ -32,5 +32,3 @@ verificationTokenSchema.methods.compareToken = async function(token) {
   
 
 module.exports = mongoose.model( "VerificationToken", verificationTokenSchema);
-
-// exports.VerificationToken = mongoose.model('VerificationToken', verificationTokenSchema);

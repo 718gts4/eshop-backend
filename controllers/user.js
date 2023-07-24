@@ -7,10 +7,8 @@ const nodemailer = require('nodemailer');
 const { isValidObjectId } = require('mongoose');
 
 const { generateOTP, mailTransport, generateEmailTemplate } = require('../utils/mail');
-// const { compareToken } = require('../models/verificationToken')
 
 exports.checkEmail = async (req, res) => {
-
     const {userId, otp} = req.body;
     if(!userId || !otp.trim()){
         return res.status(400).send('PIN 번호를 다시 확인하시기 바랍니다.');
@@ -21,7 +19,6 @@ exports.checkEmail = async (req, res) => {
     }
 
     const user = await User.findById(userId);
-console.log('user verified', user.verified)
     if(!user) 
     return res.status(400).send('회원을 찾을 수 없습니다.');
 
@@ -29,12 +26,10 @@ console.log('user verified', user.verified)
     return res.status(400).send('PIN 번호가 확인된 이메일입니다.');
 
     const token = await VerificationToken.findOne({owner: userId})
-    console.log('token', token)
     if(!token) 
     return res.status(400).send('Sorry, user not found!');
 
     const isMatched = await token.compareToken(otp)
-    console.log('ismatched', isMatched);
     if(!isMatched)
     return res.status(400).send('PIN 번호가 잘못되었습니다');
 
@@ -44,6 +39,37 @@ console.log('user verified', user.verified)
     await user.save();
 
     res.json({success: true, message: "Email is verified", user: user})
+}
+
+exports.resendEmailVerification = async (req, res) => {
+    const { userId } = req.body;
+    const user = await User.findById(userId);
+    if (!user) return res.json({error: "User is not found"});
+
+    if(user.verified)
+        return res.json({error: "This email is already verified!"});
+
+    const alreadyHasToken = await VerificationToken.findOne({
+        owner: userId,
+    });
+    if (alreadyHasToken)
+        return res.json({error: "1시간 후 다른 PIN을 요청하실 수 있습니다."});
+
+    const OTP = generateOTP()
+    console.log('new otp', OTP)
+
+    const newVerfificationToken = new VerificationToken({owner: userId, token: OTP})
+
+    await newVerfificationToken.save()
+
+    mailTransport().sendMail({
+        from: process.env.EMAIL,
+        to: user.email,
+        subject:"VOUTIQ 가입 PIN 번호입니다",
+        html: generateEmailTemplate(OTP),
+    })
+
+    res.json({message: "새로운 PIN이 이메일로 발송되었습니다."});
 }
 
 exports.getUsers = async (req, res) => {
@@ -177,46 +203,6 @@ exports.register = async (req, res) => {
     })
 
     res.send(user);
-}
-
-
-
-exports.verifyEmail = async (req, res) => {
-    const {userId, otp} = req.body;
-    console.log('userID', userId);
-    console.log('otp', otp);
-    const { id} = route.params;
-    console.log('id', id)
-//     if(!userId || !otp.trim()){
-//         return res.status(400).send('PIN 번호를 다시 확인하시기 바랍니다.');
-//     }
-    
-//     if(isValidObjectId(userId)){
-//         return res.status(400).send('유저 ID에 문제가 있습니다.')
-//     }
-
-//     const user = await User.findById(userId);
-
-//     if(!user) 
-//     return res.status(400).send('회원을 찾을 수 없습니다.');
-
-//     if(user.verified) 
-//     return res.status(400).send('PIN 번호가 확인된 이메일입니다.');
-
-//     const token = await VerificationToken.findOne({owner: user._id})
-//     if(!token) 
-//     return res.status(400).send('Sorry, user not found!');
-// console.log('compoare', comopareToken())
-//     const isMatched = await token.compareToken(otp)
-//     if(!isMatched)
-//     return res.status(400).send('PIN 번호가 잘못되었습니다');
-
-//     user.verified = true;
-
-//     await VerificationToken.findByIdAndRemove(token._id);
-//     await user.save();
-
-//     res.json({success: true, message: "Email is verified", user: user})
 }
 
 exports.login = async (req, res) => {
@@ -464,13 +450,4 @@ exports.resetPassword =  async(req, res) => {
     }).catch(error => {
         return res.status(500).json({ error })
     })  
-};
-
-exports.verifyEmail = async (otp, userId) => {
-    // try {
-    //     const {data} = await client.post('/user/verify-email', {otp, userId});
-    //     return data;
-    // } catch (error) {
-    //     return catchError(error);
-    // }
 };
