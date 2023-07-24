@@ -156,7 +156,7 @@ exports.checkEmail = async (req, res) => {
     }
 
     const user = await User.findById(userId);
-
+console.log('user', user.verified)
     if(!user) 
     return res.status(400).send('회원을 찾을 수 없습니다.');
 
@@ -166,7 +166,7 @@ exports.checkEmail = async (req, res) => {
     const token = await VerificationToken.findOne({owner: user._id})
     if(!token) 
     return res.status(400).send('Sorry, user not found!');
-console.log('compoare', comopareToken())
+console.log('token', token)
     const isMatched = await token.compareToken(otp)
     if(!isMatched)
     return res.status(400).send('PIN 번호가 잘못되었습니다');
