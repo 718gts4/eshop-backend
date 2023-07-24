@@ -1,5 +1,5 @@
 const { User } = require('../models/user');
-const {VerificationToken} = require('../models/verificationToken');
+const VerificationToken = require('../models/verificationToken');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
