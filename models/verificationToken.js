@@ -20,8 +20,7 @@ const verificationTokenSchema = mongoose.Schema({
 
 verificationTokenSchema.pre("save", async function(next){
     if(this.isModified("token")){
-        const hash = await bcrypt.hash(this.token, 8);
-        this.token = hash;
+        this.token = await bcrypt.hash(this.token, 10);
     }
     next();
 });
@@ -31,5 +30,6 @@ verificationTokenSchema.method.compareToken = async function(token) {
     return result;
 };
 
+module.exports = mongoose.model( "VerificationToken", verificationTokenSchema);
 
-exports.VerificationToken = mongoose.model('VerificationToken', verificationTokenSchema);
+// exports.VerificationToken = mongoose.model('VerificationToken', verificationTokenSchema);
