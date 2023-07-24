@@ -48,7 +48,7 @@ router.get(`/:userId/searchwords`, getSearchWords);
 router.delete(`/:userId/searchwords`, deleteAllSearchWords);
 router.patch('/:userId/bookmarks/:productId', bookmarkProduct);
 router.get('/:userId/bookmarks', getBookmarkedProducts);
-router.post('/verifyEmail', verifyEmail);
+router.post('/:userId/verifyemail', verifyEmail);
 
 router.post('/profile', requireSignin, (req, res)=>{
     res.status(200).json({user: 'profile'})
