@@ -142,12 +142,11 @@ exports.register = async (req, res) => {
     res.send(user);
 }
 
-exports.checkEmail = (req, res) => {
+exports.checkEmail = async (req, res) => {
     console.log('hello')
     const {userId, otp} = req.body;
     console.log('userID', userId);
     console.log('otp', otp);
-    console.log('route params', route.params)
 //     if(!userId || !otp.trim()){
 //         return res.status(400).send('PIN 번호를 다시 확인하시기 바랍니다.');
 //     }
