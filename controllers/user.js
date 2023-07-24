@@ -146,8 +146,8 @@ exports.verifyEmail = async (req, res) => {
     const {userId, otp} = req.body;
     console.log('userID', userId);
     console.log('otp', otp);
-    const { id} = route.params
-    console.log{'id', id}
+    const { id} = route.params;
+    console.log('id', id)
 //     if(!userId || !otp.trim()){
 //         return res.status(400).send('PIN 번호를 다시 확인하시기 바랍니다.');
 //     }
