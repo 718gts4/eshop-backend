@@ -15,7 +15,7 @@ const {
     bookmarkProduct,
     getBookmarkedProducts,
     resetPassword,
-    verifyEmail,
+    // verifyEmail,
     checkEmail,
     resendEmailVerification
 } = require('../controllers/user');
@@ -50,7 +50,7 @@ router.get(`/:userId/searchwords`, getSearchWords);
 router.delete(`/:userId/searchwords`, deleteAllSearchWords);
 router.patch('/:userId/bookmarks/:productId', bookmarkProduct);
 router.get('/:userId/bookmarks', getBookmarkedProducts);
-router.post('/:userId/verifyemail', verifyEmail);
+// router.post('/:userId/verifyemail', verifyEmail);
 router.post(`/checkEmail`, checkEmail);
 router.post(`/resendCheckEmail`, resendEmailVerification);
 
