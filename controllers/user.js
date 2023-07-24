@@ -151,9 +151,9 @@ exports.checkEmail = async (req, res) => {
         return res.status(400).send('PIN 번호를 다시 확인하시기 바랍니다.');
     }
     
-    if(isValidObjectId(userId)){
-        return res.status(400).send('유저 ID에 문제가 있습니다.')
-    }
+    // if(isValidObjectId(userId)){
+    //     return res.status(400).send('유저 ID에 문제가 있습니다.')
+    // }
 
     const user = await User.findById(userId);
 console.log('user', user.verified)
