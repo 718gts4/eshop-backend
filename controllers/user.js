@@ -147,36 +147,36 @@ exports.checkEmail = async (req, res) => {
     const {userId, otp} = req.body;
     console.log('userID', userId);
     console.log('otp', otp);
-//     if(!userId || !otp.trim()){
-//         return res.status(400).send('PIN 번호를 다시 확인하시기 바랍니다.');
-//     }
+    if(!userId || !otp.trim()){
+        return res.status(400).send('PIN 번호를 다시 확인하시기 바랍니다.');
+    }
     
-//     if(isValidObjectId(userId)){
-//         return res.status(400).send('유저 ID에 문제가 있습니다.')
-//     }
+    if(isValidObjectId(userId)){
+        return res.status(400).send('유저 ID에 문제가 있습니다.')
+    }
 
-//     const user = await User.findById(userId);
+    const user = await User.findById(userId);
 
-//     if(!user) 
-//     return res.status(400).send('회원을 찾을 수 없습니다.');
+    if(!user) 
+    return res.status(400).send('회원을 찾을 수 없습니다.');
 
-//     if(user.verified) 
-//     return res.status(400).send('PIN 번호가 확인된 이메일입니다.');
+    if(user.verified) 
+    return res.status(400).send('PIN 번호가 확인된 이메일입니다.');
 
-//     const token = await VerificationToken.findOne({owner: user._id})
-//     if(!token) 
-//     return res.status(400).send('Sorry, user not found!');
-// console.log('compoare', comopareToken())
-//     const isMatched = await token.compareToken(otp)
-//     if(!isMatched)
-//     return res.status(400).send('PIN 번호가 잘못되었습니다');
+    const token = await VerificationToken.findOne({owner: user._id})
+    if(!token) 
+    return res.status(400).send('Sorry, user not found!');
+console.log('compoare', comopareToken())
+    const isMatched = await token.compareToken(otp)
+    if(!isMatched)
+    return res.status(400).send('PIN 번호가 잘못되었습니다');
 
-//     user.verified = true;
+    user.verified = true;
 
-//     await VerificationToken.findByIdAndRemove(token._id);
-//     await user.save();
+    await VerificationToken.findByIdAndRemove(token._id);
+    await user.save();
 
-//     res.json({success: true, message: "Email is verified", user: user})
+    res.json({success: true, message: "Email is verified", user: user})
 }
 
 exports.verifyEmail = async (req, res) => {
