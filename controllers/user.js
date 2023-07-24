@@ -1,5 +1,5 @@
 const { User } = require('../models/user');
-const VerificationToken = require('../models/verificationToken');
+const {VerificationToken} = require('../models/verificationToken');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
@@ -7,7 +7,7 @@ const nodemailer = require('nodemailer');
 const { isValidObjectId } = require('mongoose');
 
 const { generateOTP, mailTransport, generateEmailTemplate } = require('../utils/mail');
-const { compareToken } = require('../models/verificationToken')
+// const { compareToken } = require('../models/verificationToken')
 
 exports.checkEmail = async (req, res) => {
 
