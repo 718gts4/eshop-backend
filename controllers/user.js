@@ -144,6 +144,9 @@ exports.register = async (req, res) => {
 
 exports.verifyEmail = async (req, res) => {
     const {userId, otp} = req.body;
+    console.log('userID', userId);
+    console.log('otp', otp);
+
     if(!userId || !otp.trim()){
         return res.status(400).send('PIN 번호를 다시 확인하시기 바랍니다.');
     }
@@ -163,7 +166,7 @@ exports.verifyEmail = async (req, res) => {
     const token = await VerificationToken.findOne({owner: user._id})
     if(!token) 
     return res.status(400).send('Sorry, user not found!');
-
+console.log('compoare', comopareToken())
     const isMatched = await token.compareToken(otp)
     if(!isMatched)
     return res.status(400).send('PIN 번호가 잘못되었습니다');
