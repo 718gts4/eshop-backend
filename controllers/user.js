@@ -34,6 +34,7 @@ console.log('user verified', user.verified)
     return res.status(400).send('Sorry, user not found!');
 
     const isMatched = await token.compareToken(otp)
+    console.log('ismatched', isMatched);
     if(!isMatched)
     return res.status(400).send('PIN 번호가 잘못되었습니다');
 
