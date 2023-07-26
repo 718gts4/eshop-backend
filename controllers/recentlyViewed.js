@@ -1,6 +1,6 @@
 const {RecentlyViewed} = require('../models/recentlyViewed');
 const slugify = require('slugify');
-
+const mongoose = require('mongoose');
 
 exports.getRecentlyViewed = async (req, res) => {
     console.log('req params', req.params.id);
