@@ -1,4 +1,4 @@
-const {RecentlyViewed} = require('../models/category');
+const {RecentlyViewed} = require('../models/recentlyViewed');
 const slugify = require('slugify');
 
 
@@ -23,4 +23,3 @@ exports.saveRecentlyViewed = async (req, res) => {
 
     res.send(recentlyViewed);
 }
-
