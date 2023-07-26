@@ -23,3 +23,17 @@ exports.saveRecentlyViewed = async (req, res) => {
 
     res.send(recentlyViewed);
 }
+
+exports.deleteRecentlyViewed = async (req, res) => {
+    try {
+        const recentlyViewed = await RecentlyViewed.findById(req.params.id);
+        if (!recentlyViewed) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+  
+        await recentlyViewed.remove();
+        res.json({ message: 'Product deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
