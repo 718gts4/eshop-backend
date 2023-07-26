@@ -2,7 +2,6 @@ const {RecentlyViewed} = require('../models/category');
 const slugify = require('slugify');
 
 
-
 exports.getRecentlyViewed = async (req, res) => {
     const recentlyViewedList = await RecentlyViewed.find();
 
@@ -14,7 +13,8 @@ exports.getRecentlyViewed = async (req, res) => {
 
 exports.saveRecentlyViewed = async (req, res) => {
     const { userId, productId } = req.body;
-    let recentlyViewed = new RecentlyViewed({ userId, productId });
+    console.log('check req body', req.body);
+    let recentlyViewed = new RecentlyViewed({ user:userId, product:productId });
 
     recentlyViewed = await recentlyViewed.save();
     
