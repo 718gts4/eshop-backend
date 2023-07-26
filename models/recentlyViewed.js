@@ -9,6 +9,10 @@ const recentlyViewedSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     },
+    dateCreated:{
+        type: Date,
+        default: Date.now
+    },
 })
 
 exports.RecentlyViewed = mongoose.model('RecentlyViewed', recentlyViewedSchema);
