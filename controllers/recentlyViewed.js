@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 exports.getRecentlyViewed = async (req, res) => {
     const userId = mongoose.Types.ObjectId(req.params.id);
-    const recentlyViewedList = await RecentlyViewed.find({user: userId});
+    const recentlyViewedList = await RecentlyViewed.find({user: userId}).populate('product').sort({'dateCreated': -1});
 
     if(!recentlyViewedList){
         res.status(500).json({success:false})
