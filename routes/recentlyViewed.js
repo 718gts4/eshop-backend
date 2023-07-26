@@ -2,7 +2,7 @@ const { getRecentlyViewed, saveRecentlyViewed, deleteRecentlyViewed } = require(
 const express = require('express');
 const router = express.Router();
 
-router.get(`/`, getRecentlyViewed);
+router.get(`/:id`, getRecentlyViewed);
 router.post(`/`, saveRecentlyViewed);
 router.delete(`/:id`, deleteRecentlyViewed);
 

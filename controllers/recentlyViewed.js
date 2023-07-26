@@ -3,7 +3,7 @@ const slugify = require('slugify');
 
 
 exports.getRecentlyViewed = async (req, res) => {
-    const recentlyViewedList = await RecentlyViewed.find();
+    const recentlyViewedList = await RecentlyViewed.findById(req.params.id);
 
     if(!recentlyViewedList){
         res.status(500).json({success:false})
