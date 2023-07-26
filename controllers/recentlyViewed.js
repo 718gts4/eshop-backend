@@ -3,7 +3,6 @@ const slugify = require('slugify');
 const mongoose = require('mongoose');
 
 exports.getRecentlyViewed = async (req, res) => {
-    console.log('req params', req.params.id);
     const userId = mongoose.Types.ObjectId(req.params.id);
     const recentlyViewedList = await RecentlyViewed.find({user: userId});
 
@@ -15,7 +14,11 @@ exports.getRecentlyViewed = async (req, res) => {
 
 exports.saveRecentlyViewed = async (req, res) => {
     const { userId, productId } = req.body;
-    console.log('check req body', req.body);
+    const existingViewedItem = await RecentlyViewed.findOne({ user: userId, product: productId });
+    if (existingViewedItem) {
+        return res.status(400).send('이미 저장된 상품입니다.');
+    }
+
     let recentlyViewed = new RecentlyViewed({ user:userId, product:productId });
 
     recentlyViewed = await recentlyViewed.save();
@@ -39,15 +42,3 @@ exports.deleteRecentlyViewed = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-
-exports.getProductsByCategoryId = async (req, res) => {
-    console.log('req.params.', req.params.categoryId)
-    try {
-        const categoryId = mongoose.Types.ObjectId(req.params.categoryId);
-        const products = await Product.find({ parentCategory: categoryId});
-
-        res.status(200).json(products);
-    } catch (error) {
-        res.status(500).json({error: 'Failed to retrieve category products'});
-    }
-}
