@@ -11,4 +11,4 @@ const recentlyViewedSchema = mongoose.Schema({
     },
 })
 
-exports.RecentlyViewed = mongoose.model('RecenltyViewed', recentlyViewedSchema);
+exports.RecentlyViewed = mongoose.model('RecentlyViewed', recentlyViewedSchema);
