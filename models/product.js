@@ -1,33 +1,5 @@
 const mongoose = require('mongoose');
-
-const saleSchema = new mongoose.Schema({
-    onSale: {
-        type: Boolean,
-        required: true,
-        default: false
-    },
-    title: {
-        type: String,
-        default: ''
-    },
-    products: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
-        required: true
-    }],
-    discount: {
-        type: Number,
-        required: true
-    },
-    startTime: {
-        type: Date,
-        required: true
-    },
-    endTime: {
-        type: Date,
-        required: true
-    }
-});
+const { Sale } = require('../models/sale');
   
 const productSchema = mongoose.Schema({
     name: {
@@ -177,11 +149,6 @@ const productSchema = mongoose.Schema({
             }
         ]
     },
-    sale: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Sale',
-        default: null
-    },
     delivery : {
         type: String,
         default: ''
@@ -214,6 +181,11 @@ const productSchema = mongoose.Schema({
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
+    },
+    sale: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Sale',
+        default: null
     },
     salesQuantity: {
         type: Number,

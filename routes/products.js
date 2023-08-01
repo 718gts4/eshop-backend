@@ -15,8 +15,8 @@ const { getProducts,
     getRecentProducts,
     getProductsByCategoryId,
     bookmarkProduct,
-    // getCategoryProducts,
-    getProductsByChildCategoryId
+    getProductsByChildCategoryId,
+    setSaleForProduct
 } = require('../controllers/product');
 const express = require('express');
 const router = express.Router();
@@ -63,7 +63,6 @@ router.delete(`/:id`, requireSignin, adminMiddleware, deleteProduct);
 router.get(`/get/count`, getProductCount);
 router.get(`/admin/:id`, getAdminProducts);
 router.get(`/search/products`, getSearchProducts); // get products of search result
-// router.get(`/category/search/products`, getCategoryProducts);
 router.patch('/:id/like', likeProduct, requireSignin);
 router.patch('/:id/bookmark', bookmarkProduct, requireSignin);
 router.put('/:id/sale', editSaleDuration, requireSignin);
@@ -71,6 +70,8 @@ router.post('/post/sale', createSale);
 router.get('/recent/products', getRecentProducts);
 router.get('/category/:categoryId', getProductsByCategoryId);
 router.get('/category/child/:categoryId', getProductsByChildCategoryId); // get child category search results
+
+router.post('/set-sale', setSaleForProduct);
 
 router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
     const {
