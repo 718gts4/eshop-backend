@@ -144,7 +144,7 @@ exports.getUserOrders = async (req, res) => {
         path: 'orderItems', populate: {
             path: 'product', populate: 'category'
         }
-    }).sort({'dateOrdered': -1});
+    }).populate(address).sort({'dateOrdered': -1});
 
     if(!userOrderList){
         res.status(500).json({success: false});

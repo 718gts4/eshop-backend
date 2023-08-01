@@ -12,7 +12,7 @@ const orderSchema = mongoose.Schema({
     status: {
         type: String,
         required: true,
-        default: 'Pending',
+        default: '주문요청',
     },
     totalPrice: {
         type: Number,
@@ -33,7 +33,7 @@ const orderSchema = mongoose.Schema({
         {
             type: {
                 type: String,
-                enum: ["ordered", "processing", "packed", "shipped", "delivered"],
+                enum: ["주문요청", "주문확인", "준비중", "배송중", "배송완료"],
                 default: "ordered",
             }, 
             date: {
