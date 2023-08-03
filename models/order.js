@@ -44,10 +44,25 @@ const orderSchema = mongoose.Schema({
                 default: false,
             },
         },
-    ],   
+    ],  
+    orderNumber: {
+        type: String,
+        required: true,
+        unique: true,
+        minlength: 16,
+        maxlength: 16,
+    },
+ 
 },
 {timestamps: true}
 );
+
+orderSchema.pre('save', function (next) {
+    // Generate a random 16-digit number
+    const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
+    this.orderNumber = randomNumber.toString(); // Convert to string and set as order number
+    next();
+});
 
 orderSchema.virtual('id').get(function(){
     return this._id.toHexString();
