@@ -140,11 +140,14 @@ exports.getTotalSales = async (req, res) => {
 }
 
 exports.getUserOrders = async (req, res) => {
-    const userOrderList = await Order.find({user: req.params.userid}).populate('address').populate({
+    const userOrderList = await Order.find({user: req.params.userid})
+    .populate('address')
+    .populate({
         path: 'orderItems', populate: {
             path: 'product', populate: 'category'
         }
-    }).sort({'dateOrdered': -1});
+    })
+    .sort({'dateOrdered': -1});
 
     if(!userOrderList){
         res.status(500).json({success: false});
