@@ -33,7 +33,7 @@ const orderSchema = mongoose.Schema({
         {
             type: {
                 type: String,
-                enum: ["주문요청", "주문확인", "준비중", "배송중", "배송완료"],
+                enum: ["주문완료", "주문확인", "준비중", "배송중", "배송완료"],
                 default: "ordered",
             }, 
             date: {
