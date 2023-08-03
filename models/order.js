@@ -12,7 +12,7 @@ const orderSchema = mongoose.Schema({
     status: {
         type: String,
         required: true,
-        default: '주문요청',
+        default: '주문완료',
     },
     totalPrice: {
         type: Number,
