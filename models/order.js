@@ -58,9 +58,11 @@ const orderSchema = mongoose.Schema({
 );
 
 orderSchema.pre('save', function (next) {
-    // Generate a random 16-digit number
-    const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
-    this.orderNumber = randomNumber.toString(); // Convert to string and set as order number
+    if (!this.orderNumber) {
+        // Generate a random 16-digit number
+        const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
+        this.orderNumber = randomNumber.toString(); // Convert to string and set as order number
+    }
     next();
 });
 
