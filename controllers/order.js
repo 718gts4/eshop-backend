@@ -140,7 +140,7 @@ exports.getTotalSales = async (req, res) => {
 }
 
 exports.getUserOrders = async (req, res) => {
-    const userOrderList = await Order.find({user: req.params.userid}).populate({
+    const userOrderList = await Order.find({user: req.params.userid}).populate('address').populate({
         path: 'orderItems', populate: {
             path: 'product', populate: 'category'
         }
