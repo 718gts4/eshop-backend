@@ -55,24 +55,24 @@ exports.postOrder = async (req, res) => {
         user: req.body.user,
         orderStatus: req.body.orderStatus = [
             {
-                type: "ordered",
+                type: "주문요청",
                 date: new Date(),
                 isCompleted: true,
             },
             {
-                type: "processing",
+                type: "주문확인",
                 isCompleted: false,
             },
             {
-                type: "packed",
+                type: "준비중",
                 isCompleted: false,
             },
             {
-                type: "shipped",
+                type: "배송중",
                 isCompleted: false,
             },
             {
-                type: "delivered",
+                type: "배송완료",
                 isCompleted: false,
             }
         ]
