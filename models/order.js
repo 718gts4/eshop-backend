@@ -14,6 +14,13 @@ const orderSchema = mongoose.Schema({
         required: true,
         default: '주문완료',
     },
+    deliveryFee: {
+        type: Number,
+        default: 3000,
+    },
+    productPrice: {
+        type: Number,
+    },
     totalPrice: {
         type: Number,
     },
