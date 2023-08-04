@@ -43,7 +43,6 @@ const storage = multer.diskStorage({
       if(isValid){
         uploadError = null
       }
-
               
       const uploadsFolder = path.join(path.dirname(__dirname), 'uploads');
       if (!fs.existsSync(uploadsFolder)) {
@@ -52,7 +51,6 @@ const storage = multer.diskStorage({
     
       cb(uploadError, uploadsFolder);
 
-    //   cb(uploadError, path.join(path.dirname(__dirname), 'uploads'))
     },
     filename: function (req, file, cb) {
       const fileName = file.originalname.split(' ').join('-');
