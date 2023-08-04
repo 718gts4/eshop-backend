@@ -55,6 +55,8 @@ exports.postOrder = async (req, res) => {
         orderItems: orderItemsIdsResolved,
         address: req.body.address,
         status: req.body.status,
+        deliveryFee: req.body.deliveryFee,
+        productPrice: req.body.productPrice,
         totalPrice: totalPrice,
         user: req.body.user,
         orderStatus: req.body.orderStatus = [
