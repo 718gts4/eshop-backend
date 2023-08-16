@@ -35,7 +35,8 @@ exports.getOrderItems = async (req, res) => {
         }
 
         const orderItems = await OrderItem.find({ sellerId: sellerId })
-            .populate('product', 'address');
+            .populate('product')
+            .populate('address');
 
         if (!orderItems) {
             return res.status(500).json({ success: false });
