@@ -32,6 +32,7 @@ exports.postOrder = async (req, res) => {
             product: orderItem.product.id,
             buyer: req.body.user,
             address: req.body.address,
+            sellerId: orderItem.sellerId,
         })
         newOrderItem = await newOrderItem.save();
 
