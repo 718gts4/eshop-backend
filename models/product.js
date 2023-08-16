@@ -10,6 +10,10 @@ const productSchema = mongoose.Schema({
         type: String,
         default: Date.now,
     },
+    sellerId: {
+        type: String,
+        required: true
+    },
     description: {
         type: String,
         required: true,

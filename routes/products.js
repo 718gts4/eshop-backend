@@ -82,10 +82,9 @@ router.get('/category/child/:categoryId', getProductsByChildCategoryId); // get 
 
 router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
     const {
-        name, price, description, richDescription, brand, parentCategory, category, isFeatured, colorOptions, subOption1, subOption2, subOption3, soldout, display, dropDate, sale, dropProduct, deliveryFee
+        name, price, description, richDescription, brand, parentCategory, category, isFeatured, colorOptions, subOption1, subOption2, subOption3, soldout, display, dropDate, sale, dropProduct, deliveryFee, sellerId
     } = req.body;
-console.log('deliver fee', deliveryFee);
-console.log('checking', req.body.deliveryFee);
+
     try {
         const images = req.files.map((file) => ({
             file: fs.readFileSync(file.path),
@@ -121,6 +120,7 @@ console.log('checking', req.body.deliveryFee);
             dropDate,
             dropProduct,
             deliveryFee,
+            sellerId,
         });
 
         if (product.sale) {
