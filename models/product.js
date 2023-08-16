@@ -201,7 +201,7 @@ const productSchema = mongoose.Schema({
     },
     deliveryFeeAmount: {
         type: Number,
-        default: 3000
+        default: 0
     }
 })
 
