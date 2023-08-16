@@ -82,7 +82,7 @@ router.get('/category/child/:categoryId', getProductsByChildCategoryId); // get 
 
 router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
     const {
-        name, price, description, richDescription, brand, parentCategory, category, isFeatured, colorOptions, subOption1, subOption2, subOption3, soldout, display, dropDate, sale, dropProduct, deliveryFee, sellerId
+        name, price, description, richDescription, brand, parentCategory, category, isFeatured, colorOptions, subOption1, subOption2, subOption3, soldout, display, dropDate, sale, dropProduct, deliveryFee, deliveryFeeAmount, sellerId
     } = req.body;
 
     try {
@@ -120,6 +120,7 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
             dropDate,
             dropProduct,
             deliveryFee,
+            deliveryFeeAmount,
             sellerId,
         });
 

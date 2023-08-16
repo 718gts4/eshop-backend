@@ -199,6 +199,10 @@ const productSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
+    deliveryFeeAmount: {
+        type: Number,
+        default: 3000
+    }
 })
 
 
