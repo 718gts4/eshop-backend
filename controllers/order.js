@@ -27,6 +27,7 @@ exports.getOrder = async (req, res) => {
 exports.postOrder = async (req, res) => {
     
     const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
+        console.log('check sellerID', orderItem.sellerId)
         let newOrderItem = new OrderItem({
             quantity: orderItem.quantity,
             product: orderItem.product.id,
