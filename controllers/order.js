@@ -1,5 +1,6 @@
 const {Order} = require('../models/order');
 const {OrderItem} = require('../models/order-item');
+const mongoose = require('mongoose');
 
 exports.getOrders = async (req, res) => {
     const orderList = await Order.find().populate('user', 'name').sort({'dateOrdered': -1});
@@ -25,17 +26,23 @@ exports.getOrder = async (req, res) => {
 }
 
 exports.getOrderItems = async (req, res) => {
-    console.log('check req params', req.params.sellerId)
     try {
-        const orderItem = await OrderItem.findById({sellerId: req.params.sellerId})
+        const sellerId = req.params.sellerId;
+
+        // Check if the sellerId is a valid ObjectId
+        if (!mongoose.isValidObjectId(sellerId)) {
+            return res.status(400).json({ success: false, error: 'Invalid sellerId' });
+        }
+
+        const orderItems = await OrderItem.find({ sellerId: sellerId })
             .populate('product', 'address', 'buyer');
 
-        if (!orderItem) {
+        if (!orderItems) {
             return res.status(500).json({ success: false });
         }
-        
-        // Send the retrieved orderItem
-        res.status(200).json(orderItem);
+
+        // Send the retrieved orderItems
+        res.status(200).json(orderItems);
     } catch (error) {
         // Handle errors gracefully
         res.status(500).json({ success: false, error: error.message });
