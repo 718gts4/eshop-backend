@@ -18,6 +18,11 @@ const orderItemSchema = mongoose.Schema({
     address: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Address'
+    },
+    sellerId: {
+
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }
 })
 
