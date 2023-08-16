@@ -25,8 +25,9 @@ exports.getOrder = async (req, res) => {
 }
 
 exports.getOrderItems = async (req, res) => {
+    console.log('check req params', req.params.sellerId)
     try {
-        const orderItem = await OrderItem.findById(req.params.sellerId)
+        const orderItem = await OrderItem.findById({sellerId: req.params.sellerId})
             .populate('product', 'address', 'buyer');
 
         if (!orderItem) {
