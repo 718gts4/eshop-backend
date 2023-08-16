@@ -24,10 +24,19 @@ exports.getOrder = async (req, res) => {
     res.send(order);
 }
 
+exports.getOrderItems = async (req, res) => {
+    const orderItem = await OrderItem.findById(sellerId:req.params.sellerId)
+    .populate('product', 'address', 'buyer');
+
+    if(!orderItem){
+        res.status(500).json({succeess: false});
+    }
+    res.send(orderItem);
+}
+
 exports.postOrder = async (req, res) => {
     
     const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
-        console.log('check sellerID', orderItem)
         let newOrderItem = new OrderItem({
             quantity: orderItem.quantity,
             product: orderItem.product.id,
