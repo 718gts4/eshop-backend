@@ -59,6 +59,11 @@ const orderSchema = mongoose.Schema({
         minlength: 16,
         maxlength: 16,
     }, 
+    orderItemsData: [{
+        orderItemNumber: String,
+        product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+        quantity: Number,
+    }],
 },
 {timestamps: true}
 );
