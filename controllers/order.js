@@ -52,8 +52,9 @@ exports.getOrderItems = async (req, res) => {
     }
 };
 
-exports.postOrder = async (req, res) => {
-    
+exports.postOrder = async (req, res) => {   
+    const orderItemsData = [];
+
     const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
         const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
         const orderNumber = randomNumber.toString();
@@ -67,6 +68,14 @@ exports.postOrder = async (req, res) => {
             orderNumber: orderNumber,
         })
         newOrderItem = await newOrderItem.save();
+
+        const orderItemData = {
+            orderItemNumber: orderNumber,
+            product: orderItem.product.id,
+            quantity: orderItem.quantity,
+        };
+
+        orderItemsData.push(orderItemData);
 
         return newOrderItem._id;
     }))
@@ -83,9 +92,10 @@ exports.postOrder = async (req, res) => {
     // Generate a random 16-digit number for orderNumber
     const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
     const orderNumber = randomNumber.toString();
-
+console.log('orderitemsdata check', orderItemsData);
     let order = new Order({
         orderItems: orderItemsIdsResolved,
+        orderItemsData: orderItemsData,
         address: req.body.address,
         status: req.body.status,
         deliveryFee: req.body.deliveryFee,
