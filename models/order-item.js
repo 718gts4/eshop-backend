@@ -27,6 +27,17 @@ const orderItemSchema = mongoose.Schema({
         type: Date,
         default: Date.now,
     },  
+    orderNumber: {
+        type: String,
+        required: true,
+        unique: true,
+        minlength: 16,
+        maxlength: 16,
+    }, 
+    parentOrderNumber: {
+        type: String,
+        required: true,
+    }, 
     orderStatus: [
         {
             type: {
