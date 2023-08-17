@@ -36,13 +36,6 @@ const orderSchema = mongoose.Schema({
         type: Date,
         default: Date.now,
     }, 
-    parentOrderNumber: {
-        type: String,
-        required: true,
-        unique: true,
-        minlength: 16,
-        maxlength: 16,
-    }, 
     orderItemsData: [{
         orderItemNumber: String,
         product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },

@@ -79,7 +79,7 @@ exports.postOrder = async (req, res) => {
     ];
 
     const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
-        const randomNumberDigit = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
+        // const randomNumberDigit = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
         // const orderNumber = randomNumberDigit.toString();
 
         let newOrderItem = new OrderItem({
@@ -89,7 +89,7 @@ exports.postOrder = async (req, res) => {
             address: req.body.address,
             sellerId: orderItem.product.sellerId,
             // orderNumber: orderNumber,
-            parentOrderNumber: parentOrderNumber,
+            // parentOrderNumber: parentOrderNumber,
             orderStatus: orderStatus
         })
         newOrderItem = await newOrderItem.save();
@@ -124,7 +124,7 @@ exports.postOrder = async (req, res) => {
         productPrice: req.body.productPrice,
         totalPrice: totalPrice,
         user: req.body.user,
-        parentOrderNumber: parentOrderNumber,
+        // parentOrderNumber: parentOrderNumber,
     })
     order = await order.save();
 

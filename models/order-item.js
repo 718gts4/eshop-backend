@@ -27,10 +27,6 @@ const orderItemSchema = mongoose.Schema({
         type: Date,
         default: Date.now,
     },  
-    parentOrderNumber: {
-        type: String,
-        required: true,
-    }, 
     orderStatus: [
         {
             type: {
