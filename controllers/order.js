@@ -90,6 +90,7 @@ exports.postOrder = async (req, res) => {
             sellerId: orderItem.product.sellerId,
             orderNumber: orderNumber,
             parentOrderNumber: parentOrderNumber,
+            parentOrderId: order._id,
             orderStatus: orderStatus
         })
         newOrderItem = await newOrderItem.save();
@@ -137,9 +138,11 @@ exports.postOrder = async (req, res) => {
 exports.toggleOrderStatus = async (req, res) => {
     const orderItemId = req.params.orderItemId;
     const statusIndex = req.params.statusIndex;
-
+console.log('order item id', orderItemId);
+console.log('stataus index', statusIndex);
     try {
         const orderItem = await OrderItem.findById(orderItemId);
+console.log('orderItem', orderItem);
 
         if(!orderItem) {
             return res.status(404).json({success: false, message: 'Order not found.'});
