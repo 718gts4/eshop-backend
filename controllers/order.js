@@ -90,7 +90,7 @@ exports.postOrder = async (req, res) => {
             sellerId: orderItem.product.sellerId,
             orderNumber: orderNumber,
             parentOrderNumber: parentOrderNumber,
-            parentOrderId: order._id,
+            // parentOrderId: order._id,
             orderStatus: orderStatus
         })
         newOrderItem = await newOrderItem.save();
