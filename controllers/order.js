@@ -53,6 +53,10 @@ exports.getOrderItems = async (req, res) => {
 };
 
 exports.postOrder = async (req, res) => {   
+    // Generate a random 16-digit number for orderNumber
+    const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
+    const parentOrderNumber = randomNumber.toString();
+
     const orderItemsData = [];
 
     const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
@@ -66,6 +70,7 @@ exports.postOrder = async (req, res) => {
             address: req.body.address,
             sellerId: orderItem.product.sellerId,
             orderNumber: orderNumber,
+            parentOrderNumber: parentOrderNumber,
             orderStatus: req.body.orderStatus = [
                 {
                     type: "주문완료",
@@ -108,9 +113,7 @@ exports.postOrder = async (req, res) => {
 
     const totalPrice = totalPrices.reduce((a,b) => a +b , 0);
 
-    // Generate a random 16-digit number for orderNumber
-    const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
-    const orderNumber = randomNumber.toString();
+    
 console.log('orderitemsdata check', orderItemsData);
     let order = new Order({
         orderItems: orderItemsIdsResolved,
@@ -140,7 +143,7 @@ console.log('orderitemsdata check', orderItemsData);
         //         isCompleted: false,
         //     }
         // ],
-        orderNumber: orderNumber,
+        orderNumber: parentOrderNumber,
     })
     order = await order.save();
 
