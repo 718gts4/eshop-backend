@@ -30,7 +30,7 @@ const orderItemSchema = mongoose.Schema({
     orderNumber: {
         type: String,
         required: true,
-        unique: true,
+        // unique: true,
         minlength: 16,
         maxlength: 16,
     }, 
@@ -38,10 +38,6 @@ const orderItemSchema = mongoose.Schema({
         type: String,
         required: true,
     }, 
-    // parentOrderId: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Order', // Reference to the Order model
-    // },
     orderStatus: [
         {
             type: {
