@@ -138,7 +138,7 @@ exports.postOrder = async (req, res) => {
 exports.toggleOrderStatus = async (req, res) => {
     console.log('checking params', req.params);
     const orderItemId = req.params.orderItemId;
-    const statusIndex = req.params.index;
+    const statusIndex = req.params.orderStatusIndex;
 console.log('order item id', orderItemId);
 console.log('stataus index', statusIndex);
     try {
