@@ -58,23 +58,7 @@ const orderSchema = mongoose.Schema({
                 isCompleted: Boolean
             }
         ]
-    }],
-    // orderStatus: [
-    //     {
-    //         type: {
-    //             type: String,
-    //             enum: ["주문완료", "준비중", "배송중", "배송완료"],
-    //             default: "ordered",
-    //         }, 
-    //         date: {
-    //             type: Date
-    //         },
-    //         isCompleted: {
-    //             type: Boolean,
-    //             default: false,
-    //         },
-    //     },
-    // ],  
+    }], 
 },
 {timestamps: true}
 );

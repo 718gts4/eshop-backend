@@ -38,6 +38,10 @@ const orderItemSchema = mongoose.Schema({
         type: String,
         required: true,
     }, 
+    parentOrderId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Order', // Reference to the Order model
+    },
     orderStatus: [
         {
             type: {

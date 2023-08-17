@@ -134,6 +134,30 @@ exports.postOrder = async (req, res) => {
     res.send(order);
 }
 
+exports.toggleOrderStatus = async (req, res) => {
+    const orderItemId = req.params.orderItemId;
+    const statusIndex = req.params.statusIndex;
+
+    try {
+        const orderItem = await OrderItem.findById(orderItemId);
+
+        if(!orderItem) {
+            return res.status(404).json({success: false, message: 'Order not found.'});
+        }
+
+        const updatedOrderStatus = [...orderItem.orderStatus];
+
+        updatedOrderStatus[statusIndex].isCompleted = !updatedOrderStatus[statusIndex].isCompleted;
+        orderItem.orderStatus = updatedOrderStatus;
+
+        const updatedOrderItem = await orderItem.save();
+
+        res.json({success: true, orderItem: updatedOrderItem});
+    } catch (error) {
+        res.status(500).json({success: false, message: 'Server error'});
+    }
+};
+
 exports.updateOrder = async (req, res) => {
     const order = await Order.findByIdAndUpdate(
         req.params.id,
