@@ -81,21 +81,18 @@ exports.postOrder = async (req, res) => {
     const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
         const randomNumberDigit = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
         const orderNumber = randomNumberDigit.toString();
-console.log('checking order Number', orderNumber)
+        
         let newOrderItem = new OrderItem({
             quantity: orderItem.quantity,
             product: orderItem.product.id,
             buyer: req.body.user,
             address: req.body.address,
             sellerId: orderItem.product.sellerId,
-            orderNumber: orderNumber,
-            parentOrderNumber: parentOrderNumber,
             orderStatus: orderStatus
         })
         newOrderItem = await newOrderItem.save();
 
         const orderItemData = {
-            orderItemNumber: orderNumber,
             product: orderItem.product.id,
             quantity: orderItem.quantity,
             orderStatus: orderStatus,
@@ -124,7 +121,6 @@ console.log('checking order Number', orderNumber)
         productPrice: req.body.productPrice,
         totalPrice: totalPrice,
         user: req.body.user,
-        parentOrderNumber: parentOrderNumber,
     })
     order = await order.save();
 
@@ -135,11 +131,9 @@ console.log('checking order Number', orderNumber)
 }
 
 exports.toggleOrderStatus = async (req, res) => {
-    console.log('checking params', req.params);
     const orderItemId = req.params.orderItemId;
     const statusIndex = req.params.orderStatusIndex;
-console.log('order item id', orderItemId);
-console.log('stataus index', statusIndex);
+
     try {
         const orderItem = await OrderItem.findById(orderItemId);
 
