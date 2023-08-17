@@ -58,6 +58,25 @@ exports.postOrder = async (req, res) => {
     const parentOrderNumber = randomNumber.toString();
 
     const orderItemsData = [];
+    const orderStatus = [
+        {
+            type: "주문완료",
+            date: new Date(),
+            isCompleted: true,
+        },
+        {
+            type: "준비중",
+            isCompleted: false,
+        },
+        {
+            type: "배송중",
+            isCompleted: false,
+        },
+        {
+            type: "배송완료",
+            isCompleted: false,
+        }
+    ];
 
     const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
         const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
@@ -71,25 +90,7 @@ exports.postOrder = async (req, res) => {
             sellerId: orderItem.product.sellerId,
             orderNumber: orderNumber,
             parentOrderNumber: parentOrderNumber,
-            orderStatus: req.body.orderStatus = [
-                {
-                    type: "주문완료",
-                    date: new Date(),
-                    isCompleted: true,
-                },
-                {
-                    type: "준비중",
-                    isCompleted: false,
-                },
-                {
-                    type: "배송중",
-                    isCompleted: false,
-                },
-                {
-                    type: "배송완료",
-                    isCompleted: false,
-                }
-            ],
+            orderStatus: orderStatus
         })
         newOrderItem = await newOrderItem.save();
 
@@ -97,25 +98,7 @@ exports.postOrder = async (req, res) => {
             orderItemNumber: orderNumber,
             product: orderItem.product.id,
             quantity: orderItem.quantity,
-            orderStatus: req.body.orderStatus = [
-                {
-                    type: "주문완료",
-                    date: new Date(),
-                    isCompleted: true,
-                },
-                {
-                    type: "준비중",
-                    isCompleted: false,
-                },
-                {
-                    type: "배송중",
-                    isCompleted: false,
-                },
-                {
-                    type: "배송완료",
-                    isCompleted: false,
-                }
-            ],
+            orderStatus: orderStatus,
         };
 
         orderItemsData.push(orderItemData);
