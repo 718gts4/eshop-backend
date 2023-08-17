@@ -95,7 +95,7 @@ exports.postOrder = async (req, res) => {
         newOrderItem = await newOrderItem.save();
 
         const orderItemData = {
-            orderItemNumber: orderNumber,
+            // orderItemNumber: orderNumber,
             product: orderItem.product.id,
             quantity: orderItem.quantity,
             orderStatus: orderStatus,
