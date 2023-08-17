@@ -20,10 +20,20 @@ const orderItemSchema = mongoose.Schema({
         ref: 'Address'
     },
     sellerId: {
-
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    }
+    },
+    dateOrdered: {
+        type: Date,
+        default: Date.now,
+    },  
+    orderNumber: {
+        type: String,
+        required: true,
+        unique: true,
+        minlength: 16,
+        maxlength: 16,
+    }, 
 })
 
 exports.OrderItem = mongoose.model("OrderItem", orderItemSchema);
