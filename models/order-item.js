@@ -34,6 +34,22 @@ const orderItemSchema = mongoose.Schema({
         minlength: 16,
         maxlength: 16,
     }, 
+    orderStatus: [
+        {
+            type: {
+                type: String,
+                enum: ["주문완료", "준비중", "배송중", "배송완료"],
+                default: "ordered",
+            }, 
+            date: {
+                type: Date
+            },
+            isCompleted: {
+                type: Boolean,
+                default: false,
+            },
+        },
+    ], 
 })
 
 exports.OrderItem = mongoose.model("OrderItem", orderItemSchema);

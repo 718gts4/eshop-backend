@@ -66,6 +66,25 @@ exports.postOrder = async (req, res) => {
             address: req.body.address,
             sellerId: orderItem.product.sellerId,
             orderNumber: orderNumber,
+            orderStatus: req.body.orderStatus = [
+                {
+                    type: "주문완료",
+                    date: new Date(),
+                    isCompleted: true,
+                },
+                {
+                    type: "준비중",
+                    isCompleted: false,
+                },
+                {
+                    type: "배송중",
+                    isCompleted: false,
+                },
+                {
+                    type: "배송완료",
+                    isCompleted: false,
+                }
+            ],
         })
         newOrderItem = await newOrderItem.save();
 
@@ -102,29 +121,25 @@ console.log('orderitemsdata check', orderItemsData);
         productPrice: req.body.productPrice,
         totalPrice: totalPrice,
         user: req.body.user,
-        orderStatus: req.body.orderStatus = [
-            {
-                type: "주문완료",
-                date: new Date(),
-                isCompleted: true,
-            },
-            {
-                type: "주문확인",
-                isCompleted: false,
-            },
-            {
-                type: "준비중",
-                isCompleted: false,
-            },
-            {
-                type: "배송중",
-                isCompleted: false,
-            },
-            {
-                type: "배송완료",
-                isCompleted: false,
-            }
-        ],
+        // orderStatus: req.body.orderStatus = [
+        //     {
+        //         type: "주문완료",
+        //         date: new Date(),
+        //         isCompleted: true,
+        //     },
+        //     {
+        //         type: "준비중",
+        //         isCompleted: false,
+        //     },
+        //     {
+        //         type: "배송중",
+        //         isCompleted: false,
+        //     },
+        //     {
+        //         type: "배송완료",
+        //         isCompleted: false,
+        //     }
+        // ],
         orderNumber: orderNumber,
     })
     order = await order.save();
