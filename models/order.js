@@ -47,6 +47,17 @@ const orderSchema = mongoose.Schema({
         orderItemNumber: String,
         product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
         quantity: Number,
+        orderStatus: [
+            {
+                type: {
+                    type: String,
+                    enum: ['주문완료', '준비중', '배송중', '배송완료'],
+                    required: true
+                },
+                date: Date,
+                isCompleted: Boolean
+            }
+        ]
     }],
     // orderStatus: [
     //     {
