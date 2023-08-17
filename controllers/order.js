@@ -80,7 +80,7 @@ exports.postOrder = async (req, res) => {
 
     const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
         const randomNumberDigit = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
-        const orderNumber = randomNumberDigit.toString();
+        // const orderNumber = randomNumberDigit.toString();
 console.log('checking order Number', orderNumber)
         let newOrderItem = new OrderItem({
             quantity: orderItem.quantity,
@@ -88,7 +88,7 @@ console.log('checking order Number', orderNumber)
             buyer: req.body.user,
             address: req.body.address,
             sellerId: orderItem.product.sellerId,
-            orderNumber: orderNumber,
+            // orderNumber: orderNumber,
             parentOrderNumber: parentOrderNumber,
             orderStatus: orderStatus
         })
