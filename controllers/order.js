@@ -97,6 +97,25 @@ exports.postOrder = async (req, res) => {
             orderItemNumber: orderNumber,
             product: orderItem.product.id,
             quantity: orderItem.quantity,
+            orderStatus: req.body.orderStatus = [
+                {
+                    type: "주문완료",
+                    date: new Date(),
+                    isCompleted: true,
+                },
+                {
+                    type: "준비중",
+                    isCompleted: false,
+                },
+                {
+                    type: "배송중",
+                    isCompleted: false,
+                },
+                {
+                    type: "배송완료",
+                    isCompleted: false,
+                }
+            ],
         };
 
         orderItemsData.push(orderItemData);
@@ -113,8 +132,6 @@ exports.postOrder = async (req, res) => {
 
     const totalPrice = totalPrices.reduce((a,b) => a +b , 0);
 
-    
-console.log('orderitemsdata check', orderItemsData);
     let order = new Order({
         orderItems: orderItemsIdsResolved,
         orderItemsData: orderItemsData,
@@ -124,26 +141,7 @@ console.log('orderitemsdata check', orderItemsData);
         productPrice: req.body.productPrice,
         totalPrice: totalPrice,
         user: req.body.user,
-        // orderStatus: req.body.orderStatus = [
-        //     {
-        //         type: "주문완료",
-        //         date: new Date(),
-        //         isCompleted: true,
-        //     },
-        //     {
-        //         type: "준비중",
-        //         isCompleted: false,
-        //     },
-        //     {
-        //         type: "배송중",
-        //         isCompleted: false,
-        //     },
-        //     {
-        //         type: "배송완료",
-        //         isCompleted: false,
-        //     }
-        // ],
-        orderNumber: parentOrderNumber,
+        parentOrderNumber: parentOrderNumber,
     })
     order = await order.save();
 

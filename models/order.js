@@ -36,23 +36,7 @@ const orderSchema = mongoose.Schema({
         type: Date,
         default: Date.now,
     }, 
-    orderStatus: [
-        {
-            type: {
-                type: String,
-                enum: ["주문완료", "준비중", "배송중", "배송완료"],
-                default: "ordered",
-            }, 
-            date: {
-                type: Date
-            },
-            isCompleted: {
-                type: Boolean,
-                default: false,
-            },
-        },
-    ],  
-    orderNumber: {
+    parentOrderNumber: {
         type: String,
         required: true,
         unique: true,
@@ -64,6 +48,22 @@ const orderSchema = mongoose.Schema({
         product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
         quantity: Number,
     }],
+    // orderStatus: [
+    //     {
+    //         type: {
+    //             type: String,
+    //             enum: ["주문완료", "준비중", "배송중", "배송완료"],
+    //             default: "ordered",
+    //         }, 
+    //         date: {
+    //             type: Date
+    //         },
+    //         isCompleted: {
+    //             type: Boolean,
+    //             default: false,
+    //         },
+    //     },
+    // ],  
 },
 {timestamps: true}
 );
