@@ -52,18 +52,56 @@ exports.getOrderItems = async (req, res) => {
     }
 };
 
-exports.postOrder = async (req, res) => {
-    
+exports.postOrder = async (req, res) => {   
+    // Generate a random 16-digit number for orderNumber
+    const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
+    const parentOrderNumber = randomNumber.toString();
+
+    const orderItemsData = [];
+    const orderStatus = [
+        {
+            type: "주문완료",
+            date: new Date(),
+            isCompleted: true,
+        },
+        {
+            type: "준비중",
+            isCompleted: false,
+        },
+        {
+            type: "배송중",
+            isCompleted: false,
+        },
+        {
+            type: "배송완료",
+            isCompleted: false,
+        }
+    ];
+
     const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
-        
+        const randomNumberDigit = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
+        const orderNumber = randomNumberDigit.toString();
+console.log('checking order Number', orderNumber)
         let newOrderItem = new OrderItem({
             quantity: orderItem.quantity,
             product: orderItem.product.id,
             buyer: req.body.user,
             address: req.body.address,
             sellerId: orderItem.product.sellerId,
+            orderNumber: orderNumber,
+            parentOrderNumber: parentOrderNumber,
+            orderStatus: orderStatus
         })
         newOrderItem = await newOrderItem.save();
+
+        const orderItemData = {
+            orderItemNumber: orderNumber,
+            product: orderItem.product.id,
+            quantity: orderItem.quantity,
+            orderStatus: orderStatus,
+        };
+
+        orderItemsData.push(orderItemData);
 
         return newOrderItem._id;
     }))
@@ -77,42 +115,16 @@ exports.postOrder = async (req, res) => {
 
     const totalPrice = totalPrices.reduce((a,b) => a +b , 0);
 
-    // Generate a random 16-digit number for orderNumber
-    const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
-    const orderNumber = randomNumber.toString();
-
     let order = new Order({
         orderItems: orderItemsIdsResolved,
+        orderItemsData: orderItemsData,
         address: req.body.address,
         status: req.body.status,
         deliveryFee: req.body.deliveryFee,
         productPrice: req.body.productPrice,
         totalPrice: totalPrice,
         user: req.body.user,
-        orderStatus: req.body.orderStatus = [
-            {
-                type: "주문완료",
-                date: new Date(),
-                isCompleted: true,
-            },
-            {
-                type: "주문확인",
-                isCompleted: false,
-            },
-            {
-                type: "준비중",
-                isCompleted: false,
-            },
-            {
-                type: "배송중",
-                isCompleted: false,
-            },
-            {
-                type: "배송완료",
-                isCompleted: false,
-            }
-        ],
-        orderNumber: orderNumber,
+        parentOrderNumber: parentOrderNumber,
     })
     order = await order.save();
 
@@ -121,6 +133,30 @@ exports.postOrder = async (req, res) => {
 
     res.send(order);
 }
+
+exports.toggleOrderStatus = async (req, res) => {
+    const orderItemId = req.params.orderItemId;
+    const statusIndex = req.params.orderStatusIndex;
+    try {
+        const orderItem = await OrderItem.findById(orderItemId);
+
+
+        if(!orderItem) {
+            return res.status(404).json({success: false, message: 'Order not found.'});
+        }
+
+        const updatedOrderStatus = [...orderItem.orderStatus];
+
+        updatedOrderStatus[statusIndex].isCompleted = !updatedOrderStatus[statusIndex].isCompleted;
+        orderItem.orderStatus = updatedOrderStatus;
+
+        const updatedOrderItem = await orderItem.save();
+
+        res.json({success: true, orderItem: updatedOrderItem});
+    } catch (error) {
+        res.status(500).json({success: false, message: 'Server error'});
+    }
+};
 
 exports.updateOrder = async (req, res) => {
     const order = await Order.findByIdAndUpdate(
