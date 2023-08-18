@@ -57,6 +57,26 @@ exports.postOrder = async (req, res) => {
     const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
     const parentOrderNumber = randomNumber.toString();
 
+    let order = new Order({
+        // orderItems: orderItemsIdsResolved,
+        // orderItemsData: orderItemsData,
+        address: req.body.address,
+        status: req.body.status,
+        deliveryFee: req.body.deliveryFee,
+        productPrice: req.body.productPrice,
+        // totalPrice: totalPrice,
+        user: req.body.user,
+        parentOrderNumber: parentOrderNumber,
+    })
+
+    try {
+        order = await order.save();
+    } catch (error) {
+        return res.status(400).send('The order cannot be created');
+    }
+
+    const orderId = order._id;
+
     const orderItemsData = [];
     const orderStatus = [
         {
@@ -81,7 +101,7 @@ exports.postOrder = async (req, res) => {
     const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
         const randomNumberDigit = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
         const orderNumber = randomNumberDigit.toString();
-console.log('checking order Number', orderNumber)
+
         let newOrderItem = new OrderItem({
             quantity: orderItem.quantity,
             product: orderItem.product.id,
@@ -90,7 +110,8 @@ console.log('checking order Number', orderNumber)
             sellerId: orderItem.product.sellerId,
             orderNumber: orderNumber,
             parentOrderNumber: parentOrderNumber,
-            orderStatus: orderStatus
+            orderStatus: orderStatus,
+            parentOrderId: orderId,
         })
         newOrderItem = await newOrderItem.save();
 
@@ -105,6 +126,7 @@ console.log('checking order Number', orderNumber)
 
         return newOrderItem._id;
     }))
+
     const orderItemsIdsResolved =  await orderItemsIds;
 
     const totalPrices = await Promise.all(orderItemsIdsResolved.map(async (orderItemId)=>{
@@ -115,21 +137,26 @@ console.log('checking order Number', orderNumber)
 
     const totalPrice = totalPrices.reduce((a,b) => a +b , 0);
 
-    let order = new Order({
-        orderItems: orderItemsIdsResolved,
-        orderItemsData: orderItemsData,
-        address: req.body.address,
-        status: req.body.status,
-        deliveryFee: req.body.deliveryFee,
-        productPrice: req.body.productPrice,
-        totalPrice: totalPrice,
-        user: req.body.user,
-        parentOrderNumber: parentOrderNumber,
-    })
-    order = await order.save();
+    // let order = new Order({
+    //     orderItems: orderItemsIdsResolved,
+    //     orderItemsData: orderItemsData,
+    //     address: req.body.address,
+    //     status: req.body.status,
+    //     deliveryFee: req.body.deliveryFee,
+    //     productPrice: req.body.productPrice,
+    //     totalPrice: totalPrice,
+    //     user: req.body.user,
+    //     parentOrderNumber: parentOrderNumber,
+    // })
+    // order = await order.save();
 
-    if(!order)
-    return res.status(400).send('the order cannot be created!')
+    // if(!order)
+    // return res.status(400).send('the order cannot be created!')
+
+    order.orderItems = orderItemsIds;
+    order.orderItemsData = orderItemsData;
+    order.orderItemsIdsResolved = orderItemsIdsResolved;
+    order.totalPrice = totalPrice;
 
     res.send(order);
 }
