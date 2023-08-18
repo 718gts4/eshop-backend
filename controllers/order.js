@@ -57,6 +57,7 @@ exports.postOrder = async (req, res) => {
     const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
     const parentOrderNumber = randomNumber.toString();
 console.log('check cart item ', req.body.orderItems)
+
     let order = new Order({
         address: req.body.address,
         status: req.body.status,
@@ -100,7 +101,7 @@ console.log('check cart item ', req.body.orderItems)
         const orderNumber = randomNumberDigit.toString();
 
         let newOrderItem = new OrderItem({
-            quantity: req.body.orderItems.selectedQuantity || 1,
+            quantity: orderItem.product.selectedQuantity || 1,
             product: orderItem.product.id,
             buyer: req.body.user,
             address: req.body.address,
@@ -111,11 +112,11 @@ console.log('check cart item ', req.body.orderItems)
             parentOrderId: orderId,
             paidPrice: orderItem.product.price,
             deliveryFeeAmount: orderItem.product.deliveryFeeAmount,
-            selectedColor: req.body.orderItems.selectedColor || '',
-            selectedSize: req.body.orderItems.selectedSize || '',
-            subOption1: req.body.orderItems.subOption1 || '',
-            subOption2: req.body.orderItems.subOption2 || '',
-            subOption3: req.body.orderItems.subOption3 || '',
+            selectedColor: orderItem.product.selectedColor || '',
+            selectedSize: orderItem.product.selectedSize || '',
+            subOption1: orderItem.product.subOption1 || '',
+            subOption2: orderItem.product.subOption2 || '',
+            subOption3: orderItem.product.subOption3 || '',
         })
         newOrderItem = await newOrderItem.save();
 
