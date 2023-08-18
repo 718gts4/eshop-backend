@@ -153,9 +153,7 @@ exports.postOrder = async (req, res) => {
     // if(!order)
     // return res.status(400).send('the order cannot be created!')
 
-    order.orderItems = orderItemsIds;
-    order.orderItemsData = orderItemsData;
-    order.orderItemsIdsResolved = orderItemsIdsResolved;
+    order.orderItems = orderItemsIdsResolved;
     order.totalPrice = totalPrice;
 
     res.send(order);
