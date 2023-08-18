@@ -53,81 +53,76 @@ exports.getOrderItems = async (req, res) => {
 };
 
 exports.postOrder = async (req, res) => {   
-    // Generate a random 16-digit number for orderNumber
-    // const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
-    // const parentOrderNumber = randomNumber.toString();
+    console.log('hello')
+    // const orderItemsData = [];
+    // const orderStatus = [
+    //     {
+    //         type: "주문완료",
+    //         date: new Date(),
+    //         isCompleted: true,
+    //     },
+    //     {
+    //         type: "준비중",
+    //         isCompleted: false,
+    //     },
+    //     {
+    //         type: "배송중",
+    //         isCompleted: false,
+    //     },
+    //     {
+    //         type: "배송완료",
+    //         isCompleted: false,
+    //     }
+    // ];
 
-    const orderItemsData = [];
-    const orderStatus = [
-        {
-            type: "주문완료",
-            date: new Date(),
-            isCompleted: true,
-        },
-        {
-            type: "준비중",
-            isCompleted: false,
-        },
-        {
-            type: "배송중",
-            isCompleted: false,
-        },
-        {
-            type: "배송완료",
-            isCompleted: false,
-        }
-    ];
+    // const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
+   
+    //     let newOrderItem = new OrderItem({
+    //         quantity: orderItem.quantity,
+    //         product: orderItem.product.id,
+    //         buyer: req.body.user,
+    //         address: req.body.address,
+    //         sellerId: orderItem.product.sellerId,
+    //         orderStatus: orderStatus
+    //     })
+    //     newOrderItem = await newOrderItem.save();
 
-    const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
-        // const randomNumberDigit = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
-        // const orderNumber = randomNumberDigit.toString();
-        
-        let newOrderItem = new OrderItem({
-            quantity: orderItem.quantity,
-            product: orderItem.product.id,
-            buyer: req.body.user,
-            address: req.body.address,
-            sellerId: orderItem.product.sellerId,
-            orderStatus: orderStatus
-        })
-        newOrderItem = await newOrderItem.save();
+    //     const orderItemData = {
+    //         product: orderItem.product.id,
+    //         quantity: orderItem.quantity,
+    //     };
 
-        const orderItemData = {
-            product: orderItem.product.id,
-            quantity: orderItem.quantity,
-            // orderStatus: orderStatus,
-        };
+    //     orderItemsData.push(orderItemData);
 
-        orderItemsData.push(orderItemData);
+    //     return newOrderItem._id;
+    // }));
 
-        return newOrderItem._id;
-    }))
-    const orderItemsIdsResolved =  await orderItemsIds;
+    // const orderItemsIdsResolved =  await orderItemsIds;
 
-    const totalPrices = await Promise.all(orderItemsIdsResolved.map(async (orderItemId)=>{
-        const orderItem = await OrderItem.findById(orderItemId).populate('product', 'price');
-        const totalPrice = orderItem.product.price * orderItem.quantity;
-        return totalPrice
-    }))
+    // const totalPrices = await Promise.all(orderItemsIdsResolved.map(async (orderItemId)=>{
+    //     const orderItem = await OrderItem.findById(orderItemId).populate('product', 'price');
+    //     const totalPrice = orderItem.product.price * orderItem.quantity;
+    //     return totalPrice
+    // }));
 
-    const totalPrice = totalPrices.reduce((a,b) => a +b , 0);
+    // const totalPrice = totalPrices.reduce((a,b) => a +b , 0);
 
-    let order = new Order({
-        orderItems: orderItemsIdsResolved,
-        orderItemsData: orderItemsData,
-        address: req.body.address,
-        status: req.body.status,
-        deliveryFee: req.body.deliveryFee,
-        productPrice: req.body.productPrice,
-        totalPrice: totalPrice,
-        user: req.body.user,
-    })
-    order = await order.save();
+    // let order = new Order({
+    //     orderItems: orderItemsIdsResolved,
+    //     orderItemsData: orderItemsData,
+    //     address: req.body.address,
+    //     status: req.body.status,
+    //     deliveryFee: req.body.deliveryFee,
+    //     productPrice: req.body.productPrice,
+    //     totalPrice: totalPrice,
+    //     user: req.body.user,
+    // })
+    // order = await order.save();
 
-    if(!order)
-    return res.status(400).send('the order cannot be created!')
+    // if(!order)
+    // return res.status(400).send('the order cannot be created!')
 
-    res.send(order);
+    // res.send(order);
 }
 
 exports.toggleOrderStatus = async (req, res) => {
