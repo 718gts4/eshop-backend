@@ -61,6 +61,26 @@ const orderItemSchema = mongoose.Schema({
             },
         },
     ], 
+    selectedColor: {
+        type: String,
+        default: '',
+    },
+    selectedSize: {
+        type: String,
+        default: '',
+    },
+    subOption1: {
+        type: String,
+        default: '',
+    },
+    subOption2: {
+        type: String,
+        default: '',
+    },
+    subOption3: {
+        type: String,
+        default: '',
+    },
 })
 
 exports.OrderItem = mongoose.model("OrderItem", orderItemSchema);

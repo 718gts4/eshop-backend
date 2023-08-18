@@ -100,7 +100,7 @@ console.log('check cart item ', req.body.orderItems)
         const orderNumber = randomNumberDigit.toString();
 
         let newOrderItem = new OrderItem({
-            quantity: orderItem.quantity,
+            quantity: req.body.orderItems.selectedQuantity || 1,
             product: orderItem.product.id,
             buyer: req.body.user,
             address: req.body.address,
@@ -111,6 +111,11 @@ console.log('check cart item ', req.body.orderItems)
             parentOrderId: orderId,
             paidPrice: orderItem.product.price,
             deliveryFeeAmount: orderItem.product.deliveryFeeAmount,
+            selectedColor: req.body.orderItems.selectedColor || '',
+            selectedSize: req.body.orderItems.selectedSize || '',
+            subOption1: req.body.orderItems.subOption1 || '',
+            subOption2: req.body.orderItems.subOption2 || '',
+            subOption3: req.body.orderItems.subOption3 || '',
         })
         newOrderItem = await newOrderItem.save();
 
