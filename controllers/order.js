@@ -54,8 +54,8 @@ exports.getOrderItems = async (req, res) => {
 
 exports.postOrder = async (req, res) => {   
     // Generate a random 16-digit number for orderNumber
-    const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
-    const parentOrderNumber = randomNumber.toString();
+    // const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
+    // const parentOrderNumber = randomNumber.toString();
 
     const orderItemsData = [];
     const orderStatus = [
@@ -79,8 +79,8 @@ exports.postOrder = async (req, res) => {
     ];
 
     const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
-        const randomNumberDigit = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
-        const orderNumber = randomNumberDigit.toString();
+        // const randomNumberDigit = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
+        // const orderNumber = randomNumberDigit.toString();
         
         let newOrderItem = new OrderItem({
             quantity: orderItem.quantity,
