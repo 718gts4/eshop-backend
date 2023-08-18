@@ -52,16 +52,9 @@ const orderSchema = mongoose.Schema({
             },
         },
     ],  
-    orderNumber: {
-        type: String,
-        required: true,
-        unique: true,
-        minlength: 16,
-        maxlength: 16,
-    }, 
     parentOrderNumber: {
         type: String,
-        // required: true,
+        required: true,
     }, 
 },
 {timestamps: true}
