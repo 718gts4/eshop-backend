@@ -54,48 +54,48 @@ exports.getOrderItems = async (req, res) => {
 
 exports.postOrder = async (req, res) => {   
     console.log('hello')
-    // const orderItemsData = [];
-    // const orderStatus = [
-    //     {
-    //         type: "주문완료",
-    //         date: new Date(),
-    //         isCompleted: true,
-    //     },
-    //     {
-    //         type: "준비중",
-    //         isCompleted: false,
-    //     },
-    //     {
-    //         type: "배송중",
-    //         isCompleted: false,
-    //     },
-    //     {
-    //         type: "배송완료",
-    //         isCompleted: false,
-    //     }
-    // ];
+    const orderItemsData = [];
+    const orderStatus = [
+        {
+            type: "주문완료",
+            date: new Date(),
+            isCompleted: true,
+        },
+        {
+            type: "준비중",
+            isCompleted: false,
+        },
+        {
+            type: "배송중",
+            isCompleted: false,
+        },
+        {
+            type: "배송완료",
+            isCompleted: false,
+        }
+    ];
 
-    // const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
+    const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
    
-    //     let newOrderItem = new OrderItem({
-    //         quantity: orderItem.quantity,
-    //         product: orderItem.product.id,
-    //         buyer: req.body.user,
-    //         address: req.body.address,
-    //         sellerId: orderItem.product.sellerId,
-    //         orderStatus: orderStatus
-    //     })
-    //     newOrderItem = await newOrderItem.save();
+        let newOrderItem = new OrderItem({
+            quantity: orderItem.quantity,
+            product: orderItem.product.id,
+            buyer: req.body.user,
+            address: req.body.address,
+            sellerId: orderItem.product.sellerId,
+            orderStatus: orderStatus
+        })
+        newOrderItem = await newOrderItem.save();
 
-    //     const orderItemData = {
-    //         product: orderItem.product.id,
-    //         quantity: orderItem.quantity,
-    //     };
+        const orderItemData = {
+            product: orderItem.product.id,
+            quantity: orderItem.quantity,
+        };
 
-    //     orderItemsData.push(orderItemData);
+        orderItemsData.push(orderItemData);
 
-    //     return newOrderItem._id;
-    // }));
+        return newOrderItem._id;
+    }));
 
     // const orderItemsIdsResolved =  await orderItemsIds;
 
