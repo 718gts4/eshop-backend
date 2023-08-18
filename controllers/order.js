@@ -109,7 +109,6 @@ exports.postOrder = async (req, res) => {
             parentOrderNumber: parentOrderNumber,
             orderStatus: orderStatus,
             parentOrderId: orderId,
-            paidPrice: orderItem.product.price * orderItem.quantity,
         })
         newOrderItem = await newOrderItem.save();
 
