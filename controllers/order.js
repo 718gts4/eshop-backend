@@ -95,7 +95,7 @@ exports.postOrder = async (req, res) => {
         const orderItemData = {
             product: orderItem.product.id,
             quantity: orderItem.quantity,
-            orderStatus: orderStatus,
+            // orderStatus: orderStatus,
         };
 
         orderItemsData.push(orderItemData);
