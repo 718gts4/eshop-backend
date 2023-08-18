@@ -1,23 +1,27 @@
 const mongoose = require('mongoose');
 
 const orderItemSchema = mongoose.Schema({
-    quantity: {
-        type: Number,
-        required: true,
-        default: 1
-    },
     product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
         required: true
     },
-    buyer: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+    paidPrice: {
+        type: Number,
+        required: true,
+    },
+    quantity: {
+        type: Number,
+        required: true,
+        default: 1
     },
     address: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Address'
+    },
+    buyer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
     sellerId: {
         type: mongoose.Schema.Types.ObjectId,

@@ -58,13 +58,10 @@ exports.postOrder = async (req, res) => {
     const parentOrderNumber = randomNumber.toString();
 
     let order = new Order({
-        // orderItems: orderItemsIdsResolved,
-        // orderItemsData: orderItemsData,
         address: req.body.address,
         status: req.body.status,
         deliveryFee: req.body.deliveryFee,
         productPrice: req.body.productPrice,
-        // totalPrice: totalPrice,
         user: req.body.user,
         parentOrderNumber: parentOrderNumber,
     })
@@ -112,6 +109,7 @@ exports.postOrder = async (req, res) => {
             parentOrderNumber: parentOrderNumber,
             orderStatus: orderStatus,
             parentOrderId: orderId,
+            paidPrice: orderItem.product.price * orderItem.quantity,
         })
         newOrderItem = await newOrderItem.save();
 
