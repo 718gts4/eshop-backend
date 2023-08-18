@@ -96,7 +96,6 @@ exports.postOrder = async (req, res) => {
     ];
 
     const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
-        console.log('ORDERITEM', orderItem)
         const randomNumberDigit = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
         const orderNumber = randomNumberDigit.toString();
 
@@ -110,6 +109,8 @@ exports.postOrder = async (req, res) => {
             parentOrderNumber: parentOrderNumber,
             orderStatus: orderStatus,
             parentOrderId: orderId,
+            paidPrice: orderItem.product.price,
+            deliveryFeeAmount: orderItem.product.deliveryFeeAmount,
         })
         newOrderItem = await newOrderItem.save();
 
