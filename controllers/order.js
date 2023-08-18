@@ -137,26 +137,16 @@ exports.postOrder = async (req, res) => {
 
     const totalPrice = totalPrices.reduce((a,b) => a +b , 0);
 
-    // let order = new Order({
-    //     orderItems: orderItemsIdsResolved,
-    //     orderItemsData: orderItemsData,
-    //     address: req.body.address,
-    //     status: req.body.status,
-    //     deliveryFee: req.body.deliveryFee,
-    //     productPrice: req.body.productPrice,
-    //     totalPrice: totalPrice,
-    //     user: req.body.user,
-    //     parentOrderNumber: parentOrderNumber,
-    // })
-    // order = await order.save();
-
-    // if(!order)
-    // return res.status(400).send('the order cannot be created!')
-
     order.orderItems = orderItemsIdsResolved;
     order.totalPrice = totalPrice;
 
-    res.send(order);
+    try {
+        // Save the updated order object with totalPrice to the database
+        const updatedOrder = await order.save();
+        res.send(updatedOrder);
+    } catch (error) {
+        return res.status(500).send('An error occurred while saving the order');
+    }
 }
 
 exports.toggleOrderStatus = async (req, res) => {
