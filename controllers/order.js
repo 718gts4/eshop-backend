@@ -53,7 +53,7 @@ exports.getOrderItems = async (req, res) => {
 };
 
 exports.postOrder = async (req, res) => {   
-    console.log('hello')
+    console.log('hello', req.body)
     const orderItemsData = [];
     const orderStatus = [
         {
@@ -97,32 +97,32 @@ exports.postOrder = async (req, res) => {
         return newOrderItem._id;
     }));
 
-    // const orderItemsIdsResolved =  await orderItemsIds;
+    const orderItemsIdsResolved =  await orderItemsIds;
 
-    // const totalPrices = await Promise.all(orderItemsIdsResolved.map(async (orderItemId)=>{
-    //     const orderItem = await OrderItem.findById(orderItemId).populate('product', 'price');
-    //     const totalPrice = orderItem.product.price * orderItem.quantity;
-    //     return totalPrice
-    // }));
+    const totalPrices = await Promise.all(orderItemsIdsResolved.map(async (orderItemId)=>{
+        const orderItem = await OrderItem.findById(orderItemId).populate('product', 'price');
+        const totalPrice = orderItem.product.price * orderItem.quantity;
+        return totalPrice
+    }));
 
-    // const totalPrice = totalPrices.reduce((a,b) => a +b , 0);
+    const totalPrice = totalPrices.reduce((a,b) => a +b , 0);
 
-    // let order = new Order({
-    //     orderItems: orderItemsIdsResolved,
-    //     orderItemsData: orderItemsData,
-    //     address: req.body.address,
-    //     status: req.body.status,
-    //     deliveryFee: req.body.deliveryFee,
-    //     productPrice: req.body.productPrice,
-    //     totalPrice: totalPrice,
-    //     user: req.body.user,
-    // })
-    // order = await order.save();
+    let order = new Order({
+        orderItems: orderItemsIdsResolved,
+        // orderItemsData: orderItemsData,
+        address: req.body.address,
+        status: req.body.status,
+        deliveryFee: req.body.deliveryFee,
+        productPrice: req.body.productPrice,
+        totalPrice: totalPrice,
+        user: req.body.user,
+    })
+    order = await order.save();
 
-    // if(!order)
-    // return res.status(400).send('the order cannot be created!')
+    if(!order)
+    return res.status(400).send('the order cannot be created!')
 
-    // res.send(order);
+    res.send(order);
 }
 
 exports.toggleOrderStatus = async (req, res) => {
