@@ -56,7 +56,6 @@ exports.postOrder = async (req, res) => {
     // Generate a random 16-digit number for orderNumber
     const randomNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
     const parentOrderNumber = randomNumber.toString();
-console.log('check cart item ', req.body.orderItems)
 
     let order = new Order({
         address: req.body.address,
@@ -110,7 +109,7 @@ console.log('check cart item ', req.body.orderItems)
             parentOrderNumber: parentOrderNumber,
             orderStatus: orderStatus,
             parentOrderId: orderId,
-            paidPrice: orderItem.product.price,
+            paidPrice: orderItem.product.price * orderItem.product.selectedQuantity,
             deliveryFeeAmount: orderItem.product.deliveryFeeAmount,
             selectedColor: orderItem.product.selectedColor || '',
             selectedSize: orderItem.product.selectedSize || '',
