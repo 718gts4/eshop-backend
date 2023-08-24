@@ -4,14 +4,14 @@ const { User } = require('../models/user');
 const { Product } = require('../models/product');
 const { deleteUrl } = require('../s3');
 
-// function getRandomIndexes(length, count) {
-//     const indexes = new Set();
-//     while (indexes.size < count) {
-//         const randomIndex = Math.floor(Math.random() * length);
-//         indexes.add(randomIndex);
-//     }
-//     return Array.from(indexes);
-// }
+function getRandomIndexes(length, count) {
+    const indexes = new Set();
+    while (indexes.size < count) {
+        const randomIndex = Math.floor(Math.random() * length);
+        indexes.add(randomIndex);
+    }
+    return Array.from(indexes);
+}
 
 // exports.getVideos = async (req, res) => {
 //     let limit = 10;
@@ -36,7 +36,7 @@ const { deleteUrl } = require('../s3');
 // }
 
 exports.getVideos = async (req, res) => {
-    let limit = 10;
+    let limit = 20;
     let skip = parseInt(req.query.skip) || 0;
 
     const videoList = await Video.find()
@@ -50,7 +50,9 @@ exports.getVideos = async (req, res) => {
         res.status(500).json({success:false})
     }
     
-    res.status(200).send(videoList);
+    const randomVideoIndexes = getRandomIndexes(videoList.length, 10);
+    const selectedVideos = randomVideoIndexes.map(index => videoList[index]);
+    res.status(200).send(selectedVideos);
 }
 
 exports.getVideo = async (req, res) => {
