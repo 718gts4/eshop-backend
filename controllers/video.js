@@ -36,7 +36,7 @@ function getRandomIndexes(length, count) {
 // }
 
 exports.getVideos = async (req, res) => {
-    let limit = 20;
+    let limit = 10;
     let skip = parseInt(req.query.skip) || 0;
 
     const videoList = await Video.find()
