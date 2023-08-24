@@ -4,6 +4,15 @@ const { User } = require('../models/user');
 const { Product } = require('../models/product');
 const { deleteUrl } = require('../s3');
 
+function getRandomIndexes(length, count) {
+    const indexes = new Set();
+    while (indexes.size < count) {
+        const randomIndex = Math.floor(Math.random() * length);
+        indexes.add(randomIndex);
+    }
+    return Array.from(indexes);
+}
+
 exports.getVideos = async (req, res) => {
     let limit = 10;
     let skip = parseInt(req.query.skip) || 0;
