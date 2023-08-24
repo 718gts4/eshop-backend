@@ -75,7 +75,9 @@ router.patch('/:id/bookmark', bookmarkVideo, requireSignin);
 router.delete('/:id', deleteVideo, requireSignin, adminMiddleware);
 router.get(`/get/videocount`, getVideoCount);
 router.put(`/:id/updatecomments`, updateVideoComment);
-router.post(`/:id/followingVideos`, getFollowingVideos);
+
+router.get(`/:id/followingVideos`, getFollowingVideos);
+
 router.get(`/uservideos/:id`, getVideosByUser)
 
 router.post("/upload/:id", upload.single('video'), async (req, res) => {

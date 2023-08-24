@@ -4,37 +4,6 @@ const { User } = require('../models/user');
 const { Product } = require('../models/product');
 const { deleteUrl } = require('../s3');
 
-function getRandomIndexes(length, count) {
-    const indexes = new Set();
-    while (indexes.size < count) {
-        const randomIndex = Math.floor(Math.random() * length);
-        indexes.add(randomIndex);
-    }
-    return Array.from(indexes);
-}
-
-// exports.getVideos = async (req, res) => {
-//     let limit = 10;
-//     let skip = parseInt(req.query.skip) || 0;
-
-//     const videoList = await Video.find()
-//     .populate('createdBy')
-//     .populate('videoItems')
-//     .sort({'dateCreated': -1})
-//     .skip(skip)
-//     .limit(limit);
-
-//     if(!videoList){
-//         res.status(500).json({success:false})
-//     }
-
-//     // Randomly select 5 videos from the fetched list
-//     const randomVideoIndexes = getRandomIndexes(videoList.length, 5);
-//     const selectedVideos = randomVideoIndexes.map(index => videoList[index]);
-
-//     res.status(200).send(selectedVideos);
-// }
-
 exports.getVideos = async (req, res) => {
     let limit = 10;
     let skip = parseInt(req.query.skip) || 0;
@@ -51,6 +20,29 @@ exports.getVideos = async (req, res) => {
     }
     
     res.status(200).send(videoList);
+}
+
+exports.getFollowingVideos = async (req, res) => {
+    let limit = 10;
+    let skip = parseInt(req.query.skip) || 0;
+
+    let videos = [];
+    const followingVideos = await Promise.all(req.body.following.map(async (video) => {
+        const followingVideo = await Video.find({"createdBy": video})
+            .populate('createdBy')
+            .populate('videoItems')
+            .sort({'dateCreated': -1})
+            .skip(skip)
+            .limit(limit);
+        
+        const allVideos = videos.push(...followingVideo);
+        return allVideos
+    }));
+
+    if(!followingVideos) {
+        res.status(500).json({success:false})
+    }
+    res.status(200).send(videos)
 }
 
 exports.getVideo = async (req, res) => {
@@ -240,23 +232,5 @@ exports.getVideoCount = async (req, res) => {
     res.send({
         videoCount: videoCount
     });
-}
-
-exports.getFollowingVideos = async (req, res) => {
-    let videos = [];
-    const followingVideos = await Promise.all(req.body.following.map(async (video) => {
-        const followingVideo = await Video.find({"createdBy": video})
-            .populate('createdBy')
-            .populate('videoItems')
-            .sort({'dateCreated': -1});
-        
-        const allVideos = videos.push(...followingVideo);
-        return allVideos
-    }));
-
-    if(!followingVideos) {
-        res.status(500).json({success:false})
-    }
-    res.status(200).send(videos)
 }
 
