@@ -49,8 +49,8 @@ const orderItemSchema = mongoose.Schema({
         {
             type: {
                 type: String,
-                enum: ["주문완료", "준비중", "배송중", "배송완료"],
-                default: "주문완료",
+                enum: ["결제완료", "준비중", "배송중", "배송완료"],
+                default: "결제완료",
             }, 
             date: {
                 type: Date

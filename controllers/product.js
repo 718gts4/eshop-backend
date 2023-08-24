@@ -1,7 +1,43 @@
 const {Product} = require('../models/product');
 const {Category} = require('../models/category');
+const { Sale } = require('../models/sale');
 const mongoose = require('mongoose');
 
+// Controller function to set a sale on a product
+exports.setSaleForProduct = async (req, res) => {
+    try {
+        const { productId, discount, startTime, endTime } = req.body;
+    
+        // Find the product by its ID
+        const product = await Product.findById(productId);
+    
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+    
+        // Create a new Sale document with the provided details
+        const sale = new Sale({
+            onSale: true,
+            title: `Sale for ${product.name}`,
+            products: [productId],
+            discount: discount,
+            startTime: startTime,
+            endTime: endTime
+        });
+    
+        // Save the sale document
+        const savedSale = await sale.save();
+    
+        // Update the product's sale field with the sale ID
+        product.sale = savedSale._id;
+        await product.save();
+    
+        res.json({ success: true, message: 'Sale set for product', sale: savedSale });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
 
 exports.getProducts = async (req, res) => {
     let filter = {};

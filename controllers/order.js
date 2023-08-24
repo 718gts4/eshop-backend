@@ -77,7 +77,7 @@ exports.postOrder = async (req, res) => {
     const orderItemsData = [];
     const orderStatus = [
         {
-            type: "주문완료",
+            type: "결제완료",
             date: new Date(),
             isCompleted: true,
         },
