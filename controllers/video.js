@@ -50,9 +50,7 @@ exports.getVideos = async (req, res) => {
         res.status(500).json({success:false})
     }
     
-    const randomVideoIndexes = getRandomIndexes(videoList.length, 10);
-    const selectedVideos = randomVideoIndexes.map(index => videoList[index]);
-    res.status(200).send(selectedVideos);
+    res.status(200).send(videoList);
 }
 
 exports.getVideo = async (req, res) => {
