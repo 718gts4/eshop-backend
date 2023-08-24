@@ -4,14 +4,36 @@ const { User } = require('../models/user');
 const { Product } = require('../models/product');
 const { deleteUrl } = require('../s3');
 
-function getRandomIndexes(length, count) {
-    const indexes = new Set();
-    while (indexes.size < count) {
-        const randomIndex = Math.floor(Math.random() * length);
-        indexes.add(randomIndex);
-    }
-    return Array.from(indexes);
-}
+// function getRandomIndexes(length, count) {
+//     const indexes = new Set();
+//     while (indexes.size < count) {
+//         const randomIndex = Math.floor(Math.random() * length);
+//         indexes.add(randomIndex);
+//     }
+//     return Array.from(indexes);
+// }
+
+// exports.getVideos = async (req, res) => {
+//     let limit = 10;
+//     let skip = parseInt(req.query.skip) || 0;
+
+//     const videoList = await Video.find()
+//     .populate('createdBy')
+//     .populate('videoItems')
+//     .sort({'dateCreated': -1})
+//     .skip(skip)
+//     .limit(limit);
+
+//     if(!videoList){
+//         res.status(500).json({success:false})
+//     }
+
+//     // Randomly select 5 videos from the fetched list
+//     const randomVideoIndexes = getRandomIndexes(videoList.length, 5);
+//     const selectedVideos = randomVideoIndexes.map(index => videoList[index]);
+
+//     res.status(200).send(selectedVideos);
+// }
 
 exports.getVideos = async (req, res) => {
     let limit = 10;
@@ -27,12 +49,8 @@ exports.getVideos = async (req, res) => {
     if(!videoList){
         res.status(500).json({success:false})
     }
-
-    // Randomly select 5 videos from the fetched list
-    const randomVideoIndexes = getRandomIndexes(videoList.length, 5);
-    const selectedVideos = randomVideoIndexes.map(index => videoList[index]);
-
-    res.status(200).send(selectedVideos);
+    
+    res.status(200).send(videoList);
 }
 
 exports.getVideo = async (req, res) => {
