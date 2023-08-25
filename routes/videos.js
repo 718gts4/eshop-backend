@@ -78,6 +78,20 @@ router.put(`/:id/updatecomments`, updateVideoComment);
 router.post(`/:id/followingVideos`, getFollowingVideos);
 router.get(`/uservideos/:id`, getVideosByUser)
 
+// Function to get video duration using ffmpeg
+function getVideoDuration(filePath) {
+    return new Promise((resolve, reject) => {
+        ffmpeg.ffprobe(filePath, (err, metadata) => {
+            if (err) {
+                reject(err);
+            } else {
+                const duration = metadata.format.duration;
+                resolve(duration);
+            }
+        });
+    });
+}
+
 router.post("/upload/:id", upload.single('video'), async (req, res) => {
     const file = req.file;
     const userId = req.params.id;
@@ -88,6 +102,14 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
     }
 
     try {
+        
+        // Use ffmpeg to get the duration of the video
+        const videoDuration = await getVideoDuration(file.path);
+        console.log('vidoe duration!!!', videoDuration);
+        if (videoDuration > 16) {
+            return res.status(400).json({ message: "영상 길이가 15초를 초과하였습니다. 15초 이하의 영상으로 편집 또는 선택해주세요." });
+        }
+
 
         const key = await uploadVideoToS3({ file, userId });
 
