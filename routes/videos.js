@@ -100,11 +100,11 @@ router.post("/upload/:id", upload.single('video'), async (req, res) => {
     if (!file || !userId) {
         return res.status(400).json({ message: "File or user id is not available" });
     }
-
+    console.log('vidoe file!!!', file);
     try {
         
         // Use ffmpeg to get the duration of the video
-        const videoDuration = await getVideoDuration(file.path);
+        const videoDuration = await getVideoDuration(file);
         console.log('vidoe duration!!!', videoDuration);
         if (videoDuration > 16) {
             return res.status(400).json({ message: "영상 길이가 15초를 초과하였습니다. 15초 이하의 영상으로 편집 또는 선택해주세요." });
