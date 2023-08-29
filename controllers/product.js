@@ -7,13 +7,13 @@ exports.getActiveSales = async (req, res) => {
     try {
         // Find active sales that are currently on sale
         const activeSales = await Sale.find({ onSale: true });
-
+console.log('active sales', activesales);
         // Extract product IDs from active sales
         const productIds = activeSales.flatMap(sale => sale.products);
-
+console.log('productIds', productIds)
         // Fetch products using the extracted product IDs
         const activeSaleProducts = await Product.find({ _id: { $in: productIds } });
-
+console.log('active sales products', activeSaleProducts)
         res.json({ success: true, activeSaleProducts });
     } catch (error) {
         console.error(error);
@@ -28,10 +28,8 @@ exports.setSaleForProduct = async (req, res) => {
     
         // Extract product IDs from the array of products
         const productIds = products;
-    console.log('productIds', productIds)
         // Find the products by their IDs
         const foundProducts = await Product.find({ _id: { $in: productIds } });
-    console.log('foundprodudts', foundProducts)
         // Create a mapping object for found product IDs
         const productMapping = {};
         foundProducts.forEach(product => {
@@ -40,15 +38,11 @@ exports.setSaleForProduct = async (req, res) => {
 
         // Check for missing product IDs
         const missingProductIds = productIds.filter(id => !productMapping[id]);
-
-        console.log('missinproductids', missingProductIds)
         if (missingProductIds.length > 0) {
             return res.status(404).json({ success: false, message: 'Some products not found' });
         }
-
         // Create a comma-separated list of product names
         const productNames = foundProducts.map(product => product.name).join(', ');
-
         // Create a new Sale document with the provided details
         const sale = new Sale({
             onSale: true,
@@ -59,7 +53,6 @@ exports.setSaleForProduct = async (req, res) => {
             endTime: endTime,
             sellerId: sellerId,
         });
-    
         // Save the sale document
         const savedSale = await sale.save();
     
