@@ -30,6 +30,18 @@ exports.createSaleProduct = async (req, res) => {
     }
 };
 
+exports.getSaleProducts = async (req, res) => {
+    try {
+        // Find products where onSale is true
+        const saleProducts = await Product.find({ onSale: true });
+
+        res.json({ success: true, saleProducts });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
 
 exports.getProducts = async (req, res) => {
     let filter = {};
