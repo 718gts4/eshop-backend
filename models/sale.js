@@ -26,6 +26,11 @@ const saleSchema = new mongoose.Schema({
     endTime: {
         type: Date,
         required: true
+    },
+    sellerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', 
+        required: true
     }
 });
 

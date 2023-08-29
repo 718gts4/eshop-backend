@@ -23,7 +23,7 @@ exports.setSaleForProduct = async (req, res) => {
             discount: discount,
             startTime: startTime,
             endTime: endTime,
-            sellerId
+            sellerId: sellerId,
         });
     
         // Save the sale document
