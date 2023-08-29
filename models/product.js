@@ -11,7 +11,8 @@ const productSchema = mongoose.Schema({
         default: Date.now,
     },
     sellerId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', 
         required: true
     },
     description: {
