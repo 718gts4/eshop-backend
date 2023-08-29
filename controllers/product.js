@@ -28,10 +28,10 @@ exports.setSaleForProduct = async (req, res) => {
     
         // Extract product IDs from the array of products
         const productIds = products.map(product => product._id);
-    
+    console.log('productIds', productIds)
         // Find the products by their IDs
         const foundProducts = await Product.find({ _id: { $in: productIds } });
-
+    console.log('foundprodudts', foundProducts)
         // Create a mapping object for found product IDs
         const productMapping = {};
         foundProducts.forEach(product => {
@@ -40,6 +40,8 @@ exports.setSaleForProduct = async (req, res) => {
 
         // Check for missing product IDs
         const missingProductIds = productIds.filter(id => !productMapping[id]);
+
+        console.log('missinproductids', missingProductIds)
         if (missingProductIds.length > 0) {
             return res.status(404).json({ success: false, message: 'Some products not found' });
         }
