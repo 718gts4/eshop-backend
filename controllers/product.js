@@ -7,7 +7,7 @@ exports.getActiveSales = async (req, res) => {
     try {
         // Find active sales that are currently on sale
         const activeSales = await Sale.find({ onSale: true });
-console.log('active sales', activesales);
+console.log('active sales', activeSales);
         // Extract product IDs from active sales
         const productIds = activeSales.flatMap(sale => sale.products);
 console.log('productIds', productIds)
