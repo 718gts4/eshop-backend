@@ -76,7 +76,7 @@ router.get('/recent/products', getRecentProducts);
 router.get('/category/:categoryId', getProductsByCategoryId);
 router.get('/category/child/:categoryId', getProductsByChildCategoryId); // get child category search results
 
-router.post('/create-sale', createSale);
+// router.post('/create-sale', createSale);
 
 router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
     const {

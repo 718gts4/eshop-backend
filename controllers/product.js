@@ -1,84 +1,35 @@
 const {Product} = require('../models/product');
 const {Category} = require('../models/category');
-const { Sale } = require('../models/sale');
+// const { Sale } = require('../models/sale');
 const mongoose = require('mongoose');
 
-exports.getActiveSales = async (req, res) => {
+exports.createSale = async (req, res) => {
     try {
-        const activeSales = await Sale.find({ onSale: true });
+        const { productId, discount, saleStartDate, saleEndDate } = req.body;
 
-        // Extract product IDs and sale details from active sales
-        const activeSaleData = activeSales.map(sale => {
-            return {
-                saleId: sale._id,
-                discount: sale.discount,
-                startTime: sale.startTime,
-                endTime: sale.endTime,
-                productIds: sale.products
-            };
-        });
+        // Find the product by its ID
+        const product = await Product.findById(productId);
 
-        // Extract product IDs from active sales
-        const productIds = activeSales.flatMap(sale => sale.products);
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
 
-        // Fetch products using the extracted product IDs
-        const activeSaleProducts = await Product.find({ _id: { $in: productIds } });
+        // Update the product's sale-related fields
+        product.onSale = true;
+        product.discount = discount;
+        product.saleStartDate = saleStartDate;
+        product.saleEndDate = saleEndDate;
 
-        res.json({ success: true, activeSaleData, activeSaleProducts });
+        // Save the updated product
+        await product.save();
+
+        res.json({ success: true, message: 'Sale created for product', product });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
 
-
-// Controller function to set a sale on a product
-exports.setSaleForProduct = async (req, res) => {
-    try {
-        const { products, discount, startTime, endTime, sellerId } = req.body;
-    
-        // Extract product IDs from the array of products
-        const productIds = products;
-        // Find the products by their IDs
-        const foundProducts = await Product.find({ _id: { $in: productIds } });
-        // Create a mapping object for found product IDs
-        const productMapping = {};
-        foundProducts.forEach(product => {
-            productMapping[product._id.toString()] = true;
-        });
-
-        // Check for missing product IDs
-        const missingProductIds = productIds.filter(id => !productMapping[id]);
-        if (missingProductIds.length > 0) {
-            return res.status(404).json({ success: false, message: 'Some products not found' });
-        }
-        // Create a comma-separated list of product names
-        const productNames = foundProducts.map(product => product.name).join(', ');
-        // Create a new Sale document with the provided details
-        const sale = new Sale({
-            onSale: true,
-            title: `Sale for ${productNames}`, 
-            products: productIds,
-            discount: discount,
-            startTime: startTime,
-            endTime: endTime,
-            sellerId: sellerId,
-        });
-        // Save the sale document
-        const savedSale = await sale.save();
-    
-        // Update the products' sale fields with the sale ID
-        for (const product of foundProducts) {
-            product.sale = savedSale._id;
-            await product.save();
-        }
-    
-        res.json({ success: true, message: 'Sale set for product', sale: savedSale });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-};
 
 exports.getProducts = async (req, res) => {
     let filter = {};
