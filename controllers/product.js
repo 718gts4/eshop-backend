@@ -3,7 +3,7 @@ const {Category} = require('../models/category');
 // const { Sale } = require('../models/sale');
 const mongoose = require('mongoose');
 
-exports.createSale = async (req, res) => {
+exports.createSaleProduct = async (req, res) => {
     try {
         const { productId, discount, saleStartDate, saleEndDate } = req.body;
 
