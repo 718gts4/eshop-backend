@@ -32,7 +32,7 @@ exports.setSaleForProduct = async (req, res) => {
         // Find the products by their IDs
         const foundProducts = await Product.find({ _id: { $in: productIds } });
 
-        if (!foundProducts || foundProducts.length !== productIds.length) {
+        if (foundProducts.length !== productIds.length) {
             return res.status(404).json({ success: false, message: 'Some products not found' });
         }
     
