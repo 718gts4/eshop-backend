@@ -181,30 +181,29 @@ const productSchema = mongoose.Schema({
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    },
-    sale: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Sale',
-        default: null
-    },
-    saleDuration: {
-        startDate: Date,
-        endDate: Date,
-        deliveryDate: Date
-    },
-    salesQuantity: {
-        type: Number,
-        default: 0,
-    },    
+    },   
     onSale: {
         type: Boolean,
         required: true,
         default: false
     },
+    discountPrice: {
+        type: Number,
+    },
     discount: {
         type: Number,
-        required: true
+        default: 0,
     },
+    saleStartDate: {
+        type: Date,
+    },
+    saleEndDate: {
+        type: Date,
+    },
+    salesQuantity: {
+        type: Number,
+        default: 0,
+    }, 
     deliveryFee: {
         type: Boolean,
         default: false

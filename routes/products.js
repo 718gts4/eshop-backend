@@ -15,8 +15,7 @@ const { getProducts,
     getProductsByCategoryId,
     bookmarkProduct,
     getProductsByChildCategoryId,
-    setSaleForProduct,
-    getActiveSales
+    createSale,
 } = require('../controllers/product');
 const express = require('express');
 const router = express.Router();
@@ -77,8 +76,7 @@ router.get('/recent/products', getRecentProducts);
 router.get('/category/:categoryId', getProductsByCategoryId);
 router.get('/category/child/:categoryId', getProductsByChildCategoryId); // get child category search results
 
-router.post('/setsale/products', setSaleForProduct, requireSignin);
-router.get('/activesales/products', getActiveSales);
+router.post('/create/sale', createSale);
 
 router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
     const {
