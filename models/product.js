@@ -195,6 +195,15 @@ const productSchema = mongoose.Schema({
     salesQuantity: {
         type: Number,
         default: 0,
+    },    
+    onSale: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
+    discount: {
+        type: Number,
+        required: true
     },
     deliveryFee: {
         type: Boolean,

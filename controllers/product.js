@@ -5,21 +5,32 @@ const mongoose = require('mongoose');
 
 exports.getActiveSales = async (req, res) => {
     try {
-        // Find active sales that are currently on sale
         const activeSales = await Sale.find({ onSale: true });
-console.log('active sales', activeSales);
+
+        // Extract product IDs and sale details from active sales
+        const activeSaleData = activeSales.map(sale => {
+            return {
+                saleId: sale._id,
+                discount: sale.discount,
+                startTime: sale.startTime,
+                endTime: sale.endTime,
+                productIds: sale.products
+            };
+        });
+
         // Extract product IDs from active sales
         const productIds = activeSales.flatMap(sale => sale.products);
-console.log('productIds', productIds)
+
         // Fetch products using the extracted product IDs
         const activeSaleProducts = await Product.find({ _id: { $in: productIds } });
-console.log('active sales products', activeSaleProducts)
-        res.json({ success: true, activeSaleProducts });
+
+        res.json({ success: true, activeSaleData, activeSaleProducts });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
+
 
 // Controller function to set a sale on a product
 exports.setSaleForProduct = async (req, res) => {
