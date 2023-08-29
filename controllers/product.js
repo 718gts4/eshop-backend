@@ -24,20 +24,23 @@ exports.getActiveSales = async (req, res) => {
 // Controller function to set a sale on a product
 exports.setSaleForProduct = async (req, res) => {
     try {
-        const { productId, discount, startTime, endTime, sellerId } = req.body;
+        const { products, discount, startTime, endTime, sellerId } = req.body;
     
-        // Find the product by its ID
-        const product = await Product.findById(productId);
+        // Extract product IDs from the array of products
+        const productIds = products.map(product => product._id);
     
-        if (!product) {
-            return res.status(404).json({ success: false, message: 'Product not found' });
+        // Find the products by their IDs
+        const foundProducts = await Product.find({ _id: { $in: productIds } });
+
+        if (!foundProducts || foundProducts.length !== productIds.length) {
+            return res.status(404).json({ success: false, message: 'Some products not found' });
         }
     
         // Create a new Sale document with the provided details
         const sale = new Sale({
             onSale: true,
             title: `Sale for ${product.name}`,
-            products: [productId],
+            products: productIds,
             discount: discount,
             startTime: startTime,
             endTime: endTime,
@@ -47,9 +50,11 @@ exports.setSaleForProduct = async (req, res) => {
         // Save the sale document
         const savedSale = await sale.save();
     
-        // Update the product's sale field with the sale ID
-        product.sale = savedSale._id;
-        await product.save();
+        // Update the products' sale fields with the sale ID
+        for (const product of foundProducts) {
+            product.sale = savedSale._id;
+            await product.save();
+        }
     
         res.json({ success: true, message: 'Sale set for product', sale: savedSale });
     } catch (error) {
