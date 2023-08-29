@@ -3,6 +3,24 @@ const {Category} = require('../models/category');
 const { Sale } = require('../models/sale');
 const mongoose = require('mongoose');
 
+exports.getActiveSales = async (req, res) => {
+    try {
+        // Find active sales that are currently on sale
+        const activeSales = await Sale.find({ onSale: true });
+
+        // Extract product IDs from active sales
+        const productIds = activeSales.flatMap(sale => sale.products);
+
+        // Fetch products using the extracted product IDs
+        const activeSaleProducts = await Product.find({ _id: { $in: productIds } });
+
+        res.json({ success: true, activeSaleProducts });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
 // Controller function to set a sale on a product
 exports.setSaleForProduct = async (req, res) => {
     try {
