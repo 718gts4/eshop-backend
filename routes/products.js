@@ -16,7 +16,6 @@ const { getProducts,
     getProductsByCategoryId,
     bookmarkProduct,
     getProductsByChildCategoryId,
-    setSaleForProduct
 } = require('../controllers/product');
 const express = require('express');
 const router = express.Router();
@@ -73,7 +72,7 @@ router.get(`/search/products`, getSearchProducts); // get products of search res
 router.patch('/:id/like', likeProduct, requireSignin);
 router.patch('/:id/bookmark', bookmarkProduct, requireSignin);
 router.put('/:id/sale', editSaleDuration, requireSignin);
-router.post('/post/sale', createSale);
+router.post('/create-sale', createSale);
 router.get('/recent/products', getRecentProducts);
 router.get('/category/:categoryId', getProductsByCategoryId);
 router.get('/category/child/:categoryId', getProductsByChildCategoryId); // get child category search results

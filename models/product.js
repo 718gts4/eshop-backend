@@ -173,11 +173,6 @@ const productSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
-    saleDuration: {
-        startDate: Date,
-        endDate: Date,
-        deliveryDate: Date
-    },
     dropDate:{
         type: Date,
         default: Date.now
@@ -190,6 +185,11 @@ const productSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Sale',
         default: null
+    },
+    saleDuration: {
+        startDate: Date,
+        endDate: Date,
+        deliveryDate: Date
     },
     salesQuantity: {
         type: Number,

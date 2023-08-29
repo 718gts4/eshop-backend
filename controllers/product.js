@@ -39,6 +39,29 @@ exports.setSaleForProduct = async (req, res) => {
     }
 };
 
+exports.createSale = async (req, res) => {
+    try {
+        // discount is decimal value and duration is number of days
+        const { productId, discount, duration } = req.body;
+        const product = await Product.findById(productId);
+        const discountedPrice = product.price - (product.price * discount);
+
+        const sale = {
+            discount : discount,
+            endTime: new Date(Date.now() + duration * 24 * 60 * 60 * 1000)
+        };
+
+        product.price = discountedPrice;
+        product.sale = sale;
+
+        await product.save();
+
+        res.status(200).json({message: 'Sale created successfully', product});
+    } catch (error) {
+        res.status(500).json({error: 'Failed to create sale', message: error.message});
+    }
+};
+
 exports.getProducts = async (req, res) => {
     let filter = {};
 
@@ -361,29 +384,6 @@ exports.getSearchProducts = async (req, res) => {
 //         res.status(500).json({ message: 'Server Error' });
 //     }   
 // }
-
-exports.createSale = async (req, res) => {
-    try {
-        // discount is decimal value and duration is number of days
-        const { productId, discount, duration } = req.body;
-        const product = await Product.findById(productId);
-        const discountedPrice = product.price - (product.price * discount);
-
-        const sale = {
-            discount : discount,
-            endTime: new Date(Date.now() + duration * 24 * 60 * 60 * 1000)
-        };
-
-        product.price = discountedPrice;
-        product.sale = sale;
-
-        await product.save();
-
-        res.status(200).json({message: 'Sale created successfully', product});
-    } catch (error) {
-        res.status(500).json({error: 'Failed to create sale', message: error.message});
-    }
-}
 
 exports.editSaleDuration = async (req, res) => {
     const productId = req.params.id;
