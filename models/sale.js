@@ -31,10 +31,6 @@ const saleSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', 
         required: true
-    },
-    dateCreated:{
-        type: Date,
-        default: Date.now
     }
 }, {timestamps: true});
 
