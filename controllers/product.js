@@ -27,7 +27,7 @@ exports.setSaleForProduct = async (req, res) => {
         const { products, discount, startTime, endTime, sellerId } = req.body;
     
         // Extract product IDs from the array of products
-        const productIds = products.map(product => product._id);
+        const productIds = products;
     console.log('productIds', productIds)
         // Find the products by their IDs
         const foundProducts = await Product.find({ _id: { $in: productIds } });
