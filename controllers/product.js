@@ -36,10 +36,13 @@ exports.setSaleForProduct = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Some products not found' });
         }
     
+        // Create a comma-separated list of product names
+        const productNames = foundProducts.map(product => product.name).join(', ');
+
         // Create a new Sale document with the provided details
         const sale = new Sale({
             onSale: true,
-            title: `Sale for ${product.name}`,
+            title: `Sale for ${productNames}`, 
             products: productIds,
             discount: discount,
             startTime: startTime,
