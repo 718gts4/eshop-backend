@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 // Controller function to set a sale on a product
 exports.setSaleForProduct = async (req, res) => {
     try {
-        const { productId, discount, startTime, endTime } = req.body;
+        const { productId, discount, startTime, endTime, sellerId } = req.body;
     
         // Find the product by its ID
         const product = await Product.findById(productId);
@@ -22,7 +22,8 @@ exports.setSaleForProduct = async (req, res) => {
             products: [productId],
             discount: discount,
             startTime: startTime,
-            endTime: endTime
+            endTime: endTime,
+            sellerId
         });
     
         // Save the sale document
