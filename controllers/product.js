@@ -31,9 +31,10 @@ exports.createSaleProduct = async (req, res) => {
 };
 
 exports.getSaleProducts = async (req, res) => {
+    console.log('hello')
     try {
         // Find products where onSale is true
-        const saleProducts = await Product.find({ onSale: true });
+        const saleProducts = await Product.find({ "onSale": true });
 
         res.json({ success: true, saleProducts });
     } catch (error) {
