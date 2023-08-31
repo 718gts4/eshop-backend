@@ -407,12 +407,11 @@ exports.getRecentProducts = async (req, res) => {
 
 exports.createProductReview = async (req, res) => {
     const { rating, comment } = req.body;
-console.log('req user', req.user)
     const product = await Product.findById(req.params.id)
 
     if (product) {
         const alreadyReviewed = product.reviews.find((r) => 
-            r.user.toString() === req.user._id.toString())
+            r.user.toString() === req.user.userId.toString())
 
         if (alreadyReviewed) {
             res.status(400)
