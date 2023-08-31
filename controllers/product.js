@@ -411,7 +411,7 @@ exports.createProductReview = async (req, res) => {
 
     if (product) {
         const alreadyReviewed = product.reviews.find((r) => 
-            r.user.toString() === req.user.userId.toString())
+            r.createdBy.toString() === req.user.userId.toString())
 
         if (alreadyReviewed) {
             res.status(400)
