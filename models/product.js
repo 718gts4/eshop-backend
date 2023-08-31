@@ -3,10 +3,9 @@ const { Sale } = require('../models/sale');
 
 const reviewSchema = mongoose.Schema(
     {
-        name: { type: String, required: true },
         rating: { type: Number, required: true },
         comment: { type: String, required: true },
-        user: {
+        createdBy: {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
             ref: 'User',
