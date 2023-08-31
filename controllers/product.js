@@ -407,7 +407,7 @@ exports.getRecentProducts = async (req, res) => {
 
 exports.createProductReview = async (req, res) => {
     const { rating, comment } = req.body;
-console.log('req user', req)
+console.log('req user', req.user)
     const product = await Product.findById(req.params.id)
 
     if (product) {
@@ -422,7 +422,7 @@ console.log('req user', req)
         const review = {
             rating: Number(rating),
             comment,
-            createdBy: req.user._id,
+            createdBy: req.user.userId,
         }
 
         product.reviews.push(review)
