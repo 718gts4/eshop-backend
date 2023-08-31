@@ -414,8 +414,7 @@ exports.createProductReview = async (req, res) => {
             r.createdBy.toString() === req.user.userId.toString())
 
         if (alreadyReviewed) {
-            res.status(400)
-            throw new Error('리뷰를 이미 작성했습니다.')
+            return res.status(500).json({ success: false, message: '리뷰를 이미 작성했습니다.' });
         }
 
         const review = {
