@@ -423,10 +423,8 @@ exports.createProductReview = async (req, res) => {
             createdBy: req.user.userId,
         }
 
-        product.reviews.push(review)
-
+        product.reviews.push(review);
         product.numReviews = product.reviews.length;
-
         product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length;
 
         await product.save()
