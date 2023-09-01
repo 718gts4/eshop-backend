@@ -406,12 +406,12 @@ exports.getRecentProducts = async (req, res) => {
 };
 
 exports.createProductReview = async (req, res) => {
-    const { rating, comment } = req.body;
+    const { rating, comment, userId } = req.body;
     const product = await Product.findById(req.params.id)
-    console.log('req.user:', req.user);
+
     if (product) {
         const alreadyReviewed = product.reviews.find((r) => 
-            r.createdBy.toString() === req.user.userId.toString())
+            r.createdBy.toString() === userId.toString())
 
         if (alreadyReviewed) {
             return res.status(500).json({ success: false, message: '리뷰를 이미 작성했습니다.' });
@@ -420,7 +420,7 @@ exports.createProductReview = async (req, res) => {
         const review = {
             rating: Number(rating),
             comment,
-            createdBy: req.user.userId,
+            createdBy: userId,
         }
 
         product.reviews.push(review);
