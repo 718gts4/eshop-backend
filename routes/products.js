@@ -80,7 +80,7 @@ router.get('/category/child/:categoryId', getProductsByChildCategoryId); // get 
 
 router.post(`/create-sale`, createSaleProduct);
 router.get(`/sale/products`, getSaleProducts);
-router.post(`/:id/reviews`, createProductReview);
+router.post(`/:id/reviews`, createProductReview, requireSignin);
 
 router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
     const {
