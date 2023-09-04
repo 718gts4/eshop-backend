@@ -249,7 +249,7 @@ exports.getUserOrders = async (req, res) => {
 }
 
 exports.updateDisplayOrder = async (req, res) => {
-    const orderId = req.params.id; 
+    const orderId = req.params.orderId; 
   console.log('orderID', orderId)
     try {
         const order = await Order.findByIdAndUpdate(
