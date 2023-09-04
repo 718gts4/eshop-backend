@@ -248,3 +248,22 @@ exports.getUserOrders = async (req, res) => {
     res.send(userOrderList);
 }
 
+exports.updateDisplayOrder = async (req, res) => {
+    const orderId = req.params.id; 
+  
+    try {
+        const order = await Order.findByIdAndUpdate(
+            orderId,
+            { $set: { display: "false" } }, // Update the "display" property to "false"
+            { new: true } // Return the updated document
+        );
+    
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+    
+        return res.status(200).json({ message: 'Order display updated successfully', order });
+    } catch (error) {
+        return res.status(500).json({ message: 'An error occurred while updating order display', error });
+    }
+  };
