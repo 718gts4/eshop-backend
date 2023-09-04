@@ -13,6 +13,6 @@ router.get('/get/totalsales', getTotalSales);
 router.get(`/get/count`, getOrdersCount);
 router.get(`/get/userorders/:userid`, getUserOrders, requireSignin);
 router.put('/toggle-order-status/:orderItemId/:orderStatusIndex', toggleOrderStatus, requireSignin);
-router.put(`/:id/updateDisplay`, updateDisplayOrder);
+router.put(`/updateDisplay/:orderId`, updateDisplayOrder);
 
 module.exports = router;
