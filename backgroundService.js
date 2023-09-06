@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
-const Product = require('./models/product'); 
+const Product = require('./models/Product'); 
 
 async function updateProductsOnSaleStatus() {
     try {
 
         console.log('Running updateProductsOnSaleStatus function at:', new Date());
-        
+
         // Find products where saleEndDate has passed and onSale is true
         const currentDate = new Date();
         const productsToUpdate = await Product.find({
