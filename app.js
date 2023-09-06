@@ -6,6 +6,7 @@ const cors = require('cors');
 require('dotenv/config');
 const authJwt = require('./helpers/jwt');
 const errorHandler = require('./helpers/error-handler');
+const backgroundService = require('./backgroundService');
 
 app.use(cors());
 app.options('*', cors());
@@ -47,6 +48,8 @@ app.use(`${api}/card`, cardRoutes);
 app.use(`${api}/questions`, questionRoutes);
 app.use(`${api}/recentlyViewed`, recentlyViewed);
 
+// Schedule the task to run periodically (e.g., every hour)
+setInterval(backgroundService.updateProductsOnSaleStatus, 3600000);
 
 mongoose.connect(process.env.CONNECTION_STRING)
 .then(() => {
