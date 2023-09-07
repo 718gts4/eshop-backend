@@ -124,6 +124,10 @@ exports.updateProduct = async (req, res) => {
     }
     const saleStartDate = new Date(req.body.saleStartDate);
     const saleEndDate = new Date(req.body.saleEndDate);
+console.log('checking', req.body.saleStartDate)
+    if (isNaN(saleStartDate.getTime()) || isNaN(saleEndDate.getTime())) {
+        return res.status(400).send('Invalid date format');
+    }
 
     const updatedProduct = await Product.findByIdAndUpdate(
         req.params.id,
