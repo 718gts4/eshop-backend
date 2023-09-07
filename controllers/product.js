@@ -122,7 +122,7 @@ exports.updateProduct = async (req, res) => {
     } else {
         imagepath = product.image;
     }
-
+console.log('check Req Body', req.body)
     const updatedProduct = await Product.findByIdAndUpdate(
         req.params.id,
         {
