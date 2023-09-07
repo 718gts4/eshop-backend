@@ -5,13 +5,13 @@ async function updateProductsOnSaleStatus() {
     try {
 
         console.log('Running updateProductsOnSaleStatus function at:', new Date());
-   
+
         // Find products where saleEndDate has passed and onSale is true
         const currentDate = new Date();
         const productsToUpdate = await Product.find({
-            $and: [
-                { saleEndDate: { $gte: currentDate } }, // Products where saleEndDate has passed
-                { saleStartDate: { $lte: currentDate } }, // Products where saleStartDate has not yet arrived
+            $or: [
+                { saleEndDate: { $lt: currentDate } }, // Products where saleEndDate has passed
+                { saleStartDate: { $gt: currentDate } }, // Products where saleStartDate has not yet arrived
             ],
             onSale: true,
         });
