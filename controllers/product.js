@@ -122,7 +122,9 @@ exports.updateProduct = async (req, res) => {
     } else {
         imagepath = product.image;
     }
-console.log('check Req Body', req.body)
+    const saleStartDate = new Date(Date.parse(req.body.saleStartDate));
+    const saleEndDate = new Date(Date.parse(req.body.saleEndDate));
+
     const updatedProduct = await Product.findByIdAndUpdate(
         req.params.id,
         {
@@ -146,8 +148,8 @@ console.log('check Req Body', req.body)
             soldout: req.body.soldout,
             isSelling: req.body.isSelling,
             discount: req.body.discount,
-            saleStartdate: req.body.saleStartDate,
-            saleEndDate: req.body.saleEndDate,
+            saleStartDate,
+            saleEndDate,
             onSale: req.body.onSale,
         },
         { new: true}
