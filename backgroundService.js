@@ -17,13 +17,11 @@ async function updateProductsOnSaleStatus() {
         });
 
         // Iterate through the products to update onSale status
-        for (const product of productsToUpdate) {
-            console.log('product.salestart', product.saleStartDate);
-            console.log('current date', currentDate)
+        for (const product of productsToUpdate) {\
             if (currentDate >= product.saleStartDate) {
                 product.onSale = true;
             } else {
-                product.onSale = false;
+                product.onSale = product.saleStartDate <= currentDate <= product.saleEndDate;
             }
             await product.save();
         }
