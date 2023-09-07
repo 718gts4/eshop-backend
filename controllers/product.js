@@ -145,6 +145,10 @@ exports.updateProduct = async (req, res) => {
             display: req.body.display,
             soldout: req.body.soldout,
             isSelling: req.body.isSelling,
+            discount: req.body.discount,
+            saleStartdate: req.body.saleStartDate,
+            saleEndDate: req.body.saleEndDate,
+            onSale: req.body.onSale,
         },
         { new: true}
     );
