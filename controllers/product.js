@@ -122,8 +122,8 @@ exports.updateProduct = async (req, res) => {
     } else {
         imagepath = product.image;
     }
-    const saleStartDate = Date.parse(req.body.saleStartDate);
-    const saleEndDate = Date.parse(req.body.saleEndDate);
+    const saleStartDate = new Date(req.body.saleStartDate);
+    const saleEndDate = new Date(req.body.saleEndDate);
 
     const updatedProduct = await Product.findByIdAndUpdate(
         req.params.id,
