@@ -8,6 +8,7 @@ async function updateProductsOnSaleStatus() {
 
         // Find products where saleEndDate has passed and onSale is true
         const currentDate = new Date();
+        console.log('Current Date:', currentDate);
         const productsToUpdate = await Product.find({
             $or: [
                 { saleEndDate: { $lt: currentDate } }, // Products where saleEndDate has passed
@@ -15,6 +16,8 @@ async function updateProductsOnSaleStatus() {
             ],
             onSale: true,
         });
+
+        console.log('Products to Update:', productsToUpdate);
 
         // Iterate through the products to update onSale status
         for (const product of productsToUpdate) {
