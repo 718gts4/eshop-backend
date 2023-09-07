@@ -122,12 +122,27 @@ exports.updateProduct = async (req, res) => {
     } else {
         imagepath = product.image;
     }
-    const saleStartDate = new Date(req.body.saleStartDate);
-    const saleEndDate = new Date(req.body.saleEndDate);
 
-    // if (isNaN(saleStartDate.getTime()) || isNaN(saleEndDate.getTime())) {
-    //     return res.status(400).send('Invalid date format');
-    // }
+    let saleStartDate;
+    let saleEndDate;
+
+    if (req.body.saleStartDate) {
+        const parsedStartDate = Date.parse(req.body.saleStartDate);
+        if (!isNaN(parsedStartDate)) {
+            saleStartDate = new Date(parsedStartDate);
+        } else {
+            return res.status(400).send('Invalid saleStartDate format');
+        }
+    }
+
+    if (req.body.saleEndDate) {
+        const parsedEndDate = Date.parse(req.body.saleEndDate);
+        if (!isNaN(parsedEndDate)) {
+            saleEndDate = new Date(parsedEndDate);
+        } else {
+            return res.status(400).send('Invalid saleEndDate format');
+        }
+    }
 
     const updatedProduct = await Product.findByIdAndUpdate(
         req.params.id,
