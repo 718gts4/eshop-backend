@@ -49,7 +49,7 @@ app.use(`${api}/questions`, questionRoutes);
 app.use(`${api}/recentlyViewed`, recentlyViewed);
 
 // Schedule the task to run periodically (e.g., every hour)
-setInterval(backgroundService.updateProductsOnSaleStatus, 60000);
+setInterval(backgroundService.updateProductsOnSaleStatus, 6000);
 
 mongoose.connect(process.env.CONNECTION_STRING)
 .then(() => {
