@@ -14,9 +14,9 @@ async function updateProductsOnSaleStatus() {
         console.log('Current Date In Seoul: ', currentDate.format());
 
         const productsToUpdate = await Product.find({
-            $or: [
-                { saleEndDate: { $gt: currentDate.toDate() } }, // Products where saleEndDate has passed
-                { saleStartDate: { $lt: currentDate.toDate() } }, // Products where saleStartDate has not yet arrived
+            $and: [
+                { saleEndDate: { $gt: currentDate.toDate() } }, 
+                { saleStartDate: { $lte: currentDate.toDate() } }, 
             ],
             onSale: true,
         });
@@ -26,7 +26,6 @@ async function updateProductsOnSaleStatus() {
         // Iterate through the products to update onSale status
         for (const product of productsToUpdate) {
             console.log('Updating product??:', product._id);
-            console.log('Current Date:', currentDate);
             console.log('Sale Start Date:', product.saleStartDate);
             if (currentDate >= product.saleStartDate) {
                 product.onSale = true;
