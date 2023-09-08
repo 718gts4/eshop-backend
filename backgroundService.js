@@ -40,8 +40,8 @@ async function updateProductsOnSaleStatus() {
             await product.save();
         }
 
-        console.log('Updated START products:', productsToUpdate.length);
-        console.log('Updated END products:', productsToUpdate2.length);
+        console.log('Updating START products:', productsToUpdate.length);
+        console.log('Updating END products:', productsToUpdate2.length);
     } catch (error) {
         console.error('Error updating products:', error);
     }
