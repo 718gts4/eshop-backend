@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { Sale } = require('../models/sale'); 
+const moment = require('moment-timezone');
 
 const reviewSchema = mongoose.Schema(
     {
@@ -186,7 +187,7 @@ const productSchema = mongoose.Schema({
     },
     dropDate:{
         type: Date,
-        default: Date.now
+        default: () => moment.tz('Asia/Seoul'),
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
@@ -206,9 +207,17 @@ const productSchema = mongoose.Schema({
     },
     saleStartDate: {
         type: Date,
+        get: function () {
+            // Convert the saleStartDate to Seoul Timezone before returning
+            return moment(this.getDataValue('saleStartDate')).tz('Asia/Seoul');
+        },
     },
     saleEndDate: {
         type: Date,
+        get: function () {
+            // Convert the saleEndDate to Seoul Timezone before returning
+            return moment(this.getDataValue('saleEndDate')).tz('Asia/Seoul');
+        },
     },
     salesQuantity: {
         type: Number,
