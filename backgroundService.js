@@ -10,7 +10,7 @@ async function updateProductsOnSaleStatus() {
         const currentDate = new Date();
 
         const productsToUpdate = await Product.find({
-            saleStartDate: { $gte: currentDate },
+            saleStartDate: { $lte: currentDate },
             onSale: false,
         });
 
