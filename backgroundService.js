@@ -1,18 +1,22 @@
 const mongoose = require('mongoose');
 const {Product} = require('./models/product'); 
+const moment = require('moment-timezone');
 
 async function updateProductsOnSaleStatus() {
     try {
 
         console.log('Running updateProductsOnSaleStatus function at:', new Date());
 
+        moment.tz.setDefault('Asia/Seoul');
+
         // Find products where saleEndDate has passed and onSale is true
-        const currentDate = new Date();
-        console.log('Current Date:', currentDate);
+        const currentDate = moment();
+        console.log('Current Date In Seoul: ', currentDate.format());
+
         const productsToUpdate = await Product.find({
             $or: [
-                { saleEndDate: { $lt: currentDate } }, // Products where saleEndDate has passed
-                { saleStartDate: { $gt: currentDate } }, // Products where saleStartDate has not yet arrived
+                { saleEndDate: { $lt: currentDate.toDate() } }, // Products where saleEndDate has passed
+                { saleStartDate: { $gt: currentDate.toDate() } }, // Products where saleStartDate has not yet arrived
             ],
             onSale: true,
         });
