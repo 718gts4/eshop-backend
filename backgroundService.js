@@ -5,7 +5,7 @@ const moment = require('moment-timezone');
 async function updateProductsOnSaleStatus() {
     try {
 
-        console.log('Running updateProductsOnSaleStatus function at:', new Date());
+        console.log('Running updateProductsOnSaleStatus function at:', moment().format());
 
         moment.tz.setDefault('Asia/Seoul');
 
