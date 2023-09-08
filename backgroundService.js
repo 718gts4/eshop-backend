@@ -1,41 +1,25 @@
 const mongoose = require('mongoose');
 const {Product} = require('./models/product'); 
-const moment = require('moment-timezone');
 
 async function updateProductsOnSaleStatus() {
     try {
 
-        console.log('Running updateProductsOnSaleStatus function at:', moment().format());
-
-        moment.tz.setDefault('Asia/Seoul');
+        console.log('Running updateProductsOnSaleStatus function at:', new Date());
 
         // Find products where saleEndDate has passed and onSale is true
-        const currentDate = moment();
-        console.log('Current Date In Seoul: ', currentDate.format());
-
+        const currentDate = new Date();
         const productsToUpdate = await Product.find({
-            $and: [
-                { saleEndDate: { $gt: currentDate.toDate() } }, 
-                { saleStartDate: { $lte: currentDate.toDate() } }, 
-            ],
+            saleEndDate: { $lte: currentDate },
             onSale: true,
         });
 
-        console.log('Products to Update:', productsToUpdate);
-
-        // Iterate through the products to update onSale status
+        // Update the onSale status to false for each product
         for (const product of productsToUpdate) {
-            console.log('Updating product??:', product._id);
-            console.log('Sale Start Date:', product.saleStartDate);
-            if (currentDate >= product.saleStartDate) {
+            if(currentDate >= product.saleStartDate){
                 product.onSale = true;
-                console.log('Product is now on sale.');
-            } else {
-                product.onSale = false;
-                console.log('Product is not on sale.');
             }
+            product.onSale = false;
             await product.save();
-            console.log('Updated product!!:', product._id);
         }
 
         console.log('Updated products:', productsToUpdate.length);
