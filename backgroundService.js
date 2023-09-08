@@ -15,10 +15,10 @@ async function updateProductsOnSaleStatus() {
 
         // Update the onSale status based on saleStartDate
         for (const product of productsToUpdate) {
-            if (currentDate >= product.saleStartDate) {
-                product.onSale = true;
-            } else {
+            if (currentDate >= product.saleEndDate) {
                 product.onSale = false;
+            } else {
+                product.onSale = true;
             }
 
             await product.save();
