@@ -47,7 +47,7 @@ exports.getProducts = async (req, res) => {
     let filter = {};
     let limit = 10;
     let skip = parseInt(req.query.skip) || 0;
-
+console.log('req query', req.query)
     if(req.query.categories)
     {
         filter = {category: req.query.categories.split(',')}
