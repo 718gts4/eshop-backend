@@ -45,13 +45,19 @@ exports.getSaleProducts = async (req, res) => {
 
 exports.getProducts = async (req, res) => {
     let filter = {};
+    let limit = 10;
+    let skip = parseInt(req.query.skip) || 0;
 
     if(req.query.categories)
     {
         filter = {category: req.query.categories.split(',')}
     }
 
-    const productList = await Product.find(filter).populate('category').sort({'dateCreated': -1});
+    const productList = await Product.find(filter)
+    .populate('category')
+    .sort({'dateCreated': -1})
+    .skip(skip)
+    .limit(limit);
 
     if(!productList){
         res.status(500).json({success:false})
