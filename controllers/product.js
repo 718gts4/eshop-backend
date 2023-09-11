@@ -75,10 +75,16 @@ exports.getProduct = async (req, res) => {
 }
 
 exports.getProductsByCategoryId = async (req, res) => {
+    let filter = {};
+    let limit = 10;
+    let skip = parseInt(req.query.skip) || 0;
     console.log('req.params.', req.params.categoryId)
     try {
         const categoryId = mongoose.Types.ObjectId(req.params.categoryId);
-        const products = await Product.find({ parentCategory: categoryId});
+        const products = await Product.find({ parentCategory: categoryId})        
+            .sort({'dateCreated': -1})
+            .skip(skip)
+            .limit(limit);;
 
         res.status(200).json(products);
     } catch (error) {
