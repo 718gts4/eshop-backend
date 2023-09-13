@@ -81,13 +81,23 @@ exports.getProductsByCategoryId = async (req, res) => {
     console.log('req.params.', req.params)
     console.log('check ID')
     try {
-        const categoryId = mongoose.Types.ObjectId(req.params.categoryId);
-        const products = await Product.find({ parentCategory: categoryId})        
-            .sort({'dateCreated': -1})
-            .skip(skip)
-            .limit(limit);;
+        if(req.params.categoryId) {
+            const categoryId = mongoose.Types.ObjectId(req.params.categoryId);
+            const products = await Product.find({ parentCategory: categoryId})        
+                .sort({'dateCreated': -1})
+                .skip(skip)
+                .limit(limit);
 
-        res.status(200).json(products);
+            res.status(200).json(products);
+        } else {
+            const products = await Product.find()
+                .sort({'dateCreated': -1})
+                .skip(skip)
+                .limit(limit);
+            
+            res.status(200).json(products);
+        }
+        
     } catch (error) {
         res.status(500).json({error: 'Failed to retrieve category products'});
     }
