@@ -54,10 +54,11 @@ console.log('REQ QUERY', req.query)
     }
 
     const productList = await Product.find(filter)
-    .populate('category')
-    .sort({'dateCreated': -1})
-    .skip(skip)
-    .limit(limit);
+        .populate('category')
+        .populate('reviews.createdBy', ['name'])
+        .sort({'dateCreated': -1})
+        .skip(skip)
+        .limit(limit);
 
     if(!productList){
         res.status(500).json({success:false})
