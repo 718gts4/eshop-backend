@@ -107,7 +107,7 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
             brand,
             price,
             parentCategory,
-            category,
+            category: req.body.category || null,
             isFeatured,
             createdBy: req.user.userId, // user data from middleware
             likes: {},
