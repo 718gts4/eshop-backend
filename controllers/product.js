@@ -55,7 +55,7 @@ console.log('REQ QUERY', req.query)
 
     const productList = await Product.find(filter)
         .populate('category')
-        .populate('reviews.createdBy', ['name'])
+        .populate('reviews.createdBy', ['name', 'image', 'username'])
         .sort({'dateCreated': -1})
         .skip(skip)
         .limit(limit);
