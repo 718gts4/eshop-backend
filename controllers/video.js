@@ -171,7 +171,7 @@ exports.bookmarkVideo = async (req, res) => {
         const { userId } = req.body;
         const video = await Video.findById(id);
         const bookmarks = video.bookmarks || new Map();
-        const isBookmarked = bookmarks.get(userId);
+        const isBookmarked = bookmarks?.get(userId);
 
         if(isBookmarked){
             bookmarks.delete(userId);

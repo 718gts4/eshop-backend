@@ -313,7 +313,7 @@ exports.bookmarkProduct = async (req, res) => {
         const { id } = req.params;
         const { userId } = req.body;
         const product = await Product.findById(id);
-        const isBookmarked = product.bookmarks.get(userId);
+        const isBookmarked = product?.bookmarks.get(userId);
 
         if(isBookmarked){
             product.bookmarks.delete(userId);

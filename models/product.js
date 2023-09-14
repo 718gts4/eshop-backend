@@ -221,7 +221,11 @@ const productSchema = mongoose.Schema({
     deliveryFeeAmount: {
         type: Number,
         default: 0
-    }
+    },
+    preorder: {
+        type: Boolean,
+        default: false
+    },
 })
 
 
