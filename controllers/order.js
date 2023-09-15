@@ -274,7 +274,7 @@ exports.getOrderItemCountsBySeller = async (req, res) => {
         const orderItemCounts = await OrderItem.aggregate([
             {
             $group: {
-                _id: '$sellerId', // Group by sellerId
+                vendorId: '$sellerId', // Group by sellerId
                 count: { $sum: 1 }, // Count the number of order items for each sellerId
             },
             },
