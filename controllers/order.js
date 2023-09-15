@@ -12,17 +12,24 @@ exports.getOrderItemCountsBySeller = async (req, res) => {
                     count: { $sum: 1 }, // Count the number of order items for each sellerId
                 },
             },
+        ]);
+        
+        console.log('Order Item Counts:', orderItemCounts);
+
+        const orderItemsWidthSellerInfo = await OrderItem.aggregate([
             {
                 $lookup: {
                     from: 'users', 
-                    localField: 'sellerId', // Field from the current collection (sellerId from order items)
-                    foreignField: '_id', // Field from the referenced collection (User model's _id)
-                    as: 'sellerInfo', // Create an array field named 'sellerInfo' in the output
+                    localField: 'sellerId', 
+                    foreignField: '_id', 
+                    as: 'sellerInfo', 
                 },
             },
         ]);
     
-        res.json(orderItemCounts);
+        console.log('Order Items with Seller Info:', orderItemsWidthSellerInfo);
+
+        res.json(orderItemsWidthSellerInfo);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal server error' });
