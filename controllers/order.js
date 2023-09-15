@@ -306,7 +306,7 @@ exports.getOrderItemCountsBySeller = async (req, res) => {
                 (item) => item.sellerId.toString() === sellerId.toString()
             );
             const productCount = productCounts.find(
-                (item) => item._id.toString() === sellerId.toString()
+                (item) => item.sellerId.toString() === sellerId.toString()
             );
             return {
                 _id: sellerId,
