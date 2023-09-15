@@ -3,6 +3,32 @@ const {OrderItem} = require('../models/order-item');
 const { User } = require('../models/user');
 const mongoose = require('mongoose');
 
+exports.getOrderItemCountsBySeller = async (req, res) => {
+    try {
+        const orderItemCounts = await OrderItem.aggregate([
+            {
+                $group: {
+                    _id: '$sellerId', // Group by sellerId
+                    count: { $sum: 1 }, // Count the number of order items for each sellerId
+                },
+            },
+            {
+                $lookup: {
+                    from: User, 
+                    localField: '_id', // Field from the current collection (sellerId from order items)
+                    foreignField: '_id', // Field from the referenced collection (User model's _id)
+                    as: 'sellerInfo', // Create an array field named 'sellerInfo' in the output
+                },
+            },
+        ]);
+    
+        res.json(orderItemCounts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 exports.getOrders = async (req, res) => {
     const orderList = await Order.find().populate('user', 'name').sort({'dateOrdered': -1});
 
@@ -269,29 +295,3 @@ exports.updateDisplayOrder = async (req, res) => {
     }
   };
 
-
-exports.getOrderItemCountsBySeller = async (req, res) => {
-    try {
-        const orderItemCounts = await OrderItem.aggregate([
-            {
-                $group: {
-                    _id: '$sellerId', // Group by sellerId
-                    count: { $sum: 1 }, // Count the number of order items for each sellerId
-                },
-            },
-            {
-                $lookup: {
-                    from: 'User', 
-                    localField: '_id', // Field from the current collection (sellerId from order items)
-                    foreignField: '_id', // Field from the referenced collection (User model's _id)
-                    as: 'sellerInfo', // Create an array field named 'sellerInfo' in the output
-                },
-            },
-        ]);
-    
-        res.json(orderItemCounts);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-};
