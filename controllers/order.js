@@ -30,7 +30,7 @@ exports.getOrderItemCountsBySeller = async (req, res) => {
         const combinedResults = orderItemCounts.map((orderItemCount) => {
             const sellerId = orderItemCount._id;
             const sellerInfo = orderItemsWithSellerInfo.find(
-                (item) => item._id.toString() === sellerId.toString()
+                (item) => item.sellerId.toString() === sellerId.toString()
             );
             return {
                 _id: sellerId,
