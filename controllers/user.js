@@ -340,7 +340,7 @@ exports.bookmarkProduct = async (req, res) => {
 };
 
 exports.getBookmarkedProducts = async (req, res) => {
-    console.log('user ID', req.params;
+    console.log('user ID', req.params);
     try {
         const { userId } = req.params;
         const user = await User.findById(userId).populate('bookmarkProducts');
