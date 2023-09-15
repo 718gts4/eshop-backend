@@ -14,8 +14,8 @@ exports.getOrderItemCountsBySeller = async (req, res) => {
             },
             {
                 $lookup: {
-                    from: 'User', 
-                    localField: '_id', // Field from the current collection (sellerId from order items)
+                    from: 'users', 
+                    localField: 'sellerId', // Field from the current collection (sellerId from order items)
                     foreignField: '_id', // Field from the referenced collection (User model's _id)
                     as: 'sellerInfo', // Create an array field named 'sellerInfo' in the output
                 },
