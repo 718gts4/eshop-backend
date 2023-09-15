@@ -1,4 +1,4 @@
-const { getOrders, getOrder, postOrder, updateOrder, deleteOrder,getTotalSales, getOrdersCount, getUserOrders, getOrderItems, toggleOrderStatus, updateDisplayOrder } = require('../controllers/order');
+const { getOrders, getOrder, postOrder, updateOrder, deleteOrder,getTotalSales, getOrdersCount, getUserOrders, getOrderItems, toggleOrderStatus, updateDisplayOrder, getOrderItemCountsBySeller } = require('../controllers/order');
 const express = require('express');
 const router = express.Router();
 const { requireSignin } = require('../common-middleware');
@@ -14,5 +14,6 @@ router.get(`/get/count`, getOrdersCount);
 router.get(`/get/userorders/:userid`, getUserOrders, requireSignin);
 router.put('/toggle-order-status/:orderItemId/:orderStatusIndex', toggleOrderStatus, requireSignin);
 router.put(`/updateDisplay/:orderId`, updateDisplayOrder);
+router.get('/orderitems/countbyseller', getOrderItemCountsBySeller);
 
 module.exports = router;

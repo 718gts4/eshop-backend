@@ -267,3 +267,22 @@ exports.updateDisplayOrder = async (req, res) => {
         return res.status(500).json({ message: 'An error occurred while updating order display', error });
     }
   };
+
+
+exports.getOrderItemCountsBySeller = async (req, res) => {
+    try {
+        const orderItemCounts = await OrderItem.aggregate([
+            {
+            $group: {
+                _id: '$sellerId', // Group by sellerId
+                count: { $sum: 1 }, // Count the number of order items for each sellerId
+            },
+            },
+        ]);
+    
+        res.json(orderItemCounts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
