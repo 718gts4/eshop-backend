@@ -273,10 +273,18 @@ exports.getOrderItemCountsBySeller = async (req, res) => {
     try {
         const orderItemCounts = await OrderItem.aggregate([
             {
-            $group: {
-                _id: '$sellerId', // Group by sellerId
-                count: { $sum: 1 }, // Count the number of order items for each sellerId
+                $group: {
+                    _id: '$sellerId', // Group by sellerId
+                    count: { $sum: 1 }, // Count the number of order items for each sellerId
+                },
             },
+            {
+                $lookup: {
+                    from: 'User', // Replace 'users' with the actual name of your user collection
+                    localField: '_id', // Field from the current collection (sellerId from order items)
+                    foreignField: '_id', // Field from the referenced collection (User model's _id)
+                    as: 'sellerInfo', // Create an array field named 'sellerInfo' in the output
+                },
             },
         ]);
     
