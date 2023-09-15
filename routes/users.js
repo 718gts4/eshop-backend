@@ -17,7 +17,8 @@ const {
     resetPassword,
     // verifyEmail,
     checkEmail,
-    resendEmailVerification
+    resendEmailVerification,
+    getAllAdminUsers
 } = require('../controllers/user');
 const express = require('express');
 const router = express.Router();
@@ -41,6 +42,7 @@ router.get('/', getUsers);
 router.get('/:id', getUserId);
 router.get(`/get/count`, getUserCount);
 router.get(`/search/users`, getSearchUsers);
+router.get(`/admin-users`, getAllAdminUsers);
 router.post('/login', validateLoginRequest, isRequestValidated, login);
 router.post('/register', validateRegisterRequest, isRequestValidated, register);
 router.put('/:id', updateUser); 

@@ -315,8 +315,6 @@ exports.bookmarkProduct = async (req, res) => {
     try {
         const { productId, userId } = req.params;
         const user = await User.findById(userId);
-console.log('userid', userId);
-console.group('product id', productId);
 
         let bookmarkIndex = -1;
         for (let i = 0; i < user.bookmarkProducts?.length; i++) {
@@ -342,7 +340,6 @@ console.group('product id', productId);
 };
 
 exports.getBookmarkedProducts = async (req, res) => {
-    console.log('user ID', req.params);
     try {
         const { userId } = req.params;
         const user = await User.findById(userId).populate('bookmarkProducts');
@@ -454,3 +451,14 @@ exports.resetPassword =  async(req, res) => {
         return res.status(500).json({ error })
     })  
 };
+
+
+exports.getAllAdminUsers = async (req, res) => {
+    try {
+      const adminUsers = await User.find({ isAdmin: true });
+  
+      res.status(200).json(adminUsers);
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  };
