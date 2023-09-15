@@ -302,7 +302,8 @@ exports.getOrderItemCountsBySeller = async (req, res) => {
             };
         });
 
-
+        combinedResults.sort((a, b) => b.count - a.count);
+        
         res.json(combinedResults);
     } catch (error) {
         console.error(error);
