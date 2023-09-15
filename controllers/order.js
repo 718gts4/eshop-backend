@@ -1,5 +1,6 @@
 const {Order} = require('../models/order');
 const {OrderItem} = require('../models/order-item');
+const {Product} = require('../models/product');
 const mongoose = require('mongoose');
 
 exports.getOrders = async (req, res) => {
@@ -279,6 +280,15 @@ exports.getOrderItemCountsBySeller = async (req, res) => {
             },
         ]);
 
+        const productCount = await Product.aggregate([
+            {
+                $group: {
+                    _id: '$sellerId',
+                    count: { $sum: 1},
+                },
+            },
+        ]);
+
         const orderItemsWithSellerInfo = await OrderItem.aggregate([
             {
                 $lookup: {
@@ -295,9 +305,13 @@ exports.getOrderItemCountsBySeller = async (req, res) => {
             const sellerInfo = orderItemsWithSellerInfo.find(
                 (item) => item.sellerId.toString() === sellerId.toString()
             );
+            const productCount = productCounts.find(
+                (item) => item._id.toString() === sellerId.toString()
+            );
             return {
                 _id: sellerId,
                 count: orderItemCount.count,
+                productCount: productCount ? productCount.count : 0,
                 sellerInfo: sellerInfo ? sellerInfo.sellerInfo[0] : null,
             };
         });
