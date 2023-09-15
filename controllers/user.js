@@ -349,7 +349,7 @@ exports.getBookmarkedProducts = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const bookmarkedProducts = user.bookmarkProducts.reverse();
+        const bookmarkedProducts = user.bookmarkProducts;
 
         res.status(200).json(bookmarkedProducts);
     } catch (err) {
