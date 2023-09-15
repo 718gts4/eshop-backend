@@ -1,5 +1,6 @@
 const {Order} = require('../models/order');
 const {OrderItem} = require('../models/order-item');
+const { User } = require('../models/user');
 const mongoose = require('mongoose');
 
 exports.getOrders = async (req, res) => {
@@ -280,7 +281,7 @@ exports.getOrderItemCountsBySeller = async (req, res) => {
             },
             {
                 $lookup: {
-                    from: 'User', // Replace 'users' with the actual name of your user collection
+                    from: 'User', 
                     localField: '_id', // Field from the current collection (sellerId from order items)
                     foreignField: '_id', // Field from the referenced collection (User model's _id)
                     as: 'sellerInfo', // Create an array field named 'sellerInfo' in the output
