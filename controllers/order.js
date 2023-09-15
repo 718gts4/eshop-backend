@@ -16,7 +16,7 @@ exports.getOrderItemCountsBySeller = async (req, res) => {
         
         console.log('Order Item Counts:', orderItemCounts);
 
-        const orderItemsWidthSellerInfo = await OrderItem.aggregate([
+        const orderItemsWithSellerInfo = await OrderItem.aggregate([
             {
                 $lookup: {
                     from: 'users', 
@@ -26,10 +26,21 @@ exports.getOrderItemCountsBySeller = async (req, res) => {
                 },
             },
         ]);
-    
-        console.log('Order Items with Seller Info:', orderItemsWidthSellerInfo);
 
-        res.json(orderItemsWidthSellerInfo);
+        const combinedResults = orderItemCounts.map((orderItemCount) => {
+            const sellerId = orderItemCount._id;
+            const sellerInfo = orderItemsWithSellerInfo.find(
+                (item) => item._id.toString() === sellerId.toString()
+            );
+            return {
+                _id: sellerId,
+                count: orderItemCount.count,
+                sellerInfo: sellerInfo ? sellerInfo.sellerInfo[0] : null,
+            };
+        });
+
+
+        res.json(combinedResults);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal server error' });
