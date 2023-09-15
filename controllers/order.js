@@ -1,51 +1,6 @@
 const {Order} = require('../models/order');
 const {OrderItem} = require('../models/order-item');
-const { User } = require('../models/user');
 const mongoose = require('mongoose');
-
-exports.getOrderItemCountsBySeller = async (req, res) => {
-    try {
-        const orderItemCounts = await OrderItem.aggregate([
-            {
-                $group: {
-                    _id: '$sellerId', // Group by sellerId
-                    count: { $sum: 1 }, // Count the number of order items for each sellerId
-                },
-            },
-        ]);
-        
-        console.log('Order Item Counts:', orderItemCounts);
-
-        const orderItemsWithSellerInfo = await OrderItem.aggregate([
-            {
-                $lookup: {
-                    from: 'users', 
-                    localField: 'sellerId', 
-                    foreignField: '_id', 
-                    as: 'sellerInfo', 
-                },
-            },
-        ]);
-
-        const combinedResults = orderItemCounts.map((orderItemCount) => {
-            const sellerId = orderItemCount._id;
-            const sellerInfo = orderItemsWithSellerInfo.find(
-                (item) => item.sellerId.toString() === sellerId.toString()
-            );
-            return {
-                _id: sellerId,
-                count: orderItemCount.count,
-                sellerInfo: sellerInfo ? sellerInfo.sellerInfo[0] : null,
-            };
-        });
-
-
-        res.json(combinedResults);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-};
 
 exports.getOrders = async (req, res) => {
     const orderList = await Order.find().populate('user', 'name').sort({'dateOrdered': -1});
@@ -295,7 +250,7 @@ exports.getUserOrders = async (req, res) => {
 
 exports.updateDisplayOrder = async (req, res) => {
     const orderId = req.params.orderId; 
-  console.log('orderID', orderId)
+
     try {
         const order = await Order.findByIdAndUpdate(
             orderId,
@@ -311,5 +266,46 @@ exports.updateDisplayOrder = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: 'An error occurred while updating order display', error });
     }
-  };
+ };
 
+exports.getOrderItemCountsBySeller = async (req, res) => {
+    try {
+        const orderItemCounts = await OrderItem.aggregate([
+            {
+                $group: {
+                    _id: '$sellerId', // Group by sellerId
+                    count: { $sum: 1 }, // Count the number of order items for each sellerId
+                },
+            },
+        ]);
+
+        const orderItemsWithSellerInfo = await OrderItem.aggregate([
+            {
+                $lookup: {
+                    from: 'users', 
+                    localField: 'sellerId', 
+                    foreignField: '_id', 
+                    as: 'sellerInfo', 
+                },
+            },
+        ]);
+
+        const combinedResults = orderItemCounts.map((orderItemCount) => {
+            const sellerId = orderItemCount._id;
+            const sellerInfo = orderItemsWithSellerInfo.find(
+                (item) => item.sellerId.toString() === sellerId.toString()
+            );
+            return {
+                _id: sellerId,
+                count: orderItemCount.count,
+                sellerInfo: sellerInfo ? sellerInfo.sellerInfo[0] : null,
+            };
+        });
+
+
+        res.json(combinedResults);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
