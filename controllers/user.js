@@ -315,6 +315,8 @@ exports.bookmarkProduct = async (req, res) => {
     try {
         const { productId, userId } = req.params;
         const user = await User.findById(userId);
+console.log('userid', userId);
+console.group('product id', productId);
 
         let bookmarkIndex = -1;
         for (let i = 0; i < user.bookmarkProducts?.length; i++) {
