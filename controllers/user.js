@@ -455,7 +455,8 @@ exports.resetPassword =  async(req, res) => {
 
 exports.getAllAdminUsers = async (req, res) => {
     try {
-      const adminUsers = await User.find({ isAdmin: true });
+      const adminUsers = await User.find({ isAdmin: true })
+        .select(['_id', 'name', 'brand', 'image', 'phone', 'username', 'brandDescription', 'videos', 'following', 'followers', 'likes', 'link', 'addresses']);
   
       res.status(200).json(adminUsers);
     } catch (error) {
