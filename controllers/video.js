@@ -57,8 +57,6 @@ exports.getVideo = async (req, res) => {
 }
 
 exports.getVideosByUser = async (req, res) => {
-   
-    console.log('REQ BODY', req.query)
     let limit = 12;
     let skip = parseInt(req.query.skip);
 
