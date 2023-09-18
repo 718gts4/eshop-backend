@@ -58,8 +58,9 @@ exports.getVideo = async (req, res) => {
 
 exports.getVideosByUser = async (req, res) => {
    
-    console.log('REQ BODY', req.body)
-    let skip = parseInt(req.body.skip);
+    console.log('REQ BODY', req.query)
+    let limit = 12;
+    let skip = parseInt(req.query.skip);
 
     const videoList = await Video.find({ createdBy: req.params.id })
         .populate('createdBy')
@@ -67,7 +68,7 @@ exports.getVideosByUser = async (req, res) => {
             path: 'videoItems'})
         .sort({'dateCreated': -1})
         .skip(skip)
-        .limit(12);
+        .limit(limit);
 
     if(!videoList){
         res.status(500).json({success:false})
