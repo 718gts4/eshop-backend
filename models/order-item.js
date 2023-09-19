@@ -119,13 +119,22 @@ const updateIsFinal = async (orderItemId) => {
                 const completedDate = lastCompletedStatus.date;
                 const currentDate = new Date();
         
-                // Calculate the difference in days
-                const daysDifference = Math.ceil(
-                    (currentDate - completedDate) / (1000 * 60 * 60 * 24)
-                );
+                // // Calculate the difference in days
+                // const daysDifference = Math.ceil(
+                //     (currentDate - completedDate) / (1000 * 60 * 60 * 24)
+                // );
         
-                // If 7 days have passed, update isFinal to true
-                if (daysDifference >= 7) {
+                // // If 7 days have passed, update isFinal to true
+                // if (daysDifference >= 7) {
+                //     lastCompletedStatus.isFinal = true;
+                //     await orderItem.save();
+                // }
+
+                // Calculate the difference in minutes
+                const minutesDifference = Math.ceil((currentDate - completedDate) / (1000 * 60));
+
+                // If 1 minute has passed, update isFinal to true
+                if (minutesDifference >= 1) {
                     lastCompletedStatus.isFinal = true;
                     await orderItem.save();
                 }
@@ -137,7 +146,7 @@ const updateIsFinal = async (orderItemId) => {
 };
   
 // Schedule a daily job to check and update isFinal
-cron.schedule('0 0 * * *', async () => {
+cron.schedule('* * * * *', async () => {
     console.log('Running daily job to update isFinal...');
     const orderItems = await mongoose.model("OrderItem").find();
   
