@@ -114,27 +114,18 @@ const updateIsFinal = async (orderItemId) => {
                 .slice()
                 .reverse()
                 .find((status) => status.isCompleted);
-            console.log('last completed status', lastCompletedStatus)
+
             if (lastCompletedStatus) {
                 const completedDate = lastCompletedStatus.date;
                 const currentDate = new Date();
         
-                // // Calculate the difference in days
-                // const daysDifference = Math.ceil(
-                //     (currentDate - completedDate) / (1000 * 60 * 60 * 24)
-                // );
+                // Calculate the difference in days
+                const daysDifference = Math.ceil(
+                    (currentDate - completedDate) / (1000 * 60 * 60 * 24)
+                );
         
-                // // If 7 days have passed, update isFinal to true
-                // if (daysDifference >= 7) {
-                //     lastCompletedStatus.isFinal = true;
-                //     await orderItem.save();
-                // }
-
-                // Calculate the difference in minutes
-                const minutesDifference = Math.ceil((currentDate - completedDate) / (1000 * 60));
-
-                // If 1 minute has passed, update isFinal to true
-                if (minutesDifference >= 1) {
+                // If 7 days have passed, update isFinal to true
+                if (daysDifference >= 1) {  // change 1 to 7 !!
                     orderItem.isFinal = true;
                     await orderItem.save();
                 }
