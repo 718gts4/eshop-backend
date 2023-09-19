@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const cron = require('node-cron');
 
 const orderItemSchema = mongoose.Schema({
     product: {
@@ -99,6 +100,50 @@ orderItemSchema.pre('save', function (next) {
   
     // Continue with the save operation
     next();
+});
+
+
+// Define a function to update isFinal to true
+const updateIsFinal = async (orderItemId) => {
+    try {
+        const orderItem = await mongoose.model("OrderItem").findById(orderItemId);
+  
+        if (orderItem) {
+            // Find the last orderStatus object with isCompleted set to true
+            const lastCompletedStatus = orderItem.orderStatus
+                .slice()
+                .reverse()
+                .find((status) => status.isCompleted);
+    
+            if (lastCompletedStatus) {
+                const completedDate = lastCompletedStatus.date;
+                const currentDate = new Date();
+        
+                // Calculate the difference in days
+                const daysDifference = Math.ceil(
+                    (currentDate - completedDate) / (1000 * 60 * 60 * 24)
+                );
+        
+                // If 7 days have passed, update isFinal to true
+                if (daysDifference >= 7) {
+                    lastCompletedStatus.isFinal = true;
+                    await orderItem.save();
+                }
+            }
+        }
+    } catch (error) {
+        console.error("Error updating isFinal:", error);
+    }
+};
+  
+// Schedule a daily job to check and update isFinal
+cron.schedule('0 0 * * *', async () => {
+    console.log('Running daily job to update isFinal...');
+    const orderItems = await mongoose.model("OrderItem").find();
+  
+    for (const orderItem of orderItems) {
+        await updateIsFinal(orderItem._id);
+    }
 });
 
 exports.OrderItem = mongoose.model("OrderItem", orderItemSchema);
