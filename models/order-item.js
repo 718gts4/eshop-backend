@@ -137,7 +137,7 @@ const updateIsFinal = async (orderItemId) => {
 };
   
 // Schedule a daily job to check and update isFinal
-cron.schedule('* * * * *', async () => {
+cron.schedule('0 0 * * *', async () => {
     console.log('Running daily job to update isFinal...');
     const orderItems = await mongoose.model("OrderItem").find();
   
