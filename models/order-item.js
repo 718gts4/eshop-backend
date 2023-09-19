@@ -83,4 +83,18 @@ const orderItemSchema = mongoose.Schema({
     },
 })
 
+// Pre-save middleware to update the date when isCompleted turns true
+orderItemSchema.pre('save', function (next) {
+    const orderStatus = this.orderStatus;
+  
+    // Check if isCompleted is true in the last orderStatus object
+    if (orderStatus.length > 0 && orderStatus[orderStatus.length - 1].isCompleted) {
+        // Update the date property to Date.now()
+        orderStatus[orderStatus.length - 1].date = Date.now();
+    }
+  
+    // Continue with the save operation
+    next();
+});
+
 exports.OrderItem = mongoose.model("OrderItem", orderItemSchema);
