@@ -135,7 +135,7 @@ const updateIsFinal = async (orderItemId) => {
 
                 // If 1 minute has passed, update isFinal to true
                 if (minutesDifference >= 1) {
-                    lastCompletedStatus.isFinal = true;
+                    orderItem.isFinal = true;
                     await orderItem.save();
                 }
             }
