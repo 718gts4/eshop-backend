@@ -81,6 +81,10 @@ const orderItemSchema = mongoose.Schema({
         type: String,
         default: '',
     },
+    isFinal: {
+        type: Boolean,
+        default: false,
+    },
 })
 
 // Pre-save middleware to update the date when isCompleted turns true
