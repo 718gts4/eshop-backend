@@ -114,7 +114,7 @@ const updateIsFinal = async (orderItemId) => {
                 .slice()
                 .reverse()
                 .find((status) => status.isCompleted);
-    
+            console.log('last completed status', lastCompletedStatus)
             if (lastCompletedStatus) {
                 const completedDate = lastCompletedStatus.date;
                 const currentDate = new Date();
