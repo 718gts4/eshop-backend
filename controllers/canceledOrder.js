@@ -61,3 +61,35 @@ exports.getCanceledOrdersByUser = async (req, res) => {
         });
     }
 };
+
+exports.deleteCanceledOrder = async (req, res) => {
+    try {
+        const { canceledOrderId } = req.params; // Assuming you pass the canceled order ID as a route parameter
+        
+        // Use Mongoose to find the canceled order by its ID and remove it
+        const deletedCanceledOrder = await CanceledOrder.findByIdAndRemove(canceledOrderId);
+    
+        if (!deletedCanceledOrder) {
+            // If the canceled order with the provided ID doesn't exist
+            return res.status(404).json({
+                success: false,
+                message: 'Canceled order not found',
+            });
+        }
+    
+        // Respond with a success message and the deleted canceled order
+        return res.status(200).json({
+            success: true,
+            message: 'Canceled order deleted successfully',
+            canceledOrder: deletedCanceledOrder,
+        });
+    } catch (error) {
+        // Handle any errors and respond with an error message
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to delete canceled order',
+            error: error.message,
+        });
+    }
+};
