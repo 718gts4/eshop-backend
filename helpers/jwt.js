@@ -24,6 +24,7 @@ function authJwt() {
             {url: /\/api\/v1\/questions(.*)/ , methods: ['POST','GET','DELETE','PUT','OPTIONS'] },
             {url: /\/api\/v1\/keywords(.*)/ , methods: ['POST','GET','DELETE','PUT','OPTIONS'] },
             {url: /\/api\/v1\/recentlyViewed(.*)/ , methods: ['POST','GET','DELETE'] },
+            {url: /\/api\/v1\/canceledOrder(.*)/ , methods: ['POST','GET','DELETE'] },
             `${api}/users/login`,
             `${api}/users/register`,
             `${api}/admin/register`,
