@@ -5,6 +5,7 @@ exports.createCanceledOrder = async (req, res) => {
     try {
         const {
             order,
+            product,
             canceledBy,
             reasonForCancellation,
             refundAmount,
@@ -14,6 +15,7 @@ exports.createCanceledOrder = async (req, res) => {
         // Create a new canceled order document
         const canceledOrder = new CanceledOrder({
             order,
+            product,
             canceledBy,
             reasonForCancellation,
             refundAmount,
@@ -44,7 +46,9 @@ exports.getCanceledOrdersByUser = async (req, res) => {
     try {
         const { userId } = req.params; // Assuming you pass the user ID as a route parameter
         
-        const canceledOrders = await CanceledOrder.find({ canceledBy: userId });
+        const canceledOrders = await CanceledOrder.find({ canceledBy: userId })
+            .populate('product')
+            .sort({'dateCreated': -1});
     
         return res.status(200).json({
             success: true,

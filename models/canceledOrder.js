@@ -5,6 +5,10 @@ const canceledOrderSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Order'
     },
+    product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+    },
     canceledBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
