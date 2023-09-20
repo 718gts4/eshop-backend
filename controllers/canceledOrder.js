@@ -6,7 +6,6 @@ exports.createCanceledOrder = async (req, res) => {
         const {
             order,
             canceledBy,
-            cancellationDate,
             reasonForCancellation,
             refundAmount,
             status,
@@ -16,7 +15,6 @@ exports.createCanceledOrder = async (req, res) => {
         const canceledOrder = new CanceledOrder({
             order,
             canceledBy,
-            cancellationDate,
             reasonForCancellation,
             refundAmount,
             status,
