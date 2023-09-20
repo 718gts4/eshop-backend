@@ -2,15 +2,14 @@ const { CanceledOrder } = require('../models/canceledOrder'); // Import the Canc
 
 // Create a new canceled order
 exports.createCanceledOrder = async (req, res) => {
-    console.log('body data', req.body)
     try {
-        // Extract the data from the request body
         const {
             order,
             canceledBy,
             cancellationDate,
             reasonForCancellation,
             refundAmount,
+            status,
         } = req.body;
 
         // Create a new canceled order document
@@ -20,6 +19,7 @@ exports.createCanceledOrder = async (req, res) => {
             cancellationDate,
             reasonForCancellation,
             refundAmount,
+            status,
         });
 
         // Save the canceled order to the database
@@ -31,13 +31,33 @@ exports.createCanceledOrder = async (req, res) => {
             message: 'Canceled order created successfully',
             canceledOrder,
         });
-  } catch (error) {
-        // Handle any errors and respond with an error message
+    } catch (error) {
+            // Handle any errors and respond with an error message
+            console.error(error);
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to create canceled order',
+                error: error.message,
+            });
+    }
+};
+
+exports.getCanceledOrdersByUser = async (req, res) => {
+    try {
+        const { userId } = req.params; // Assuming you pass the user ID as a route parameter
+        
+        const canceledOrders = await CanceledOrder.find({ canceledBy: userId });
+    
+        return res.status(200).json({
+            success: true,
+            canceledOrders,
+        });
+    } catch (error) {
         console.error(error);
         return res.status(500).json({
             success: false,
-            message: 'Failed to create canceled order',
+            message: 'Failed to retrieve canceled orders',
             error: error.message,
         });
-  }
+    }
 };
