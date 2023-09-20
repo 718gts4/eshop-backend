@@ -9,6 +9,11 @@ const canceledOrderSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
+    status: {
+        type: String,
+        enum: ['취소', '교환', '반품', '환불'],
+        default: '취소'
+    },
     cancellationDate: Date,
     reasonForCancellation: String,
     refundAmount: Number,
