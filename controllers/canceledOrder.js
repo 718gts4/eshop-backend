@@ -1,14 +1,5 @@
 const { CanceledOrder } = require('../models/canceledOrder'); // Import the CanceledOrder model
 
-
-
-
-const existingViewedItem = await RecentlyViewed.findOne({ user: userId, product: productId });
-if (existingViewedItem) {
-    return res.status(400).send('이미 저장된 상품입니다.');
-}
-
-
 exports.createCanceledOrder = async (req, res) => {
     try {
         const {
