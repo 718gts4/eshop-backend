@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const canceledOrderSchema = mongoose.Schema({
-    order: {
+    orderItemId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Order'
     },

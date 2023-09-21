@@ -3,7 +3,7 @@ const { CanceledOrder } = require('../models/canceledOrder'); // Import the Canc
 exports.createCanceledOrder = async (req, res) => {
     try {
         const {
-            order,
+            orderItemId,
             product,
             canceledBy,
             reasonForCancellation,
@@ -17,7 +17,7 @@ exports.createCanceledOrder = async (req, res) => {
         }
         // Create a new canceled order document
         const canceledOrder = new CanceledOrder({
-            order,
+            orderItemId,
             product,
             canceledBy,
             reasonForCancellation,
