@@ -65,7 +65,6 @@ exports.getCanceledOrdersByUser = async (req, res) => {
 };
 
 exports.deleteCanceledOrder = async (req, res) => {
-    console.log('ID', req.params);
     try {
         const { canceledOrderId } = req.params; 
         
