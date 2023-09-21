@@ -11,9 +11,12 @@ exports.createCanceledOrder = async (req, res) => {
             status,
         } = req.body;
 
-        const existingCanceledItem = await CanceledOrder.findOne({canceledBy, product})
+        const existingCanceledItem = await CanceledOrder.findOne({canceledBy, orderItemId})
         if (existingCanceledItem) {
-            console.log('IT ALREADY EXISTS')
+            return res.status(400).json({
+                success: false,
+                message: 'A canceled order for this product and user already exists.',
+            });
         }
         // Create a new canceled order document
         const canceledOrder = new CanceledOrder({
