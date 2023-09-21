@@ -86,6 +86,10 @@ const orderItemSchema = mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    isCanceled: {
+        type: Boolean,
+        default: false,
+    },
 })
 
 // Pre-save middleware to update the date when isCompleted turns true
