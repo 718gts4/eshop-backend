@@ -324,3 +324,35 @@ exports.getOrderItemCountsBySeller = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+exports.updateOrderItemToCanceled = async (req, res) => {
+    try {
+        const { orderItemId } = req.params; // Assuming you pass the orderItem ID as a route parameter
+        
+        const updatedOrderItem = await OrderItem.findByIdAndUpdate(
+            orderItemId,
+            { isCanceled: true },
+            { new: true } // This option returns the updated document
+        );
+    
+        if (!updatedOrderItem) {
+            return res.status(404).json({
+                success: false,
+                message: 'OrderItem not found',
+            });
+        }
+    
+        return res.status(200).json({
+            success: true,
+            message: 'OrderItem updated to canceled successfully',
+            orderItem: updatedOrderItem,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to update OrderItem to canceled',
+            error: error.message,
+        });
+    }
+  };
