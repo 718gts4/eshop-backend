@@ -65,9 +65,10 @@ exports.getCanceledOrdersByUser = async (req, res) => {
 };
 
 exports.deleteCanceledOrder = async (req, res) => {
+    console.log('ID', req.params);
     try {
-        const { canceledOrderId } = req.params; // Assuming you pass the canceled order ID as a route parameter
-        console.log('ID', canceledOrderId);
+        const { canceledOrderId } = req.params; 
+        
         // Use Mongoose to find the canceled order by its ID and remove it
         const deletedCanceledOrder = await CanceledOrder.findByIdAndRemove(canceledOrderId);
     
