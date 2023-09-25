@@ -130,6 +130,7 @@ const updateIsFinal = async (orderItemId) => {
         
                 // If 7 days have passed, update isFinal to true
                 if (daysDifference >= 1) {  // change 1 to 7 !!
+                    console.log('7 days have passed after isCompleted')
                     orderItem.isFinal = true;
                     await orderItem.save();
                 }
