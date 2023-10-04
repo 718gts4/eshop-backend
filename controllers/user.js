@@ -349,7 +349,7 @@ exports.getBookmarkedProducts = async (req, res) => {
         }
 
         const bookmarkedProducts = user.bookmarkProducts;
-console.log('bookmarkes', bookmarkedProducts)
+
         res.status(200).json(bookmarkedProducts);
     } catch (err) {
         res.status(500).json({ message: err.message });
