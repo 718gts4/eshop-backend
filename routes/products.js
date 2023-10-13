@@ -90,8 +90,7 @@ console.log('COLOR OPTION', colorOptions);
 
     let hasStocks = false;
     // if (colorOptions.sizes) {
-        console.log('checkingSizes', colorOptions.productColor)
-        console.log('IS ARRAY?', Array.isArray(colorOptions.sizes));
+        console.log('checkingSizes', JSON.parse(colorOptions).productColor)
     //     hasStocks = true;
     // } 
 
