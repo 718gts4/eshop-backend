@@ -92,6 +92,10 @@ const productSchema = mongoose.Schema({
         type: Map,
         of: Boolean
     },
+    hasStocks:{
+        type: Boolean,
+        default: false
+    },
     colorOptions: {
         productColor: {
             type: String,
@@ -104,11 +108,9 @@ const productSchema = mongoose.Schema({
             {
                 size: {
                     type: String,
-                    // required: true
                 },
                 stock: {
                     type: Number,
-                    default: 10000
                 }   
             }
         ],

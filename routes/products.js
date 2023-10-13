@@ -86,7 +86,9 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
     const {
         name, price, description, richDescription, brand, parentCategory, category, isFeatured, colorOptions, subOption1, subOption2, subOption3, soldout, display, dropDate, sale, dropProduct, deliveryFee, deliveryCost, sellerId, preorder
     } = req.body;
-
+console.log('COLOR OPTION', colorOptions);
+    let hasStocks = false;
+    
     try {
         const images = req.files.map((file) => ({
             file: fs.readFileSync(file.path),
