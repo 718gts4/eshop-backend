@@ -87,8 +87,13 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
         name, price, description, richDescription, brand, parentCategory, category, isFeatured, colorOptions, subOption1, subOption2, subOption3, soldout, display, dropDate, sale, dropProduct, deliveryFee, deliveryCost, sellerId, preorder
     } = req.body;
 console.log('COLOR OPTION', colorOptions);
+
     let hasStocks = false;
-    
+    if (colorOptions.sizes[0].stock) {
+        console.log('hasStocks', colorOptions.sizes[0].stock)
+        hasStocks = true;
+    } 
+
     try {
         const images = req.files.map((file) => ({
             file: fs.readFileSync(file.path),
@@ -127,6 +132,7 @@ console.log('COLOR OPTION', colorOptions);
             deliveryFeeAmount: deliveryCost,
             sellerId,
             preorder,
+            hasStocks,
         });
 
         if (product.sale) {
