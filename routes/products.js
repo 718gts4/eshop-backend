@@ -89,8 +89,8 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
 console.log('COLOR OPTION', colorOptions);
 
     let hasStocks = false;
-    if (colorOptions.sizes.length > 0) {
-        console.log('hasStocks', colorOptions.sizes.length)
+    if (colorOptions.sizes) {
+        console.log('hasStocks', colorOptions.sizes)
         hasStocks = true;
     } 
 
