@@ -89,10 +89,10 @@ router.post(`/create`, upload.array("image", 5), requireSignin, adminMiddleware,
 console.log('COLOR OPTION', colorOptions);
 
     let hasStocks = false;
-    if (colorOptions.sizes) {
+    // if (colorOptions.sizes) {
         console.log('hasStocks', colorOptions.sizes)
-        hasStocks = true;
-    } 
+    //     hasStocks = true;
+    // } 
 
     try {
         const images = req.files.map((file) => ({
