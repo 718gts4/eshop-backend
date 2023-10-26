@@ -26,6 +26,7 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
+    console.log("hello");
     const user = await User.findOne({ email: req.body.email });
     console.log("CHEKCING", user);
     const secret = process.env.secret;
@@ -79,8 +80,6 @@ exports.login = async (req, res) => {
                 brandDescription,
                 link,
                 phone,
-                gender,
-                birthday,
             },
         });
     } else {
