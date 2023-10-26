@@ -27,6 +27,7 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
+    console.log("CHEKCING", user);
     const secret = process.env.secret;
     if (!user) {
         return res.status(400).send("The user not found");
@@ -56,7 +57,7 @@ exports.login = async (req, res) => {
             image,
             username,
             following,
-            follwers,
+            followers,
             brand,
             brandDescription,
             link,
