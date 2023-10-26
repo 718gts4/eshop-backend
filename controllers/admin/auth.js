@@ -46,10 +46,41 @@ exports.login = async (req, res) => {
             secret,
             { expiresIn: oneDayInSeconds }
         );
-        const { _id, email, role, name, isAdmin } = user;
+
+        const {
+            _id,
+            email,
+            role,
+            name,
+            isAdmin,
+            image,
+            username,
+            following,
+            follwers,
+            brand,
+            brandDescription,
+            link,
+            phone,
+        } = user;
         res.status(200).json({
             token,
-            user: { _id, email, role, name, isAdmin },
+            user: {
+                _id,
+                email,
+                role,
+                name,
+                isAdmin,
+                image,
+                username,
+                following,
+                followers,
+                brand,
+                brandDescription,
+                link,
+                phone,
+                gender,
+                birthday,
+            },
         });
     } else {
         res.status(400).send("Must be an Admin to login");
