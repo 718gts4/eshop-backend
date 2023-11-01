@@ -9,11 +9,12 @@ const errorHandler = require("./helpers/error-handler");
 const backgroundService = require("./backgroundService");
 
 app.use(
-    cors({
-        origin: "http://localhost:3000", // Replace with your frontend URL
-        methods: "GET,POST",
-        allowedHeaders: "Content-Type,Authorization",
-    })
+    cors()
+    //     {
+    //     origin: "http://localhost:3000", // Replace with your frontend URL
+    //     methods: "GET,POST",
+    //     allowedHeaders: "Content-Type,Authorization",
+    // }
 );
 app.options("*", cors());
 
