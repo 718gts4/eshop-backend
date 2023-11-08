@@ -61,6 +61,7 @@ exports.login = async (req, res) => {
             brandDescription,
             link,
             phone,
+            verified,
         } = user;
         res.status(200).json({
             token,
@@ -78,6 +79,7 @@ exports.login = async (req, res) => {
                 brandDescription,
                 link,
                 phone,
+                verified,
             },
         });
     } else {
