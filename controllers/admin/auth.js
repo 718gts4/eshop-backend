@@ -42,6 +42,7 @@ exports.login = async (req, res) => {
                 userId: user.id,
                 isAdmin: user.isAdmin,
                 role: user.role,
+                verified: user.verified,
             },
             secret,
             { expiresIn: oneDayInSeconds }
