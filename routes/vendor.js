@@ -11,6 +11,8 @@ const { Vendor } = require("../models/vendor");
 const { User } = require("../models/user");
 require("dotenv/config");
 
+const fs = require("fs");
+
 const FILE_TYPE_MAP = {
     "image/png": "png",
     "image/jpeg": "jpeg",
