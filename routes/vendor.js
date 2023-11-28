@@ -4,6 +4,7 @@ const router = express.Router();
 const multer = require("multer");
 const multerS3 = require("multer-s3");
 const { S3Client } = require("@aws-sdk/client-s3");
+const shortid = require("shortid");
 const path = require("path");
 
 const { uploadProfileToS3, getFile, deleteProfileUrl } = require("../s3");
