@@ -1,13 +1,13 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema({
     name: {
         type: String,
-        default: ''
+        default: "",
     },
     image: {
         type: String,
-        default: ''
+        default: "",
     },
     email: {
         type: String,
@@ -16,7 +16,7 @@ const userSchema = mongoose.Schema({
     },
     username: {
         type: String,
-        unique:true,
+        unique: true,
     },
     passwordHash: {
         type: String,
@@ -24,15 +24,15 @@ const userSchema = mongoose.Schema({
     },
     phone: {
         type: String,
-        default: ''
+        default: "",
     },
     gender: {
         type: String,
-        default: 'none'
+        default: "none",
     },
     birthday: {
         type: String,
-        default: ''
+        default: "",
     },
     isAdmin: {
         type: Boolean,
@@ -40,54 +40,64 @@ const userSchema = mongoose.Schema({
     },
     link: {
         type: String,
-        default: ''
+        default: "",
     },
     role: {
         type: String,
-        enum: ['user', 'admin'],
-        default: 'user'
+        enum: ["user", "admin"],
+        default: "user",
     },
     brand: {
         type: String,
-        default: ''
+        default: "",
     },
     brandDescription: {
         type: String,
-        default: ''
+        default: "",
     },
     likes: {
         type: Map,
-        of: Boolean
+        of: Boolean,
     },
-    bookmarkProducts: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
-        default: []
-    }],
-    savedVideos: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Video'
-    }],
-    savedProducts: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product'
-    }],
+    bookmarkProducts: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Product",
+            default: [],
+        },
+    ],
+    savedVideos: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Video",
+        },
+    ],
+    savedProducts: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Product",
+        },
+    ],
     followers: {
         type: Map,
-        of: Boolean
-    },   
+        of: Boolean,
+    },
     following: {
         type: Map,
-        of: Boolean
-    },   
-    videos: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Video'
-    }],
-    adresses: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Address'
-    }],
+        of: Boolean,
+    },
+    videos: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Video",
+        },
+    ],
+    adresses: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Address",
+        },
+    ],
     searchWords: {
         type: [String],
         default: [],
@@ -95,25 +105,27 @@ const userSchema = mongoose.Schema({
     verified: {
         type: Boolean,
         default: false,
-        required: true,
-    }
+    },
+    submitted: {
+        type: Boolean,
+        default: false,
+    },
 });
 
-userSchema.pre('save', function (next) {
+userSchema.pre("save", function (next) {
     if (!this.username) {
-      this.username = this.email;
+        this.username = this.email;
     }
     next();
 });
 
-userSchema.virtual('id').get(function () {
+userSchema.virtual("id").get(function () {
     return this._id.toHexString();
 });
 
-userSchema.set('toJSON', {
+userSchema.set("toJSON", {
     virtuals: true,
 });
 
-
-exports.User = mongoose.model('User', userSchema);
+exports.User = mongoose.model("User", userSchema);
 exports.userSchema = userSchema;
