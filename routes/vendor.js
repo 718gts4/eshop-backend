@@ -11,7 +11,6 @@ const { Vendor } = require("../models/vendor");
 const { User } = require("../models/user");
 require("dotenv/config");
 
-const upload = multer({ storage: storage });
 const FILE_TYPE_MAP = {
     "image/png": "png",
     "image/jpeg": "jpeg",
@@ -40,6 +39,8 @@ const storage = multer.diskStorage({
         cb(null, shortid.generate() + "-" + fileName);
     },
 });
+
+const upload = multer({ storage });
 
 router.post(`/create`, upload.array("image", 2), async (req, res) => {
     console.log("hello");
