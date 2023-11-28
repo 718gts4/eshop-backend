@@ -59,7 +59,7 @@ app.use(`${api}/questions`, questionRoutes);
 app.use(`${api}/recentlyViewed`, recentlyViewedRoutes);
 app.use(`${api}/canceledOrder`, canceledOrderRoutes);
 app.use(`${api}/purchase`, purchaseRoutes);
-app.use(`${api}/vendors`, purchaseRoutes);
+app.use(`${api}/vendors`, vendorRoutes);
 
 // Schedule the task to run periodically (e.g., every hour)
 setInterval(backgroundService.updateProductsOnSaleStatus, 3600000);
