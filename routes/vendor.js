@@ -11,9 +11,35 @@ const { Vendor } = require("../models/vendor");
 const { User } = require("../models/user");
 require("dotenv/config");
 
-const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-const fs = require("fs");
+const FILE_TYPE_MAP = {
+    "image/png": "png",
+    "image/jpeg": "jpeg",
+    "image/jpg": "jpg",
+};
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const isValid = FILE_TYPE_MAP[file.mimetype];
+        let uploadError = new Error(
+            "이미지 파일은 .png, .jpeg, .jpg만 가능합니다."
+        );
+        if (isValid) {
+            uploadError = null;
+        }
+
+        const uploadsFolder = path.join(path.dirname(__dirname), "uploads");
+        if (!fs.existsSync(uploadsFolder)) {
+            fs.mkdirSync(uploadsFolder);
+        }
+
+        cb(uploadError, uploadsFolder);
+    },
+    filename: function (req, file, cb) {
+        const fileName = file.originalname.split(" ").join("-");
+        cb(null, shortid.generate() + "-" + fileName);
+    },
+});
 
 router.post(`/create`, upload.array("image", 2), async (req, res) => {
     console.log("hello");
