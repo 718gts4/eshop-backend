@@ -13,6 +13,7 @@ require("dotenv/config");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+const fs = require("fs");
 
 router.post(`/create`, upload.array("image", 2), async (req, res) => {
     console.log("hello");
