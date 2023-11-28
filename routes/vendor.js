@@ -10,11 +10,13 @@ const { uploadProfileToS3, getFile, deleteProfileUrl } = require("../s3");
 const { Vendor } = require("../models/vendor");
 const { User } = require("../models/user");
 require("dotenv/config");
+const { requireSignin } = require("../common-middleware/");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 router.post(`/create`, upload.array("image", 2), async (req, res) => {
+    console.log("hello");
     const {
         brandName,
         username,
