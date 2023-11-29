@@ -93,12 +93,13 @@ router.post(`/create`, upload.array("image", 2), async (req, res) => {
         }
 
         const user = await User.findById(userId);
+        user.$ignore = ["passwordHash", "email"];
         if (user) {
             user.image = imageUrls[0];
             user.username = username;
             user.brand = brandName;
             user.submitted = true;
-            await user.save();
+            await user.save({ validateBeforeSave: false });
         }
 
         res.status(201).json({ vendor });
