@@ -41,13 +41,14 @@ exports.updateSubmitted = async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
-        user.submitted = true;
+        const updatedUser = new User({
+            _id: user._id,
+            submitted: true,
+        });
 
-        user.markModified("bookmarkProducts");
+        const result = await updatedUser.save();
 
-        const updatedUser = await user.save();
-
-        res.json({ user: updatedUser });
+        res.json({ user: result });
     } catch (error) {
         console.log(error);
         res.status(500).json({
