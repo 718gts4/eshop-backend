@@ -97,6 +97,7 @@ router.post(`/create`, upload.array("image", 2), async (req, res) => {
             user.image = imageUrls[0];
             user.username = username;
             user.brand = brandName;
+            user.submitted = true;
             await user.save();
         }
 
