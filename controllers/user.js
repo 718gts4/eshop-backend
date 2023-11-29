@@ -40,16 +40,12 @@ exports.updateSubmitted = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
-        const bookmarkProductsValidator =
-            user.schema.path("bookmarkProducts").validators;
-        user.schema.path("bookmarkProducts").validators = [];
 
         user.submitted = true;
 
-        const updatedUser = await user.save();
+        user.markModified("bookmarkProducts");
 
-        user.schema.path("bookmarkProducts").validators =
-            bookmarkProductsValidator;
+        const updatedUser = await user.save();
 
         res.json({ user: updatedUser });
     } catch (error) {
