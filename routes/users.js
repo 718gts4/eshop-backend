@@ -51,7 +51,7 @@ router.get("/admin/users", getAllAdminUsers);
 router.post("/login", validateLoginRequest, isRequestValidated, login);
 router.post("/register", validateRegisterRequest, isRequestValidated, register);
 router.put("/:id", updateUser);
-router.put(`/updateSubmitted/:userId`, updateSubmitted);
+router.patch(`/updateSubmitted/:userId`, updateSubmitted);
 router.delete(`/:id`, deleteUser);
 router.post(`/:userId/searchwords`, addSearchWord);
 router.get(`/:userId/searchwords`, getSearchWords);
