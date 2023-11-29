@@ -40,10 +40,13 @@ exports.updateSubmitted = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
+        user.$bypassValidation = true;
 
         user.submitted = true;
 
         const updatedUser = await user.save();
+
+        delete user.$bypassValidation;
 
         res.json({ user: updatedUser });
     } catch (error) {
