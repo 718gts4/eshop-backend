@@ -19,7 +19,6 @@ const {
     checkEmail,
     resendEmailVerification,
     getAllAdminUsers,
-    updateSubmitted,
 } = require("../controllers/user");
 const express = require("express");
 const router = express.Router();
@@ -51,7 +50,6 @@ router.get("/admin/users", getAllAdminUsers);
 router.post("/login", validateLoginRequest, isRequestValidated, login);
 router.post("/register", validateRegisterRequest, isRequestValidated, register);
 router.put("/:id", updateUser);
-router.patch(`/updateSubmitted/:userId`, updateSubmitted);
 router.delete(`/:id`, deleteUser);
 router.post(`/:userId/searchwords`, addSearchWord);
 router.get(`/:userId/searchwords`, getSearchWords);
