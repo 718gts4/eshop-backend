@@ -92,6 +92,14 @@ router.post(`/create`, upload.array("image", 2), async (req, res) => {
             return res.status(500).send("사업자를 생성할 수 없습니다");
         }
 
+        const user = await User.findById(userId);
+        if (user) {
+            user.image = imageUrls[0];
+            user.username = username;
+            user.brand = brandName;
+            await user.save();
+        }
+
         res.status(201).json({ vendor });
     } catch (error) {
         console.log(error);
