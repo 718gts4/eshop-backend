@@ -19,6 +19,7 @@ const {
     checkEmail,
     resendEmailVerification,
     getAllAdminUsers,
+    checkUsername,
 } = require("../controllers/user");
 const express = require("express");
 const router = express.Router();
@@ -58,6 +59,7 @@ router.patch("/:userId/bookmarks/:productId", bookmarkProduct);
 router.get("/:userId/bookmarks", getBookmarkedProducts);
 router.post(`/checkEmail`, checkEmail);
 router.post(`/resendCheckEmail`, resendEmailVerification);
+router.get("/checkUsername", checkUsername);
 
 router.post("/profile", requireSignin, (req, res) => {
     res.status(200).json({ user: "profile" });

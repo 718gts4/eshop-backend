@@ -541,3 +541,15 @@ exports.getAllAdminUsers = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
+exports.checkUsername = async (req, res) => {
+    const { username } = req.query;
+
+    try {
+        const existingUer = await User.findOne({ username });
+        res.json({ unique: !existingUer });
+    } catch (error) {
+        console.log(error("Error checking username:", error));
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
