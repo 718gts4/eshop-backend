@@ -59,7 +59,7 @@ router.patch("/:userId/bookmarks/:productId", bookmarkProduct);
 router.get("/:userId/bookmarks", getBookmarkedProducts);
 router.post(`/checkEmail`, checkEmail);
 router.post(`/resendCheckEmail`, resendEmailVerification);
-router.get("/checkUsername", checkUsername);
+router.get(`/check/username`, checkUsername);
 
 router.post("/profile", requireSignin, (req, res) => {
     res.status(200).json({ user: "profile" });
