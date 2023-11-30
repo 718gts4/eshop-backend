@@ -46,7 +46,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.post(`/create`, upload.array("image", 2), async (req, res) => {
-    console.log("hello");
     const {
         brandName,
         username,
@@ -58,7 +57,7 @@ router.post(`/create`, upload.array("image", 2), async (req, res) => {
         submitted,
         userId,
     } = req.body;
-    console.log("REQ FILES", req.files);
+
     try {
         const images = req.files.map((file) => ({
             file: fs.readFileSync(file.path),
