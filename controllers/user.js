@@ -546,7 +546,7 @@ exports.checkUsername = async (req, res) => {
     const { username } = req.query;
 
     try {
-        const existingUer = await User.findOne({ username });
+        const existingUer = await User.findOne({ username: username });
         res.json({ unique: !existingUer });
     } catch (error) {
         console.log(error("Error checking username:", error));
