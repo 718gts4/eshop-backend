@@ -48,7 +48,6 @@ const upload = multer({ storage });
 router.post(`/create`, upload.array("image", 2), async (req, res) => {
     const {
         brandName,
-        username,
         email,
         phone,
         bankName,
@@ -75,7 +74,6 @@ router.post(`/create`, upload.array("image", 2), async (req, res) => {
             profileImg: imageUrls[0],
             document: imageUrls[1],
             brandName,
-            username,
             email,
             phone,
             bankName,
@@ -95,7 +93,6 @@ router.post(`/create`, upload.array("image", 2), async (req, res) => {
         user.$ignore = ["passwordHash", "email"];
         if (user) {
             user.image = imageUrls[0];
-            user.username = username;
             user.brand = brandName;
             user.phone = phone;
             user.submitted = true;
