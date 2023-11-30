@@ -546,11 +546,11 @@ exports.checkUsername = async (req, res) => {
     console.log("REq", req);
     const { username } = req.query;
 
-    try {
-        const existingUser = await User.findOne({ username: username });
-        res.json({ unique: !existingUser });
-    } catch (error) {
-        console.log("Error checking username:", error); // Removed the extra function call
-        res.status(500).json({ error: "Internal server error" });
-    }
+    // try {
+    //     const existingUser = await User.findOne({ username: username });
+    //     res.json({ unique: !existingUser });
+    // } catch (error) {
+    //     console.log("Error checking username:", error); // Removed the extra function call
+    //     res.status(500).json({ error: "Internal server error" });
+    // }
 };
