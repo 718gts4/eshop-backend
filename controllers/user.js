@@ -543,6 +543,7 @@ exports.getAllAdminUsers = async (req, res) => {
 };
 
 exports.checkUsername = async (req, res) => {
+    console.log("REq", req);
     const { username } = req.query;
 
     try {
