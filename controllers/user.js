@@ -549,7 +549,7 @@ exports.checkUsername = async (req, res) => {
         const existingUser = await User.findOne({ username: username });
         res.json({ unique: !existingUser });
     } catch (error) {
-        console.log(error("Error checking username:", error));
+        console.log("Error checking username:", error); // Removed the extra function call
         res.status(500).json({ error: "Internal server error" });
     }
 };
