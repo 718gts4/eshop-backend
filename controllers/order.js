@@ -399,7 +399,24 @@ exports.getTotalSalesForSeller = async (req, res) => {
                 },
             },
         ]);
-        console.log("TOT sALE", totalSale);
+
+        const totalCanceled = await OrderItem.aggregate([
+            {
+                $match: {
+                    sellerId: mongoose.Types.ObjectId(sellerId),
+                    isCanceled: true,
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalPaidSaleCancelled: { $sum: "$paidPrice" },
+                    totalDeliveryFeeCancelled: { $sum: "$deliveryFeeAmount" },
+                    totalNumberOfSalesCancelled: { $sum: 1 },
+                },
+            },
+        ]);
+
         // Check if totalSales is empty
         if (totalSale.length === 0) {
             return res
@@ -408,7 +425,7 @@ exports.getTotalSalesForSeller = async (req, res) => {
         }
 
         // Respond with the total sales
-        res.send({ totalSale: totalSale });
+        res.send({ totalSale: totalSale, totalCanceled: totalCanceled });
     } catch (error) {
         console.error("Error calculating total sales:", error);
         res.status(500).json({ error: "Internal server error" });
