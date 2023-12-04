@@ -394,6 +394,14 @@ exports.getTotalSalesForSeller = async (req, res) => {
             .subtract(1, "months")
             .startOf("month")
             .toDate();
+        const startOfPreviousDay = moment()
+            .subtract(1, "days")
+            .startOf("day")
+            .toDate();
+        const endOfPreviousDay = moment()
+            .subtract(1, "days")
+            .endOf("day")
+            .toDate();
 
         const totalSale = await OrderItem.aggregate([
             { $match: { sellerId: mongoose.Types.ObjectId(sellerId) } },
@@ -475,6 +483,26 @@ exports.getTotalSalesForSeller = async (req, res) => {
             },
         ]);
 
+        const totalPreviousDaySale = await OrderItem.aggregate([
+            {
+                $match: {
+                    sellerId: mongoose.Types.ObjectId(sellerId),
+                    dateOrdered: {
+                        $gte: startOfPreviousDay,
+                        $lte: endOfPreviousDay,
+                    }, // Filter by the previous day
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalPaidSale: { $sum: "$paidPrice" },
+                    totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
+                    totalNumberOfSales: { $sum: 1 },
+                },
+            },
+        ]);
+
         // Check if totalSales is empty
         if (totalSale.length === 0) {
             return res
@@ -489,6 +517,7 @@ exports.getTotalSalesForSeller = async (req, res) => {
             totalDailySale: totalDailySale,
             totalWeeklySale: totalWeeklySale,
             totalMonthlySale: totalMonthlySale,
+            totalPreviousDaySale: totalPreviousDaySale,
         });
     } catch (error) {
         console.error("Error calculating total sales:", error);
