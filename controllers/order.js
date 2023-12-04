@@ -531,6 +531,11 @@ exports.getTotalSalesForSeller = async (req, res) => {
             },
         ]);
 
+        const latestBuyers = await OrderItem.find({ sellerId })
+            .sort({ dateOrdered: -1 })
+            .limit(5)
+            .populate("buyer", "name email image username");
+
         // Check if totalSales is empty
         if (totalSale.length === 0) {
             return res
@@ -547,6 +552,7 @@ exports.getTotalSalesForSeller = async (req, res) => {
             totalMonthlySale: totalMonthlySale,
             totalPreviousDaySale: totalPreviousDaySale,
             totalDayBeforeYesterdaySale: totalDayBeforeYesterdaySale,
+            latestBuyers: latestBuyers,
         });
     } catch (error) {
         console.error("Error calculating total sales:", error);
