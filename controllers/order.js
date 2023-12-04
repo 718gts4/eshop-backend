@@ -388,24 +388,20 @@ exports.getTotalSalesForSeller = async (req, res) => {
     try {
         const { sellerId } = req.params;
 
-        // Use the aggregate method to calculate total sales for a specific seller
-        const totalSales = await OrderItem.aggregate([
-            { $match: { sellerId: sellerId } }, // Match orders for the specific seller
-            { $group: { _id: null, totalSales: { $sum: "$paidPrice" } } },
+        const totalSale = await OrderItem.aggregate([
+            { $match: { sellerId: mongoose.Types.ObjectId(sellerId) } },
+            { $group: { _id: null, totalPaidPrice: { $sum: "$paidPrice" } } },
         ]);
-
+        console.log("TOT sALE", totalSale);
         // Check if totalSales is empty
-        if (totalSales.length === 0) {
+        if (totalSale.length === 0) {
             return res
                 .status(404)
                 .send("No sales data found for the specified seller");
         }
 
-        // Extract the totalSales value from the result
-        const { totalSales: totalAmount } = totalSales[0];
-
         // Respond with the total sales
-        res.send({ totalSales: totalAmount });
+        res.send(totalSale);
     } catch (error) {
         console.error("Error calculating total sales:", error);
         res.status(500).json({ error: "Internal server error" });
