@@ -1,6 +1,7 @@
 const { Order } = require("../models/order");
 const { OrderItem } = require("../models/order-item");
 const { Product } = require("../models/product");
+const moment = require("moment");
 const mongoose = require("mongoose");
 
 exports.getOrders = async (req, res) => {
@@ -387,6 +388,8 @@ exports.updateOrderItemToCanceled = async (req, res) => {
 exports.getTotalSalesForSeller = async (req, res) => {
     try {
         const { sellerId } = req.params;
+        const startDate = moment().subtract(24, "hours").toDate();
+        const startOfWeekDate = moment().subtract(7, "days").toDate();
 
         const totalSale = await OrderItem.aggregate([
             { $match: { sellerId: mongoose.Types.ObjectId(sellerId) } },
@@ -417,6 +420,40 @@ exports.getTotalSalesForSeller = async (req, res) => {
             },
         ]);
 
+        const totalDailySale = await OrderItem.aggregate([
+            {
+                $match: {
+                    sellerId: mongoose.Types.ObjectId(sellerId),
+                    dateOrdered: { $gte: startDate }, // Filter by the past 24 hours
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalPaidSale: { $sum: "$paidPrice" },
+                    totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
+                    totalNumberOfSales: { $sum: 1 },
+                },
+            },
+        ]);
+
+        const totalWeeklySale = await OrderItem.aggregate([
+            {
+                $match: {
+                    sellerId: mongoose.Types.ObjectId(sellerId),
+                    dateOrdered: { $gte: startOfWeekDate }, // Filter by the past 7 days
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalPaidSale: { $sum: "$paidPrice" },
+                    totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
+                    totalNumberOfSales: { $sum: 1 },
+                },
+            },
+        ]);
+
         // Check if totalSales is empty
         if (totalSale.length === 0) {
             return res
@@ -425,7 +462,12 @@ exports.getTotalSalesForSeller = async (req, res) => {
         }
 
         // Respond with the total sales
-        res.send({ totalSale: totalSale, totalCanceled: totalCanceled });
+        res.send({
+            totalSale: totalSale,
+            totalCanceled: totalCanceled,
+            totalDailySale: totalDailySale,
+            totalWeeklySale: totalWeeklySale,
+        });
     } catch (error) {
         console.error("Error calculating total sales:", error);
         res.status(500).json({ error: "Internal server error" });
