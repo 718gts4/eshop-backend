@@ -633,7 +633,7 @@ exports.getTotalSalesForSeller = async (req, res) => {
 
         const latestBuyers = await OrderItem.find({ sellerId })
             .sort({ dateOrdered: -1 })
-            .limit(5)
+            .limit(3)
             .populate("buyer", ["name", "email", "image", "username"])
             .populate("product");
 
