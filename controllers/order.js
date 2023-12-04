@@ -534,7 +534,7 @@ exports.getTotalSalesForSeller = async (req, res) => {
         const latestBuyers = await OrderItem.find({ sellerId })
             .sort({ dateOrdered: -1 })
             .limit(5)
-            .populate("buyer", "name email image username");
+            .populate("buyer", ["name", "email", "image", "username"]);
 
         // Check if totalSales is empty
         if (totalSale.length === 0) {
