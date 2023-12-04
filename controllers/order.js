@@ -394,6 +394,7 @@ exports.getTotalSalesForSeller = async (req, res) => {
                 $group: {
                     _id: null,
                     totalPaidSale: { $sum: "$paidPrice" },
+                    totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
                     totalNumberOfSales: { $sum: 1 },
                 },
             },
