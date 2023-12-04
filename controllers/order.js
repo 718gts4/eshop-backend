@@ -402,6 +402,14 @@ exports.getTotalSalesForSeller = async (req, res) => {
             .subtract(1, "days")
             .endOf("day")
             .toDate();
+        const startOfDayBeforeYesterday = moment()
+            .subtract(2, "days")
+            .startOf("day")
+            .toDate();
+        const endOfDayBeforeYesterday = moment()
+            .subtract(2, "days")
+            .endOf("day")
+            .toDate();
 
         const totalSale = await OrderItem.aggregate([
             { $match: { sellerId: mongoose.Types.ObjectId(sellerId) } },
@@ -503,6 +511,26 @@ exports.getTotalSalesForSeller = async (req, res) => {
             },
         ]);
 
+        const totalDayBeforeYesterdaySale = await OrderItem.aggregate([
+            {
+                $match: {
+                    sellerId: mongoose.Types.ObjectId(sellerId),
+                    dateOrdered: {
+                        $gte: startOfDayBeforeYesterday,
+                        $lte: endOfDayBeforeYesterday,
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalPaidSale: { $sum: "$paidPrice" },
+                    totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
+                    totalNumberOfSales: { $sum: 1 },
+                },
+            },
+        ]);
+
         // Check if totalSales is empty
         if (totalSale.length === 0) {
             return res
@@ -518,6 +546,7 @@ exports.getTotalSalesForSeller = async (req, res) => {
             totalWeeklySale: totalWeeklySale,
             totalMonthlySale: totalMonthlySale,
             totalPreviousDaySale: totalPreviousDaySale,
+            totalDayBeforeYesterdaySale: totalDayBeforeYesterdaySale,
         });
     } catch (error) {
         console.error("Error calculating total sales:", error);
