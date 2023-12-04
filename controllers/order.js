@@ -408,7 +408,7 @@ exports.getTotalSalesForSeller = async (req, res) => {
         }
 
         // Respond with the total sales
-        res.send(totalSale);
+        res.send({ totalSale: totalSale });
     } catch (error) {
         console.error("Error calculating total sales:", error);
         res.status(500).json({ error: "Internal server error" });
