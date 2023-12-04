@@ -410,6 +410,26 @@ exports.getTotalSalesForSeller = async (req, res) => {
             .subtract(2, "days")
             .endOf("day")
             .toDate();
+        const startOf3Day = moment()
+            .subtract(3, "days")
+            .startOf("day")
+            .toDate();
+        const endOf3Day = moment().subtract(3, "days").endOf("day").toDate();
+        const startOf4Day = moment()
+            .subtract(4, "days")
+            .startOf("day")
+            .toDate();
+        const endOf4Day = moment().subtract(4, "days").endOf("day").toDate();
+        const startOf5Day = moment()
+            .subtract(5, "days")
+            .startOf("day")
+            .toDate();
+        const endOf5Day = moment().subtract(5, "days").endOf("day").toDate();
+        const startOf6Day = moment()
+            .subtract(6, "days")
+            .startOf("day")
+            .toDate();
+        const endOf6Day = moment().subtract(6, "days").endOf("day").toDate();
 
         const totalSale = await OrderItem.aggregate([
             { $match: { sellerId: mongoose.Types.ObjectId(sellerId) } },
@@ -531,6 +551,86 @@ exports.getTotalSalesForSeller = async (req, res) => {
             },
         ]);
 
+        const totalPrevious3DaySale = await OrderItem.aggregate([
+            {
+                $match: {
+                    sellerId: mongoose.Types.ObjectId(sellerId),
+                    dateOrdered: {
+                        $gte: startOf3Day,
+                        $lte: endOf3Day,
+                    }, // Filter by the previous day
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalPaidSale: { $sum: "$paidPrice" },
+                    totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
+                    totalNumberOfSales: { $sum: 1 },
+                },
+            },
+        ]);
+
+        const totalPrevious4DaySale = await OrderItem.aggregate([
+            {
+                $match: {
+                    sellerId: mongoose.Types.ObjectId(sellerId),
+                    dateOrdered: {
+                        $gte: startOf4Day,
+                        $lte: endOf4Day,
+                    }, // Filter by the previous day
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalPaidSale: { $sum: "$paidPrice" },
+                    totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
+                    totalNumberOfSales: { $sum: 1 },
+                },
+            },
+        ]);
+
+        const totalPrevious5DaySale = await OrderItem.aggregate([
+            {
+                $match: {
+                    sellerId: mongoose.Types.ObjectId(sellerId),
+                    dateOrdered: {
+                        $gte: startOf5Day,
+                        $lte: endOf5Day,
+                    }, // Filter by the previous day
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalPaidSale: { $sum: "$paidPrice" },
+                    totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
+                    totalNumberOfSales: { $sum: 1 },
+                },
+            },
+        ]);
+
+        const totalPrevious6DaySale = await OrderItem.aggregate([
+            {
+                $match: {
+                    sellerId: mongoose.Types.ObjectId(sellerId),
+                    dateOrdered: {
+                        $gte: startOf6Day,
+                        $lte: endOf6Day,
+                    }, // Filter by the previous day
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalPaidSale: { $sum: "$paidPrice" },
+                    totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
+                    totalNumberOfSales: { $sum: 1 },
+                },
+            },
+        ]);
+
         const latestBuyers = await OrderItem.find({ sellerId })
             .sort({ dateOrdered: -1 })
             .limit(5)
@@ -552,6 +652,10 @@ exports.getTotalSalesForSeller = async (req, res) => {
             totalWeeklySale: totalWeeklySale,
             totalMonthlySale: totalMonthlySale,
             totalPreviousDaySale: totalPreviousDaySale,
+            totalPrevious3DaySale: totalPrevious3DaySale,
+            totalPrevious4DaySale: totalPrevious4DaySale,
+            totalPrevious5DaySale: totalPrevious5DaySale,
+            totalPrevious6DaySale: totalPrevious6DaySale,
             totalDayBeforeYesterdaySale: totalDayBeforeYesterdaySale,
             latestBuyers: latestBuyers,
         });
