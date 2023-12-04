@@ -391,7 +391,7 @@ exports.getTotalSalesForSeller = async (req, res) => {
         // Use the aggregate method to calculate total sales for a specific seller
         const totalSales = await OrderItem.aggregate([
             { $match: { sellerId: sellerId } }, // Match orders for the specific seller
-            { $group: { _id: null, totalSales: { $sum: "$totalPrice" } } },
+            { $group: { _id: null, totalSales: { $sum: "$paidPrice" } } },
         ]);
 
         // Check if totalSales is empty
