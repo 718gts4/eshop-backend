@@ -390,7 +390,7 @@ exports.getTotalSalesForSeller = async (req, res) => {
 
         const totalSale = await OrderItem.aggregate([
             { $match: { sellerId: mongoose.Types.ObjectId(sellerId) } },
-            { $group: { _id: null, totalPaidPrice: { $sum: "$paidPrice" } } },
+            { $group: { _id: null, totalPaidSale: { $sum: "$paidPrice" } } },
         ]);
         console.log("TOT sALE", totalSale);
         // Check if totalSales is empty
