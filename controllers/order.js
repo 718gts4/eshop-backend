@@ -431,7 +431,7 @@ exports.getTotalSalesForSeller = async (req, res) => {
             .toDate();
         const endOf6Day = moment().subtract(6, "days").endOf("day").toDate();
 
-        const totalSale = await OrderItem.aggregate(
+        const totalSale = await OrderItem.aggregate([
             { $match: { sellerId: mongoose.Types.ObjectId(sellerId) } },
             {
                 $group: {
@@ -440,10 +440,10 @@ exports.getTotalSalesForSeller = async (req, res) => {
                     totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
                     totalNumberOfSales: { $sum: 1 },
                 },
-            }
-        );
+            },
+        ]);
 
-        const totalCanceled = await OrderItem.aggregate(
+        const totalCanceled = await OrderItem.aggregate([
             {
                 $match: {
                     sellerId: mongoose.Types.ObjectId(sellerId),
@@ -457,10 +457,10 @@ exports.getTotalSalesForSeller = async (req, res) => {
                     totalDeliveryFeeCancelled: { $sum: "$deliveryFeeAmount" },
                     totalNumberOfSalesCancelled: { $sum: 1 },
                 },
-            }
-        );
+            },
+        ]);
 
-        const totalDailySale = await OrderItem.aggregate(
+        const totalDailySale = await OrderItem.aggregate([
             {
                 $match: {
                     sellerId: mongoose.Types.ObjectId(sellerId),
@@ -474,10 +474,10 @@ exports.getTotalSalesForSeller = async (req, res) => {
                     totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
                     totalNumberOfSales: { $sum: 1 },
                 },
-            }
-        );
+            },
+        ]);
 
-        const totalWeeklySale = await OrderItem.aggregate(
+        const totalWeeklySale = await OrderItem.aggregate([
             {
                 $match: {
                     sellerId: mongoose.Types.ObjectId(sellerId),
@@ -491,10 +491,10 @@ exports.getTotalSalesForSeller = async (req, res) => {
                     totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
                     totalNumberOfSales: { $sum: 1 },
                 },
-            }
-        );
+            },
+        ]);
 
-        const totalMonthlySale = await OrderItem.aggregate(
+        const totalMonthlySale = await OrderItem.aggregate([
             {
                 $match: {
                     sellerId: mongoose.Types.ObjectId(sellerId),
@@ -508,10 +508,10 @@ exports.getTotalSalesForSeller = async (req, res) => {
                     totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
                     totalNumberOfSales: { $sum: 1 },
                 },
-            }
-        );
+            },
+        ]);
 
-        const totalPreviousDaySale = await OrderItem.aggregate(
+        const totalPreviousDaySale = await OrderItem.aggregate([
             {
                 $match: {
                     sellerId: mongoose.Types.ObjectId(sellerId),
@@ -528,10 +528,10 @@ exports.getTotalSalesForSeller = async (req, res) => {
                     totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
                     totalNumberOfSales: { $sum: 1 },
                 },
-            }
-        );
+            },
+        ]);
 
-        const totalDayBeforeYesterdaySale = await OrderItem.aggregate(
+        const totalDayBeforeYesterdaySale = await OrderItem.aggregate([
             {
                 $match: {
                     sellerId: mongoose.Types.ObjectId(sellerId),
@@ -548,10 +548,10 @@ exports.getTotalSalesForSeller = async (req, res) => {
                     totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
                     totalNumberOfSales: { $sum: 1 },
                 },
-            }
-        );
+            },
+        ]);
 
-        const totalPrevious3DaySale = await OrderItem.aggregate(
+        const totalPrevious3DaySale = await OrderItem.aggregate([
             {
                 $match: {
                     sellerId: mongoose.Types.ObjectId(sellerId),
@@ -568,10 +568,10 @@ exports.getTotalSalesForSeller = async (req, res) => {
                     totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
                     totalNumberOfSales: { $sum: 1 },
                 },
-            }
-        );
+            },
+        ]);
 
-        const totalPrevious4DaySale = await OrderItem.aggregate(
+        const totalPrevious4DaySale = await OrderItem.aggregate([
             {
                 $match: {
                     sellerId: mongoose.Types.ObjectId(sellerId),
@@ -588,10 +588,10 @@ exports.getTotalSalesForSeller = async (req, res) => {
                     totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
                     totalNumberOfSales: { $sum: 1 },
                 },
-            }
-        );
+            },
+        ]);
 
-        const totalPrevious5DaySale = await OrderItem.aggregate(
+        const totalPrevious5DaySale = await OrderItem.aggregate([
             {
                 $match: {
                     sellerId: mongoose.Types.ObjectId(sellerId),
@@ -608,10 +608,10 @@ exports.getTotalSalesForSeller = async (req, res) => {
                     totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
                     totalNumberOfSales: { $sum: 1 },
                 },
-            }
-        );
+            },
+        ]);
 
-        const totalPrevious6DaySale = await OrderItem.aggregate(
+        const totalPrevious6DaySale = await OrderItem.aggregate([
             {
                 $match: {
                     sellerId: mongoose.Types.ObjectId(sellerId),
@@ -628,8 +628,8 @@ exports.getTotalSalesForSeller = async (req, res) => {
                     totalDeliveryFee: { $sum: "$deliveryFeeAmount" },
                     totalNumberOfSales: { $sum: 1 },
                 },
-            }
-        );
+            },
+        ]);
 
         const latestBuyers = await OrderItem.find({ sellerId })
             .sort({ dateOrdered: -1 })
