@@ -430,6 +430,11 @@ exports.getTotalSalesForSeller = async (req, res) => {
             .startOf("day")
             .toDate();
         const endOf6Day = moment().subtract(6, "days").endOf("day").toDate();
+        const startOfLast30Days = moment()
+            .subtract(30, "days")
+            .startOf("day")
+            .toDate();
+        const endOfToday = moment().endOf("day").toDate();
 
         const totalSale = await OrderItem.aggregate([
             { $match: { sellerId: mongoose.Types.ObjectId(sellerId) } },
@@ -448,6 +453,27 @@ exports.getTotalSalesForSeller = async (req, res) => {
                 $match: {
                     sellerId: mongoose.Types.ObjectId(sellerId),
                     isCanceled: true,
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalPaidSaleCancelled: { $sum: "$paidPrice" },
+                    totalDeliveryFeeCancelled: { $sum: "$deliveryFeeAmount" },
+                    totalNumberOfSalesCancelled: { $sum: 1 },
+                },
+            },
+        ]);
+
+        const totalCanceledLast30Days = await OrderItem.aggregate([
+            {
+                $match: {
+                    sellerId: mongoose.Types.ObjectId(sellerId),
+                    isCanceled: true,
+                    dateOrdered: {
+                        $gte: startOfLast30Days,
+                        $lte: endOfToday,
+                    },
                 },
             },
             {
@@ -658,6 +684,7 @@ exports.getTotalSalesForSeller = async (req, res) => {
             totalPrevious6DaySale: totalPrevious6DaySale,
             totalDayBeforeYesterdaySale: totalDayBeforeYesterdaySale,
             latestBuyers: latestBuyers,
+            totalCanceledLast30Days: totalCanceledLast30Days,
         });
     } catch (error) {
         console.error("Error calculating total sales:", error);
