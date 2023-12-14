@@ -691,3 +691,26 @@ exports.getTotalSalesForSeller = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
+exports.flexibleUpdate = async (req, res) => {
+    try {
+        const updates = req.body;
+
+        const result = await Promise.all(
+            updates.map(async ({ orderId, currentStatus, newStatus }) => {
+                const updateResult = await Order.updateOne(
+                    { _id: orderId, status: currentStatus },
+                    { $set: { status: newStatus } }
+                );
+
+                return { orderId, success: updateResult.modifiedCount > 0 };
+            })
+        );
+        res.status(200).json({ success: true, updates: result });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};
