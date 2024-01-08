@@ -111,7 +111,7 @@ router.post("/upload/:id", upload.single("video"), async (req, res) => {
             .status(400)
             .json({ message: "File or user id is not available" });
     }
-    console.log("vidoe file!!!", file.size);
+
     try {
         const key = await uploadVideoToS3({ file, userId });
 
@@ -197,7 +197,7 @@ router.delete("/imagedelete/:key", async (req, res) => {
 
 router.post("/upload-base64-image", async (req, res) => {
     try {
-        const { base64Image } = req.body; // Assuming base64Image is part of the request body
+        const { base64Image } = req.body;
 
         if (!base64Image) {
             return res
