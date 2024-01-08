@@ -310,8 +310,6 @@ exports.uploadBase64ImageToS3 = async (base64Image) => {
 
         const buffer = Buffer.from(base64Data, "base64");
 
-        console.log("Buffer Length:", buffer.length);
-
         const resizedImageBuffer = await sharp(buffer).resize(700).toBuffer();
 
         const key = `${uuid()}-resized-image.jpg`;
