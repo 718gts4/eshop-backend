@@ -307,7 +307,7 @@ exports.getVideoPresignedUrls = async (userId) => {
 exports.uploadBase64ImageToS3 = async (base64Image) => {
     try {
         const buffer = Buffer.from(base64Image, "base64");
-        console.log("Base64 Image Data:", base64Image);
+
         console.log("Buffer Length:", buffer.length);
 
         const resizedImageBuffer = await sharp(buffer).resize(700).toBuffer();
