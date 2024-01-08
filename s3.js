@@ -307,6 +307,8 @@ exports.getVideoPresignedUrls = async (userId) => {
 exports.uploadBase64ImageToS3 = async (base64Image) => {
     try {
         const buffer = Buffer.from(base64Image, "base64");
+        console.log("Base64 Image Data:", base64Image);
+        console.log("Buffer Length:", buffer.length);
 
         const resizedImageBuffer = await sharp(buffer).resize(700).toBuffer();
 
@@ -320,8 +322,8 @@ exports.uploadBase64ImageToS3 = async (base64Image) => {
                 ContentType: "image/jpeg",
             })
         );
-
-        return `${uuid()}-resized-${key}`;
+        const resizedKey = `${uuid()}-resized-${key}`;
+        return resizedKey;
     } catch (error) {
         console.error("Error uploading base64 image to S3:", error);
         throw new Error("Failed to upload base64 image to S3");
