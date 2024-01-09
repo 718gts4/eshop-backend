@@ -198,7 +198,7 @@ router.delete("/imagedelete/:key", async (req, res) => {
 router.post("/upload-base64-image", async (req, res) => {
     try {
         const { base64Image } = req.body;
-
+        console.log("base64 img", base64Image);
         if (!base64Image) {
             return res
                 .status(400)
