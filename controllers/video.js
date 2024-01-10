@@ -22,29 +22,6 @@ exports.getVideos = async (req, res) => {
     res.status(200).send(videoList);
 };
 
-exports.getVideosByUser = async (req, res) => {
-    try {
-        const userId = req.params.userId; // assuming userId is passed as a parameter in the request
-
-        // Find all videos created by the user
-        const videos = await Video.find({ createdBy: userId });
-
-        // Check if any videos are found
-        if (!videos || videos.length === 0) {
-            return res
-                .status(404)
-                .json({ message: "No videos found for the user." });
-        }
-
-        // If videos are found, return them in the response
-        return res.status(200).json({ videos });
-    } catch (error) {
-        // Handle any errors that may occur
-        console.error("Error fetching videos:", error);
-        return res.status(500).json({ message: "Internal Server Error" });
-    }
-};
-
 exports.getFollowingVideos = async (req, res) => {
     let limit = 10;
     let skip = parseInt(req.query.skip) || 0;
@@ -106,6 +83,29 @@ exports.getVideosByUser = async (req, res) => {
         res.status(500).json({ success: false });
     }
     res.status(200).send(videoList);
+};
+
+exports.getVideosByWebVendor = async (req, res) => {
+    try {
+        const userId = req.params.userId; // assuming userId is passed as a parameter in the request
+
+        // Find all videos created by the user
+        const videos = await Video.find({ createdBy: userId });
+
+        // Check if any videos are found
+        if (!videos || videos.length === 0) {
+            return res
+                .status(404)
+                .json({ message: "No videos found for the user." });
+        }
+
+        // If videos are found, return them in the response
+        return res.status(200).json({ videos });
+    } catch (error) {
+        // Handle any errors that may occur
+        console.error("Error fetching videos:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
 };
 
 exports.postVideo = async (req, res) => {
