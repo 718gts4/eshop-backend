@@ -323,7 +323,8 @@ exports.uploadBase64ImageToS3 = async (base64Image) => {
             })
         );
         const resizedKey = `${uuid()}-resized-${key}`;
-        return resizedKey;
+
+        return key;
     } catch (error) {
         console.error("Error uploading base64 image to S3:", error);
         throw new Error("Failed to upload base64 image to S3");
