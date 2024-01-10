@@ -87,7 +87,7 @@ router.get(`/get/videocount`, getVideoCount);
 router.put(`/:id/updatecomments`, updateVideoComment);
 router.post(`/:id/followingVideos`, getFollowingVideos);
 router.get(`/uservideos/:id`, getVideosByUser);
-router.get("/user/:userId/videos", videoController.getVideosByWebVendor);
+router.get("/user/:userId/videos", getVideosByWebVendor);
 
 // Function to get video duration using ffmpeg
 function getVideoDuration(filePath) {
