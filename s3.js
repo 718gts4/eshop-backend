@@ -322,7 +322,6 @@ exports.uploadBase64ImageToS3 = async (base64Image) => {
                 ContentType: "image/jpeg",
             })
         );
-        const resizedKey = `${uuid()}-resized-${key}`;
 
         return key;
     } catch (error) {

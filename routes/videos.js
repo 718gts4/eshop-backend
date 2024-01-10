@@ -10,6 +10,7 @@ const {
     getFollowingVideos,
     getVideosByUser,
     bookmarkVideo,
+    getVideosByWebVendor,
 } = require("../controllers/video");
 const express = require("express");
 const router = express.Router();
@@ -86,6 +87,7 @@ router.get(`/get/videocount`, getVideoCount);
 router.put(`/:id/updatecomments`, updateVideoComment);
 router.post(`/:id/followingVideos`, getFollowingVideos);
 router.get(`/uservideos/:id`, getVideosByUser);
+router.get("/user/:userId/videos", videoController.getVideosByWebVendor);
 
 // Function to get video duration using ffmpeg
 function getVideoDuration(filePath) {
