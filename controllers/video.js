@@ -90,7 +90,9 @@ exports.getVideosByWebVendor = async (req, res) => {
         const userId = req.params.userId; // assuming userId is passed as a parameter in the request
 
         // Find all videos created by the user
-        const videos = await Video.find({ createdBy: userId });
+        const videos = await Video.find({ createdBy: userId }).sort({
+            dateCreated: -1,
+        });
 
         // Check if any videos are found
         if (!videos || videos.length === 0) {
