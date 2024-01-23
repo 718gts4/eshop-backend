@@ -135,7 +135,7 @@ router.post(
             hasStocks = true;
         }
         console.log("REQ FILES", req.files);
-        console.log("image", req.body.image);
+        console.log("image", req.body.image[0]);
         try {
             const images = req.files.map((file) => ({
                 file: fs.readFileSync(file.path),
