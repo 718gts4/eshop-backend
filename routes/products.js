@@ -130,10 +130,10 @@ router.post(
         } = req.body;
 
         let hasStocks = false;
-        // if (colorOptions.sizes) {
-        console.log("checkingSizes", JSON.parse(colorOptions)?.sizes);
-        //     hasStocks = true;
-        // }
+        if (colorOptions?.sizes) {
+            console.log("checkingSizes", JSON.parse(colorOptions)?.sizes);
+            hasStocks = true;
+        }
 
         try {
             const images = req.files.map((file) => ({
