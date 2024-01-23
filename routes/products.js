@@ -134,8 +134,8 @@ router.post(
             console.log("checkingSizes", JSON.parse(colorOptions)?.sizes);
             hasStocks = true;
         }
-        console.log("REQ FILES", req.files);
-        console.log("image", req.body.image[0]);
+        console.log("REQ FILES", req);
+        console.log("image", req.body.image[0][0]);
         try {
             const images = req.files.map((file) => ({
                 file: fs.readFileSync(file.path),
