@@ -134,7 +134,7 @@ router.post(
             console.log("checkingSizes", JSON.parse(colorOptions)?.sizes);
             hasStocks = true;
         }
-
+        console.log("REQ FILES", req.files);
         try {
             const images = req.files.map((file) => ({
                 file: fs.readFileSync(file.path),
@@ -157,7 +157,7 @@ router.post(
                 brand,
                 price,
                 parentCategory,
-                category: req.body.category || null,
+                category: category || null,
                 isFeatured,
                 createdBy: req.user.userId, // user data from middleware
                 likes: {},
