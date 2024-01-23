@@ -136,7 +136,7 @@ router.post(
         }
         console.log("REQ FILES", req.files);
         try {
-            const images = req.body.image.map((file) => ({
+            const images = req.files.map((file) => ({
                 file: fs.readFileSync(file.path),
             }));
 
