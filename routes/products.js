@@ -125,7 +125,7 @@ router.post(
             discount,
             dropProduct,
             deliveryFee,
-            deliveryCost,
+            deliveryFeeAmount,
             sellerId,
             preorder,
         } = req.body;
@@ -174,7 +174,7 @@ router.post(
                 dropDate,
                 dropProduct,
                 deliveryFee,
-                deliveryFeeAmount: deliveryCost,
+                deliveryFeeAmount,
                 sellerId,
                 preorder,
                 hasStocks,
