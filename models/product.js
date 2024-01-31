@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const { Sale } = require('../models/sale'); 
+const mongoose = require("mongoose");
+const { Sale } = require("../models/sale");
 
 const reviewSchema = mongoose.Schema(
     {
@@ -8,18 +8,22 @@ const reviewSchema = mongoose.Schema(
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
-            ref: 'User',
+            ref: "User",
         },
-     },
+        vendorId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        },
+    },
     {
-      timestamps: true,
+        timestamps: true,
     }
-)
+);
 
 const productSchema = mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
     },
     slug: {
         type: String,
@@ -27,98 +31,100 @@ const productSchema = mongoose.Schema({
     },
     sellerId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', 
-        required: true
+        ref: "User",
+        required: true,
     },
     description: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
     },
     richDescription: {
         type: String,
-        default: '', 
-        trim: true
+        default: "",
+        trim: true,
     },
     image: {
         type: String,
-        default: ''
+        default: "",
     },
-    productImages: [{
-        type: String 
-    }],
+    productImages: [
+        {
+            type: String,
+        },
+    ],
     brand: {
         type: String,
-        default: ''
+        default: "",
     },
     price: {
         type: Number,
-        default: 0
+        default: 0,
     },
     parentCategory: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category',
+        ref: "Category",
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category',
+        ref: "Category",
     },
     reviews: [reviewSchema],
     rating: {
         type: Number,
-        default: 0
+        default: 0,
     },
     numReviews: {
         type: Number,
-        default: 0
+        default: 0,
     },
     dropProduct: {
         type: Boolean,
-        default: false
+        default: false,
     },
-    isFeatured:{
+    isFeatured: {
         type: Boolean,
-        default: false
+        default: false,
     },
-    dateCreated:{
+    dateCreated: {
         type: Date,
-        default: Date.now
+        default: Date.now,
     },
     likes: {
         type: Map,
-        of: Boolean
+        of: Boolean,
     },
     bookmarks: {
         type: Map,
-        of: Boolean
+        of: Boolean,
     },
-    hasStocks:{
+    hasStocks: {
         type: Boolean,
-        default: false
+        default: false,
     },
     colorOptions: {
         productColor: {
             type: String,
             // required: true
-        },   
+        },
         hexColor: {
             type: String,
         },
-        sizes:[
+        sizes: [
             {
                 size: {
                     type: String,
                 },
                 stock: {
                     type: Number,
-                }   
-            }
+                },
+            },
         ],
     },
     subOption1: {
         title: {
             type: String,
-            default: '옵션 1'
+            default: "옵션 1",
         },
         options: [
             {
@@ -126,16 +132,16 @@ const productSchema = mongoose.Schema({
                     type: String,
                     // required: true
                 },
-                value : {
+                value: {
                     type: String,
-                }
-            }
-        ]
+                },
+            },
+        ],
     },
     subOption2: {
         title: {
             type: String,
-            default: '옵션 2'
+            default: "옵션 2",
         },
         options: [
             {
@@ -143,16 +149,16 @@ const productSchema = mongoose.Schema({
                     type: String,
                     // required: true
                 },
-                value : {
+                value: {
                     type: String,
-                }
-            }
-        ]
+                },
+            },
+        ],
     },
     subOption3: {
         title: {
             type: String,
-            default: '옵션 3'
+            default: "옵션 3",
         },
         options: [
             {
@@ -160,44 +166,44 @@ const productSchema = mongoose.Schema({
                     type: String,
                     // required: true
                 },
-                value : {
+                value: {
                     type: String,
-                }
-            }
-        ]
+                },
+            },
+        ],
     },
-    delivery : {
+    delivery: {
         type: String,
-        default: ''
+        default: "",
     },
     topSeller: {
         type: Boolean,
-        default: false
+        default: false,
     },
     display: {
         type: Boolean,
-        default: true
+        default: true,
     },
     soldout: {
         type: Boolean,
-        default: false
+        default: false,
     },
     justin: {
         type: Boolean,
-        default: false
+        default: false,
     },
-    dropDate:{
+    dropDate: {
         type: Date,
-        default: Date.now
+        default: Date.now,
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    },   
+        ref: "User",
+    },
     onSale: {
         type: Boolean,
         required: true,
-        default: false
+        default: false,
     },
     discountPrice: {
         type: Number,
@@ -215,28 +221,27 @@ const productSchema = mongoose.Schema({
     salesQuantity: {
         type: Number,
         default: 0,
-    }, 
+    },
     deliveryFee: {
         type: Boolean,
-        default: false
+        default: false,
     },
     deliveryFeeAmount: {
         type: Number,
-        default: 0
+        default: 0,
     },
     preorder: {
         type: Boolean,
-        default: false
+        default: false,
     },
-})
+});
 
-
-productSchema.virtual('id').get(function () {
+productSchema.virtual("id").get(function () {
     return this._id.toHexString();
 });
 
-productSchema.set('toJSON', {
+productSchema.set("toJSON", {
     virtuals: true,
 });
 
-exports.Product = mongoose.model('Product', productSchema);
+exports.Product = mongoose.model("Product", productSchema);

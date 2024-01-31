@@ -41,7 +41,6 @@ const recentlyViewedRoutes = require("./routes/recentlyViewed");
 const canceledOrderRoutes = require("./routes/canceledOrder");
 const purchaseRoutes = require("./routes/purchase");
 const vendorRoutes = require("./routes/vendor");
-const reviewRoutes = require("./routes/review");
 
 const api = process.env.API_URL;
 
@@ -61,7 +60,6 @@ app.use(`${api}/recentlyViewed`, recentlyViewedRoutes);
 app.use(`${api}/canceledOrder`, canceledOrderRoutes);
 app.use(`${api}/purchase`, purchaseRoutes);
 app.use(`${api}/vendor`, vendorRoutes);
-app.use(`${api}/review`, reviewRoutes);
 
 // Schedule the task to run periodically (e.g., every hour)
 setInterval(backgroundService.updateProductsOnSaleStatus, 3600000);
