@@ -114,9 +114,11 @@ const productSchema = mongoose.Schema({
             {
                 size: {
                     type: String,
+                    default: "Free",
                 },
                 stock: {
                     type: Number,
+                    default: 20000,
                 },
             },
         ],

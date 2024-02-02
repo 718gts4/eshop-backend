@@ -45,3 +45,31 @@ exports.addClient = async (req, res) => {
         });
     }
 };
+
+exports.getClientsForVendor = async (req, res) => {
+    try {
+        const { vendorId } = req.params;
+
+        // Find the client record for the given vendor
+        const clientRecord = await Client.findOne({ vendorId });
+
+        if (!clientRecord) {
+            res.status(404).json({
+                success: false,
+                message: "Client record not found for the vendor",
+            });
+        } else {
+            // Return the clients array for the vendor
+            res.status(200).json({
+                success: true,
+                clients: clientRecord.clients,
+            });
+        }
+    } catch (error) {
+        console.error("Error getting clients:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
