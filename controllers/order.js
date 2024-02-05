@@ -75,6 +75,15 @@ exports.postOrder = async (req, res) => {
     );
     const parentOrderNumber = randomNumber.toString();
 
+    console.log('order ITEMS', req.body.orderItems)
+    for (const orderItem of req.body.orderItems){
+        const product = await Product.findById(orderItem.product.id);
+
+        if (!product) {
+            return res.status(400).send(`Product not found for ID: ${orderItem.product.id}`);
+        }
+    }
+
     let order = new Order({
         address: req.body.address,
         status: req.body.status,
