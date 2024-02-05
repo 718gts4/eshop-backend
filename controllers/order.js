@@ -82,15 +82,17 @@ exports.postOrder = async (req, res) => {
             return res.status(400).send(`Product not found for ID: ${orderItem.product.id}`);
         }
         const selectedSize = orderItem.product.selectedSize;
-        const sizeInfo = product.colorOptions.find(colorOption =>
-            colorOption.sizes.some(size => size.size === selectedSize)
+        const sizeInfo = product.colorOptions.sizes.find(size =>
+            size.size === selectedSize
         );
             console.log('sizeInfo', sizeInfo);
 
         if (!sizeInfo) {
-            return res.status(400).send(`Size information not found for product ${product.name} in size ${selectedSize}`);
+            throw new Error(`Size information not found for product ${product.name} in size ${selectedSize}`);
         }
-        const availableStock = sizeInfo.sizes.find(size => size.size === selectedSize).stock || 0;
+
+        const availableStock = sizeInfo.stock || 0;
+        
         console.log('available stock', availableStock);
         
         if (orderItem.quantity > availableStock) {
