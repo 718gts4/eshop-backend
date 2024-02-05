@@ -94,10 +94,11 @@ exports.postOrder = async (req, res) => {
         const availableStock = sizeInfo.stock || 0;
 
         console.log('available stock', availableStock);
-        
-        if (isNaN(availableStock) || isNaN(orderItem.quantity) || orderItem.quantity > availableStock) {
-            throw new Error(`Invalid or insufficient stock for product ${product.name} in size ${selectedSize}`);
-        }
+        console.log('orderItem qty', orderItem.quantity);
+
+        // if (isNaN(availableStock) || isNaN(orderItem.quantity) || orderItem.quantity > availableStock) {
+        //     throw new Error(`Invalid or insufficient stock for product ${product.name} in size ${selectedSize}`);
+        // }
 
         sizeInfo.stock -= orderItem.quantity;
 
