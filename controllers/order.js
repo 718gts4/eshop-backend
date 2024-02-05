@@ -115,27 +115,6 @@ exports.postOrder = async (req, res) => {
 
     const orderItemsIds = Promise.all(
         req.body.orderItems.map(async (orderItem) => {
-            console.log('Product ID', orderItem.product.id)
-            const product = await Product.findById(orderItem.product.id);
-    
-            // Check if the product is not sold out and has enough stock for each size
-            for (const size of product.colorOptions.sizes) {
-                if (size.soldout || isNaN(size.stock) || isNaN(orderItem.quantity) || size.stock < orderItem.quantity) {
-                    return res.status(400).send(`Product '${product.name}' is sold out or not enough stock for size '${size.size}'`);
-                }
-            }
-
-            // Update the stock for each size
-            for (const size of product.colorOptions.sizes) {
-                const currentStock = size.stock || 0; // Default to 0 if stock is undefined or NaN
-                const newStock = Math.max(currentStock - orderItem.quantity, 0); // Ensure newStock is non-negative
-
-                await Product.findByIdAndUpdate(orderItem.product.id, {
-                    $set: { 'colorOptions.sizes.$[elem].stock': newStock },
-                }, { arrayFilters: [{ 'elem.size': size.size }] });
-
-            }
-            
             const randomNumberDigit = Math.floor(
                 1000000000000000 + Math.random() * 9000000000000000
             );
