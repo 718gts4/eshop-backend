@@ -120,6 +120,10 @@ const productSchema = mongoose.Schema({
                     type: Number,
                     default: 20000,
                 },
+                soldout: {
+                    type: Boolean,
+                    default: false,
+                },
             },
         ],
     },
@@ -244,6 +248,15 @@ productSchema.virtual("id").get(function () {
 
 productSchema.set("toJSON", {
     virtuals: true,
+});
+
+productSchema.pre('save', function (next) {
+    this.colorOptions.sizes.forEach((size) => {
+        if (size.stock === 0) {
+            size.soldout = true;
+        }
+    });
+    next();
 });
 
 exports.Product = mongoose.model("Product", productSchema);
