@@ -97,11 +97,11 @@ exports.postOrder = async (req, res) => {
         console.log('order item', orderItem)
         console.log('orderItem qty!', orderItem.product.selectedQuantity);
 
-        // if (isNaN(availableStock) || isNaN(orderItem.quantity) || orderItem.quantity > availableStock) {
-        //     throw new Error(`Invalid or insufficient stock for product ${product.name} in size ${selectedSize}`);
-        // }
+        if (isNaN(availableStock) || isNaN(orderItem.product.selectedQuantity) || orderItem.product.selectedQuantity > availableStock) {
+            throw new Error(`Invalid or insufficient stock for product ${product.name} in size ${selectedSize}`);
+        }
 
-        sizeInfo.stock -= orderItem.product.selectedQuantity || 1;
+        sizeInfo.stock -= orderItem.product.selectedQuantity;
 
         await product.save();
     }
@@ -174,7 +174,7 @@ exports.postOrder = async (req, res) => {
             const orderItemData = {
                 orderItemNumber: orderNumber,
                 product: orderItem.product.id,
-                quantity: orderItem.product.selectedQuantity || 1,
+                quantity: orderItem.product.selectedQuantity,
                 orderStatus: orderStatus,
             };
 
