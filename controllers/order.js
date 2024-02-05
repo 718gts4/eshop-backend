@@ -69,116 +69,138 @@ exports.getOrderItems = async (req, res) => {
 };
 
 exports.postOrder = async (req, res) => {
-    // Generate a random 16-digit number for orderNumber
-    const randomNumber = Math.floor(
-        1000000000000000 + Math.random() * 9000000000000000
-    );
-    const parentOrderNumber = randomNumber.toString();
-
-    let order = new Order({
-        address: req.body.address,
-        status: req.body.status,
-        deliveryFee: req.body.deliveryFee,
-        productPrice: req.body.productPrice,
-        user: req.body.user,
-        parentOrderNumber: parentOrderNumber,
-    });
-
     try {
-        order = await order.save();
+        // Generate a random 16-digit number for orderNumber
+        const randomNumber = Math.floor(
+            1000000000000000 + Math.random() * 9000000000000000
+        );
+        const parentOrderNumber = randomNumber.toString();
+
+        let order = new Order({
+            address: req.body.address,
+            status: req.body.status,
+            deliveryFee: req.body.deliveryFee,
+            productPrice: req.body.productPrice,
+            user: req.body.user,
+            parentOrderNumber: parentOrderNumber,
+        });
+
+        try {
+            order = await order.save();
+        } catch (error) {
+            return res.status(400).send("The order cannot be created");
+        }
+
+        const orderId = order._id;
+
+        const orderItemsData = [];
+        const orderStatus = [
+            {
+                type: "결제완료",
+                date: new Date(),
+                isCompleted: true,
+            },
+            {
+                type: "준비중",
+                isCompleted: false,
+            },
+            {
+                type: "배송중",
+                isCompleted: false,
+            },
+            {
+                type: "배송완료",
+                isCompleted: false,
+            },
+        ];
+
+        const orderItemsIds = Promise.all(
+            req.body.orderItems.map(async (orderItem) => {
+                const product = await Product.findById(orderItem.product.id);
+
+                // Check if the product is not sold out and has enough stock for each size
+                for (const size of product.colorOptions.sizes) {
+                    if (size.soldout || size.stock < orderItem.quantity) {
+                        throw new Error(`Product '${product.name}' is sold out or not enough stock for size '${size.size}'`);
+                    }
+                }
+
+                // Update the stock for each size
+                for (const size of product.colorOptions.sizes) {
+                    const newStock = size.stock - orderItem.quantity;
+
+                    await Product.findByIdAndUpdate(orderItem.product.id, {
+                        $set: { 'colorOptions.sizes.$[elem].stock': newStock },
+                    }, { arrayFilters: [{ 'elem.size': size.size }] });
+                }
+
+                const randomNumberDigit = Math.floor(
+                    1000000000000000 + Math.random() * 9000000000000000
+                );
+                const orderNumber = randomNumberDigit.toString();
+
+                let newOrderItem = new OrderItem({
+                    quantity: orderItem.product.selectedQuantity || 1,
+                    product: orderItem.product.id,
+                    buyer: req.body.user,
+                    address: req.body.address,
+                    sellerId: orderItem.product.createdBy,
+                    orderNumber: orderNumber,
+                    parentOrderNumber: parentOrderNumber,
+                    orderStatus: orderStatus,
+                    parentOrderId: orderId,
+                    paidPrice:
+                        orderItem.product.price *
+                        orderItem.product.selectedQuantity,
+                    deliveryFeeAmount: orderItem.product.deliveryFeeAmount,
+                    selectedColor: orderItem.product.selectedColor || "",
+                    selectedSize: orderItem.product.selectedSize || "",
+                    subOption1: orderItem.product.subOption1 || "",
+                    subOption2: orderItem.product.subOption2 || "",
+                    subOption3: orderItem.product.subOption3 || "",
+                });
+                newOrderItem = await newOrderItem.save();
+
+                const orderItemData = {
+                    orderItemNumber: orderNumber,
+                    product: orderItem.product.id,
+                    quantity: orderItem.quantity,
+                    orderStatus: orderStatus,
+                };
+
+                orderItemsData.push(orderItemData);
+
+                return newOrderItem._id;
+            })
+        );
+
+        const orderItemsIdsResolved = await orderItemsIds;
+
+        const totalPrices = await Promise.all(
+            orderItemsIdsResolved.map(async (orderItemId) => {
+                const orderItem = await OrderItem.findById(orderItemId).populate(
+                    "product",
+                    "price"
+                );
+                const totalPrice = orderItem.product.price * orderItem.quantity;
+                return totalPrice;
+            })
+        );
+
+        const totalPrice = totalPrices.reduce((a, b) => a + b, 0);
+
+        order.orderItems = orderItemsIdsResolved;
+        order.totalPrice = totalPrice;
+
+        try {
+            // Save the updated order object with totalPrice to the database
+            const updatedOrder = await order.save();
+            res.send(updatedOrder);
+        } catch (error) {
+            return res.status(500).send("An error occurred while saving the order");
+        }
     } catch (error) {
-        return res.status(400).send("The order cannot be created");
-    }
-
-    const orderId = order._id;
-
-    const orderItemsData = [];
-    const orderStatus = [
-        {
-            type: "결제완료",
-            date: new Date(),
-            isCompleted: true,
-        },
-        {
-            type: "준비중",
-            isCompleted: false,
-        },
-        {
-            type: "배송중",
-            isCompleted: false,
-        },
-        {
-            type: "배송완료",
-            isCompleted: false,
-        },
-    ];
-
-    const orderItemsIds = Promise.all(
-        req.body.orderItems.map(async (orderItem) => {
-            const randomNumberDigit = Math.floor(
-                1000000000000000 + Math.random() * 9000000000000000
-            );
-            const orderNumber = randomNumberDigit.toString();
-
-            let newOrderItem = new OrderItem({
-                quantity: orderItem.product.selectedQuantity || 1,
-                product: orderItem.product.id,
-                buyer: req.body.user,
-                address: req.body.address,
-                sellerId: orderItem.product.createdBy,
-                orderNumber: orderNumber,
-                parentOrderNumber: parentOrderNumber,
-                orderStatus: orderStatus,
-                parentOrderId: orderId,
-                paidPrice:
-                    orderItem.product.price *
-                    orderItem.product.selectedQuantity,
-                deliveryFeeAmount: orderItem.product.deliveryFeeAmount,
-                selectedColor: orderItem.product.selectedColor || "",
-                selectedSize: orderItem.product.selectedSize || "",
-                subOption1: orderItem.product.subOption1 || "",
-                subOption2: orderItem.product.subOption2 || "",
-                subOption3: orderItem.product.subOption3 || "",
-            });
-            newOrderItem = await newOrderItem.save();
-
-            const orderItemData = {
-                orderItemNumber: orderNumber,
-                product: orderItem.product.id,
-                quantity: orderItem.quantity,
-                orderStatus: orderStatus,
-            };
-
-            orderItemsData.push(orderItemData);
-
-            return newOrderItem._id;
-        })
-    );
-
-    const orderItemsIdsResolved = await orderItemsIds;
-
-    const totalPrices = await Promise.all(
-        orderItemsIdsResolved.map(async (orderItemId) => {
-            const orderItem = await OrderItem.findById(orderItemId).populate(
-                "product",
-                "price"
-            );
-            const totalPrice = orderItem.product.price * orderItem.quantity;
-            return totalPrice;
-        })
-    );
-
-    const totalPrice = totalPrices.reduce((a, b) => a + b, 0);
-
-    order.orderItems = orderItemsIdsResolved;
-    order.totalPrice = totalPrice;
-
-    try {
-        // Save the updated order object with totalPrice to the database
-        const updatedOrder = await order.save();
-        res.send(updatedOrder);
-    } catch (error) {
-        return res.status(500).send("An error occurred while saving the order");
+        return res.status(400).send(error.message);
     }
 };
 
