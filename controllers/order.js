@@ -129,7 +129,7 @@ exports.postOrder = async (req, res) => {
             for (const size of product.colorOptions.sizes) {
                 const newStock = size.stock - orderItem.quantity;
 
-                await Product.findByIdAndUpdate(orderItem.product.id, {
+                await Product.findByIdAndUpdate(orderItem.product._id, {
                     $set: { 'colorOptions.sizes.$[elem].stock': newStock },
                 }, { arrayFilters: [{ 'elem.size': size.size }] });
             }
