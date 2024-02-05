@@ -127,11 +127,13 @@ exports.postOrder = async (req, res) => {
 
             // Update the stock for each size
             for (const size of product.colorOptions.sizes) {
-                const newStock = size.stock - orderItem.quantity;
+                const currentStock = size.stock || 0; // Default to 0 if stock is undefined or NaN
+                const newStock = Math.max(currentStock - orderItem.quantity, 0); // Ensure newStock is non-negative
 
                 await Product.findByIdAndUpdate(orderItem.product.id, {
                     $set: { 'colorOptions.sizes.$[elem].stock': newStock },
                 }, { arrayFilters: [{ 'elem.size': size.size }] });
+
             }
             
             const randomNumberDigit = Math.floor(
