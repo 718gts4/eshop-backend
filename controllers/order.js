@@ -75,13 +75,32 @@ exports.postOrder = async (req, res) => {
     );
     const parentOrderNumber = randomNumber.toString();
 
-    console.log('order ITEMS', req.body.orderItems)
     for (const orderItem of req.body.orderItems){
         const product = await Product.findById(orderItem.product.id);
 
         if (!product) {
             return res.status(400).send(`Product not found for ID: ${orderItem.product.id}`);
         }
+        const selectedSize = orderItem.product.selectedSize;
+        const sizeInfo = product.colorOptions.find(colorOption =>
+            colorOption.sizes.some(size => size.size === selectedSize)
+        );
+            console.log('sizeInfo', sizeInfo);
+
+        if (!sizeInfo) {
+            return res.status(400).send(`Size information not found for product ${product.name} in size ${selectedSize}`);
+        }
+        const availableStock = sizeInfo.sizes.find(size => size.size === selectedSize).stock || 0;
+        console.log('available stock', availableStock);
+        
+        if (orderItem.quantity > availableStock) {
+            return res.status(400).send(`Insufficient stock for product ${product.name} in size ${selectedSize}`);
+        }
+
+        const sizeIndex = sizeInfo.sizes.findIndex(size => size.size === selectedSize);
+        sizeInfo.sizes[sizeIndex].stock -= orderItem.quantity;
+
+        await product.save();
     }
 
     let order = new Order({
