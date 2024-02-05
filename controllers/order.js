@@ -92,15 +92,14 @@ exports.postOrder = async (req, res) => {
         }
 
         const availableStock = sizeInfo.stock || 0;
-        
+
         console.log('available stock', availableStock);
         
         if (orderItem.quantity > availableStock) {
-            return res.status(400).send(`Insufficient stock for product ${product.name} in size ${selectedSize}`);
+            throw new Error(`Insufficient stock for product ${product.name} in size ${selectedSize}`);
         }
 
-        const sizeIndex = sizeInfo.sizes.findIndex(size => size.size === selectedSize);
-        sizeInfo.sizes[sizeIndex].stock -= orderItem.quantity;
+        sizeInfo.stock -= orderItem.quantity;
 
         await product.save();
     }
