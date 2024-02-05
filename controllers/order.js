@@ -120,7 +120,7 @@ exports.postOrder = async (req, res) => {
     
             // Check if the product is not sold out and has enough stock for each size
             for (const size of product.colorOptions.sizes) {
-                if (size.soldout || size.stock < orderItem.quantity) {
+                if (size.soldout || isNaN(size.stock) || isNaN(orderItem.quantity) || size.stock < orderItem.quantity) {
                     return res.status(400).send(`Product '${product.name}' is sold out or not enough stock for size '${size.size}'`);
                 }
             }
