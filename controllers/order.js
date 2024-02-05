@@ -115,8 +115,8 @@ exports.postOrder = async (req, res) => {
 
     const orderItemsIds = Promise.all(
         req.body.orderItems.map(async (orderItem) => {
-            console.log('Product ID', orderItem.product._id)
-            const product = await Product.findById(orderItem.product._id);
+            console.log('Product ID', orderItem.product.id)
+            const product = await Product.findById(orderItem.product.id);
     
             // Check if the product is not sold out and has enough stock for each size
             for (const size of product.colorOptions.sizes) {
@@ -129,7 +129,7 @@ exports.postOrder = async (req, res) => {
             for (const size of product.colorOptions.sizes) {
                 const newStock = size.stock - orderItem.quantity;
 
-                await Product.findByIdAndUpdate(orderItem.product._id, {
+                await Product.findByIdAndUpdate(orderItem.product.id, {
                     $set: { 'colorOptions.sizes.$[elem].stock': newStock },
                 }, { arrayFilters: [{ 'elem.size': size.size }] });
             }
