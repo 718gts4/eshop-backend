@@ -160,9 +160,7 @@ exports.postOrder = async (req, res) => {
                 parentOrderNumber: parentOrderNumber,
                 orderStatus: orderStatus,
                 parentOrderId: orderId,
-                paidPrice:
-                    orderItem.product.price *
-                    orderItem.product.selectedQuantity,
+                paidPrice: orderItem.product.price * orderItem.product.selectedQuantity,
                 deliveryFeeAmount: orderItem.product.deliveryFeeAmount,
                 selectedColor: orderItem.product.selectedColor || "",
                 selectedSize: orderItem.product.selectedSize || "",
