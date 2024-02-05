@@ -54,7 +54,8 @@ const orderItemSchema = mongoose.Schema({
                 default: "결제완료",
             }, 
             date: {
-                type: Date
+                type: Date,
+                default: Date.now,
             },
             isCompleted: {
                 type: Boolean,
