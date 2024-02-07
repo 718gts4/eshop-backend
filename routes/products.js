@@ -101,10 +101,7 @@ router.post(`/:id/reviews`, createProductReview, requireSignin);
 
 router.post(
     `/create`,
-    upload.array("image", 5),
-    requireSignin,
-    adminMiddleware,
-    async (req, res) => {
+    upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
         const {
             name,
             price,

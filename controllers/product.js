@@ -133,19 +133,14 @@ exports.updateProduct = async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(400).send('Invalid Product!');
 
-    const category = await Category.findById(product.category);
-    if(!category) return res.status(400).send('Invalid Category');
-
     const file = req.file;
-    let imagepath;
+    let imagepath = product.image;
 
     if (file){
         const fileName = file.filename;
         const basePath = `${req.protocol}://${req.get('host')}/uploads/`;
         imagepath = `${basePath}${fileName}`; // "http://localhost:3000/public/upload/image-2323232"
-    } else {
-        imagepath = product.image;
-    }
+    } 
 
     let saleStartDate;
     let saleEndDate;
@@ -183,10 +178,10 @@ exports.updateProduct = async (req, res) => {
             rating: req.body.rating,
             numReviews: req.body.numReviews,
             isFeatured: req.body.isFeatured,
-            colorOptions: req.body.colorOptions,
-            subOption1: req.body.subOption1,
-            subOption2: req.body.subOption2,
-            subOption3: req.body.subOption3,
+            colorOptions: JSON.parse(req.body.colorOptions || '{}'),
+            subOption1: JSON.parse(req.body.subOption1 || null),
+            subOption2: JSON.parse(req.body.subOption2 || null),
+            subOption3: JSON.parse(req.body.subOption3 || null),
             display: req.body.display,
             soldout: req.body.soldout,
             isSelling: req.body.isSelling,
