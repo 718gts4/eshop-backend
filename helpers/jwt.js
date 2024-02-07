@@ -13,7 +13,7 @@ function authJwt() {
             { url: /\/uploads(.*)/, methods: ["GET", "OPTIONS"] },
             {
                 url: /\/api\/v1\/products(.*)/,
-                methods: ["GET", "PATCH", "POST", "OPTIONS"],
+                methods: ["GET", "PATCH", "POST", "OPTIONS", "PUT"],
             },
             { url: /\/api\/v1\/categories(.*)/, methods: ["GET", "OPTIONS"] },
             {
