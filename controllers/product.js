@@ -183,6 +183,8 @@ exports.updateProduct = async (req, res) => {
             subOption2: JSON.parse(req.body.subOption2 || null),
             subOption3: JSON.parse(req.body.subOption3 || null),
             display: req.body.display,
+            deliveryFee: req.body.deliveryFee,
+            deliveryFeeAmount: req.body.deliveryFeeAmount,
             soldout: req.body.soldout,
             isSelling: req.body.isSelling,
             discount: req.body.discount,
