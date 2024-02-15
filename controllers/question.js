@@ -62,13 +62,13 @@ exports.createQuestion = async (req, res) => {
         const { userId, title, detail, vendorId, productId, productQuestion } = req.body;
         const objectUserId = mongoose.Types.ObjectId(userId);
         const objectVendorId = mongoose.Types.ObjectId(vendorId);
-
+console.log('PROD QUES', productQuestion)
         let questionData = {
             userId: objectUserId,
             vendorId: objectVendorId,
             title,
             detail,
-            productQuestion
+            productQuestion,
         };
 
         if (productId) {
