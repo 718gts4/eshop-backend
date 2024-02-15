@@ -27,6 +27,10 @@ const questionSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    productQuestion: {
+        typoe: Boolean,
+        default: false
+    },
     replies: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Reply'
