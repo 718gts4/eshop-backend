@@ -28,7 +28,7 @@ const questionSchema = new mongoose.Schema({
         default: false
     },
     productQuestion: {
-        typoe: Boolean,
+        type: Boolean,
         default: false
     },
     replies: [{
