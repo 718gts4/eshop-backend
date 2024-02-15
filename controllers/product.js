@@ -55,7 +55,7 @@ exports.getProducts = async (req, res) => {
 
     const productList = await Product.find(filter)
         .populate('category')
-        .populate('sellerId', ['name', 'image', 'username'])
+        .populate('sellerId', ['name', 'image', 'username', 'brand'])
         .populate('reviews.createdBy', ['name', 'image', 'username'])
         .sort({'dateCreated': -1})
         .skip(skip)
