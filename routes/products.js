@@ -125,6 +125,7 @@ router.post(
             deliveryFeeAmount,
             sellerId,
             preorder,
+            sku,
         } = req.body;
 
         let hasStocks = false;
@@ -175,6 +176,7 @@ router.post(
                 sellerId,
                 preorder,
                 hasStocks,
+                sku,
             });
 
             if (product.sale) {
