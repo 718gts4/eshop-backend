@@ -141,7 +141,7 @@ exports.register = async (req, res) => {
     if (!user)
         return res
             .status(400)
-            .send("이미 가입된 이메일입니다. 다른 이메일을 적어주세요.");
+            .send("회원가입에 문제가 발생했습니다. 정보를 확인해주세요.");
 
     mailTransport().sendMail({
         from: process.env.EMAIL,
@@ -187,6 +187,7 @@ exports.login = async (req, res) => {
             gender,
             birthday,
             verified,
+            adminVerified,
         } = user;
         res.status(200).json({
             token,
@@ -207,6 +208,7 @@ exports.login = async (req, res) => {
                 gender,
                 birthday,
                 verified,
+                adminVerified
             },
         });
         // res.status(200).send({user: user.email , token: token})
