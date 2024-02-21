@@ -208,10 +208,9 @@ exports.login = async (req, res) => {
                 role,
                 username,
                 verified,
-                adminVerified
+                adminVerified,
             },
         });
-        // res.status(200).send({user: user.email , token: token})
     } else {
         res.status(400).send("password is wrong!");
     }
