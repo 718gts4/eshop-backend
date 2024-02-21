@@ -64,6 +64,7 @@ exports.login = async (req, res) => {
             phone,
             verified,
             submitted,
+            adminVerified,
         } = user;
         res.status(200).json({
             token,
@@ -83,6 +84,7 @@ exports.login = async (req, res) => {
                 phone,
                 verified,
                 submitted,
+                adminVerified,
             },
         });
     } else {
