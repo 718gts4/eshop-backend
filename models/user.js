@@ -106,10 +106,6 @@ const userSchema = mongoose.Schema({
         type: Boolean,
         default: false,
     },
-    adminVerfied: {
-        type: Boolean,
-        default: false,
-    },
     submitted: {
         type: Boolean,
         default: false,

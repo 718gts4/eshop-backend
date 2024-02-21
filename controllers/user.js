@@ -187,7 +187,6 @@ exports.login = async (req, res) => {
             gender,
             birthday,
             verified,
-            adminVerified,
         } = user;
         res.status(200).json({
             token,
@@ -208,7 +207,6 @@ exports.login = async (req, res) => {
                 role,
                 username,
                 verified,
-                adminVerified,
             },
         });
     } else {
