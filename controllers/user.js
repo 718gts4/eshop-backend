@@ -465,12 +465,12 @@ exports.resendEmailVerification = async (req, res) => {
     const OTP = generateOTP();
     console.log("new otp", OTP);
 
-    const newVerfificationToken = new VerificationToken({
+    const newVerificationToken = new VerificationToken({
         owner: userId,
         token: OTP,
     });
 
-    await newVerfificationToken.save();
+    await newVerificationToken.save();
 
     mailTransport().sendMail({
         from: process.env.EMAIL,

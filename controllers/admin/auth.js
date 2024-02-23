@@ -15,7 +15,7 @@ exports.register = async (req, res) => {
         email: req.body.email,
         passwordHash: bcrypt.hashSync(req.body.password, 10),
         phone: req.body.phone,
-        isAdmin: true,
+        isAdmin: false,
         role: "admin",
     });
     user = await user.save();
