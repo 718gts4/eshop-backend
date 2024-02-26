@@ -485,7 +485,8 @@ exports.resendEmailVerification = async (req, res) => {
 
 exports.resetPassword = async (req, res) => {
     const email = req.body.email;
-    const existingUser = await User.findById({email});
+    console.log('email', email)
+    const existingUser = await User.findOne({email});
 
     if(!existingUser){
         console.error({success:false, message: '이메일 비밀번호를 재설정하는데 문제가 발생했습니다.'});
