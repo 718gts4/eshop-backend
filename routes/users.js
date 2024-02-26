@@ -60,6 +60,7 @@ router.get("/:userId/bookmarks", getBookmarkedProducts);
 router.post(`/checkEmail`, checkEmail);
 router.post(`/resendCheckEmail`, resendEmailVerification);
 router.get(`/check/username`, checkUsername);
+router.post("/resetPassword", resetPassword);
 
 router.post("/profile", requireSignin, (req, res) => {
     res.status(200).json({ user: "profile" });
@@ -104,6 +105,5 @@ router.delete("/imagedelete/profiles/:key", async (req, res) => {
     res.send();
 });
 
-router.post("/resetPassword", resetPassword);
 
 module.exports = router;

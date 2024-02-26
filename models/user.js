@@ -114,6 +114,14 @@ const userSchema = mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    resettoken: {
+        type: String, 
+        required: false,
+    },
+    resettokenExpiration: {
+        type: Date,
+        required: false,
+    }
 });
 
 userSchema.pre("save", function (next) {

@@ -483,7 +483,13 @@ exports.resendEmailVerification = async (req, res) => {
 };
 
 exports.resetPassword = async (req, res) => {
-    const { userEmail } = req.body;
+    const email = req.body.email;
+    const existingUser = await User.findById({email});
+
+    if(!existingUser){
+        console.error({success:false, message: '이메일 비밀번호를 재설정하는데 문제가 발생했습니다.'});
+        return res.send({success: false, message: '사용자가 존재하면 이메일이 발송되었습니다.'})
+    }
 
     let config = {
         service: "gmail",
@@ -497,7 +503,7 @@ exports.resetPassword = async (req, res) => {
 
     let message = await transporter.sendMail({
         from: process.env.EMAIL, // sender address
-        to: userEmail, // list of receivers
+        to: email, // list of receivers
         subject: "VOUTIQ 비밀번호 재설정 이메일입니다.", // Subject line
         text: "안녕하세요", // plain text body
         html: "<p>VOUTIQ 비밀번호 재설정을위해 아래 링크를 클릭해주시기 바랍니다.</p>", // html body
