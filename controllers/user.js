@@ -10,6 +10,7 @@ const {
     generateOTP,
     mailTransport,
     generateEmailTemplate,
+    generatePasswordResetEmailTemplate,
 } = require("../utils/mail");
 
 exports.getUsers = async (req, res) => {
@@ -491,36 +492,20 @@ exports.resetPassword = async (req, res) => {
         return res.send({success: false, message: '사용자가 존재하면 이메일이 발송되었습니다.'})
     }
 
-    let config = {
-        service: "gmail",
-        auth: {
-            user: process.env.EMAIL,
-            pass: process.env.EMAIL_PASSWORD,
-        },
-    };
+    const token = generateOTP()
+    existingUser.resettoken = token;
+    existingUser.resettokenExpiration = Date.now() + 360000;
 
-    let transporter = nodemailer.createTransport(config);
+    await existingUser.save();
 
-    let message = await transporter.sendMail({
-        from: process.env.EMAIL, // sender address
-        to: email, // list of receivers
-        subject: "VOUTIQ 비밀번호 재설정 이메일입니다.", // Subject line
-        text: "안녕하세요", // plain text body
-        html: "<p>VOUTIQ 비밀번호 재설정을위해 아래 링크를 클릭해주시기 바랍니다.</p>", // html body
+    mailTransport().sendMail({
+        from: process.env.EMAIL,
+        to: email,
+        subject: "VOUTIQ 비밀번호 재설정 인증번호입니다",
+        html: generatePasswordResetEmailTemplate(token),
     });
 
-    transporter
-        .sendMail(message)
-        .then((info) => {
-            return res.status(201).json({
-                message: "You've got mail",
-                info: info.messageId,
-                preview: nodemailer.getTestMessageUrl(info),
-            });
-        })
-        .catch((error) => {
-            return res.status(500).json({ error });
-        });
+    return res.json({ success:true, message: "비밀번호 재설정 인증번호가 발송되었습니다."});
 };
 
 exports.getAllAdminUsers = async (req, res) => {
