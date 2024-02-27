@@ -526,7 +526,7 @@ exports.resetPasswordConfirm = async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        user.password = hashedPassword;
+        user.passwordHash = hashedPassword;
         user.resettoken = "";
         user.resettokenExpiration = null;
         await user.save();
