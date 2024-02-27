@@ -517,7 +517,7 @@ exports.resetPasswordConfirm = async (req, res) => {
         const password = req.body.password;
         const user = await User.findOne({ email });
 
-        if (!user || user.ressettoken !== verificationCode) {
+        if (!user || user.resettoken !== verificationCode) {
             return res.status(400).send({success:false, message: "인증번호가 잘못되었습니다"})
         }
 
