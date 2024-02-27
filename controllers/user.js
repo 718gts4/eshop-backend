@@ -509,6 +509,33 @@ exports.resetPassword = async (req, res) => {
     return res.json({ success:true, message: "비밀번호 재설정 인증번호가 발송되었습니다."});
 };
 
+exports.resetPasswordConfirm = async (req, res) => {
+    try {
+        const email = req.body.email;
+        const verificationCode = req.body.verificationCode;
+        const password = req.body.password;
+        const user = await User.findOne({ email });
+
+        if (!user || user.ressettoken !== verificationCode) {
+            return res.status(400).send({success:false, message: "인증번호가 잘못되었습니다"})
+        }
+
+        if (user.resettokenExpiration  < new Date()) {
+            return res.status(400).send({success:false, message: "인증번호가 만료되었습니다"})
+        }
+        
+        const hashedPassword = await bcrypt.hash(password, 10);
+        user.password = hashedPassword;
+        user.resettoken = "";
+        user.resettokenExpiration = null;
+        await user.save();
+
+        return res.status(200).send({success:true});
+    } catch (error) {
+        return res.status(500).send({ success: false, message: "문제가 발생했습니다. 1분 뒤 다시 시도해보세요"})
+    }
+}
+
 exports.getAllAdminUsers = async (req, res) => {
     try {
         const adminUsers = await User.find({ isAdmin: true }).select([

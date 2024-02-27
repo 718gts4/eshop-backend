@@ -20,6 +20,7 @@ const {
     resendEmailVerification,
     getAllAdminUsers,
     checkUsername,
+    resetPasswordConfirm,
 } = require("../controllers/user");
 const express = require("express");
 const router = express.Router();
@@ -61,6 +62,7 @@ router.post(`/checkEmail`, checkEmail);
 router.post(`/resendCheckEmail`, resendEmailVerification);
 router.get(`/check/username`, checkUsername);
 router.post("/resetPassword", resetPassword);
+router.post("/resetPasswordConfirm", resetPasswordConfirm);
 
 router.post("/profile", requireSignin, (req, res) => {
     res.status(200).json({ user: "profile" });
