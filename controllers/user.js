@@ -510,6 +510,7 @@ exports.resetPassword = async (req, res) => {
 };
 
 exports.resetPasswordConfirm = async (req, res) => {
+    console.log('REQ BODY', req.body)
     try {
         const email = req.body.email;
         const verificationCode = req.body.verificationCode;
@@ -523,7 +524,7 @@ exports.resetPasswordConfirm = async (req, res) => {
         if (user.resettokenExpiration  < new Date()) {
             return res.status(400).send({success:false, message: "인증번호가 만료되었습니다"})
         }
-        
+
         const hashedPassword = await bcrypt.hash(password, 10);
         user.password = hashedPassword;
         user.resettoken = "";
