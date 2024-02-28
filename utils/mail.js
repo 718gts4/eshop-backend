@@ -9,6 +9,15 @@ exports.generateOTP = () => {
     return otp;
 };
 
+exports.generateResetCode = () => {
+    let otp = '';
+    for(let i = 0; i <= 5; i++){
+        const randVal = Math.round(Math.random() * 9)
+        otp = otp + randVal
+    }
+    return otp;
+};
+
 exports.mailTransport = () => 
     nodemailer.createTransport({
         service: "gmail",

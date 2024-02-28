@@ -11,6 +11,7 @@ const {
     mailTransport,
     generateEmailTemplate,
     generatePasswordResetEmailTemplate,
+    generateResetCode,
 } = require("../utils/mail");
 
 exports.getUsers = async (req, res) => {
@@ -485,7 +486,6 @@ exports.resendEmailVerification = async (req, res) => {
 
 exports.resetPassword = async (req, res) => {
     const email = req.body.email;
-    console.log('email', email)
     const existingUser = await User.findOne({email});
 
     if(!existingUser){
@@ -493,7 +493,7 @@ exports.resetPassword = async (req, res) => {
         return res.send({success: false, message: '사용자가 존재하면 이메일이 발송되었습니다.'})
     }
 
-    const token = generateOTP()
+    const token = generateResetCode()
     existingUser.resettoken = token;
     existingUser.resettokenExpiration = Date.now() + 360000;
 
@@ -510,7 +510,6 @@ exports.resetPassword = async (req, res) => {
 };
 
 exports.resetPasswordConfirm = async (req, res) => {
-    console.log('REQ BODY', req.body)
     try {
         const email = req.body.email;
         const verificationCode = req.body.verificationCode;
