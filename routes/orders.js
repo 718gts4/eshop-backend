@@ -13,7 +13,9 @@ const {
     updateOrderItemToCanceled,
     getTotalSalesForSeller,
     flexibleUpdate,
+    updateStatus,
 } = require("../controllers/order");
+
 const express = require("express");
 const router = express.Router();
 const { requireSignin } = require("../common-middleware");
@@ -36,5 +38,5 @@ router.get("/orderitems/countbyseller", getOrderItemCountsBySeller);
 router.put("/orderitems/:orderItemId/cancel", updateOrderItemToCanceled);
 router.get(`/seller/:sellerId/totalSales`, getTotalSalesForSeller);
 router.put("/flexibleupdate", flexibleUpdate);
-
+router.patch("/updateStatus", updateStatus);
 module.exports = router;

@@ -743,3 +743,35 @@ exports.flexibleUpdate = async (req, res) => {
         });
     }
 };
+
+
+exports.updateStatus = async (req, res) => {
+    try {
+      const { orderItemIds, newStatus } = req.body;  
+      const orderItems = await OrderItem.find({ _id: { $in: orderItemIds } });
+  
+      for (const orderItem of orderItems) {
+        let found = false;
+        for (const status of orderItem.orderStatus) {
+          status.isCompleted = !found;
+          const isNewStatus = status.type.trim() === newStatus.trim();
+          if (isNewStatus) {
+            found = true;
+            status.isCompleted = true;
+            status.date = new Date();
+          }
+          if (!status.isCompleted) {
+            status.date = null;
+          }
+        }
+        await orderItem.save();
+      }
+  
+      res.json({
+        message: `Successfully updated the status of ${orderItems.length} order items.`,
+      });
+    } catch (error) {
+      console.error('Error updating order items status: ', error);
+      res.status(500).json({success:false, message:'Server Error'});
+    }
+  }
