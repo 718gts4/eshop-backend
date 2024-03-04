@@ -775,3 +775,29 @@ exports.updateStatus = async (req, res) => {
       res.status(500).json({success:false, message:'Server Error'});
     }
   }
+
+exports.updateVendorNote = async (req, res) => {
+  try {
+    await mongoose.connect("mongodb://localhost:27017/test", {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }); // Update with your actual MongoDB connection string
+    const { orderItemId, vendorNote } = req.body;
+    const orderItem = await OrderItem.findById(orderItemId);
+
+    if (!orderItem) {
+      return res.status(404).json({ error: "OrderItem not found" });
+    }
+
+    orderItem.vendorNote = vendorNote;
+    await orderItem.save();
+
+    return res.json({
+      message: `Successfully updated the order item with a note from vendor.`,
+      orderItem,
+    });
+  } catch (error) {
+    console.error("Error updating order item: ", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};

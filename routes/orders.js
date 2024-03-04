@@ -14,6 +14,7 @@ const {
     getTotalSalesForSeller,
     flexibleUpdate,
     updateStatus,
+    updateVendorNote,
 } = require("../controllers/order");
 
 const express = require("express");
@@ -39,4 +40,5 @@ router.put("/orderitems/:orderItemId/cancel", updateOrderItemToCanceled);
 router.get(`/seller/:sellerId/totalSales`, getTotalSalesForSeller);
 router.put("/flexibleupdate", flexibleUpdate);
 router.patch("/updateStatus", updateStatus);
+router.patch("/updateVendorNote", updateVendorNote);
 module.exports = router;
