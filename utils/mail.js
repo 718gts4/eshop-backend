@@ -9,6 +9,15 @@ exports.generateOTP = () => {
     return otp;
 };
 
+exports.generateResetCode = () => {
+    let otp = '';
+    for(let i = 0; i <= 5; i++){
+        const randVal = Math.round(Math.random() * 9)
+        otp = otp + randVal
+    }
+    return otp;
+};
+
 exports.mailTransport = () => 
     nodemailer.createTransport({
         service: "gmail",
@@ -66,8 +75,8 @@ exports.generatePasswordResetEmailTemplate = code => {
         <body>
         <div>
             <div style="max-width: 620px; margin: 0 auto; font-family: sans-serif; color:#272727;">
-                <p>4자리 비밀번호 재설정 인증번호를 앱에 입력하세요</p>
-                <p style="width: 80px; margin: 0 auto; font-weight: bold; text-align: center; background: #f6f6f6; border-radius: 5px; font-size: 30px;"
+                <p>6자리 비밀번호 재설정 인증번호를 앱에 입력하세요</p>
+                <p style="width: 120px; margin: 0 auto; font-weight: bold; text-align: center; background: #f6f6f6; border-radius: 5px; font-size: 30px;"
                 >${code}</p>
             </div>
         </div>
