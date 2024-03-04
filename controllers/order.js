@@ -743,3 +743,57 @@ exports.flexibleUpdate = async (req, res) => {
         });
     }
 };
+
+
+exports.updateStatus = async (req, res) => {
+    try {
+      const { orderItemIds, newStatus } = req.body;  
+      const orderItems = await OrderItem.find({ _id: { $in: orderItemIds } });
+  
+      for (const orderItem of orderItems) {
+        let found = false;
+        for (const status of orderItem.orderStatus) {
+          status.isCompleted = !found;
+          const isNewStatus = status.type.trim() === newStatus.trim();
+          if (isNewStatus) {
+            found = true;
+            status.isCompleted = true;
+            status.date = new Date();
+          }
+          if (!status.isCompleted) {
+            status.date = null;
+          }
+        }
+        await orderItem.save();
+      }
+  
+      res.json({
+        message: `Successfully updated the status of ${orderItems.length} order items.`,
+      });
+    } catch (error) {
+      console.error('Error updating order items status: ', error);
+      res.status(500).json({success:false, message:'Server Error'});
+    }
+  }
+
+exports.updateVendorNote = async (req, res) => {
+  try {
+    const { orderItemId, vendorNote } = req.body;
+    const orderItem = await OrderItem.findById(orderItemId);
+
+    if (!orderItem) {
+      return res.status(404).json({ error: "OrderItem not found" });
+    }
+
+    orderItem.vendorNote = vendorNote;
+    await orderItem.save();
+
+    return res.json({
+      message: `Successfully updated the order item with a note from vendor.`,
+      orderItem,
+    });
+  } catch (error) {
+    console.error("Error updating order item: ", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
