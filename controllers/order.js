@@ -778,10 +778,6 @@ exports.updateStatus = async (req, res) => {
 
 exports.updateVendorNote = async (req, res) => {
   try {
-    await mongoose.connect("mongodb://localhost:27017/test", {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }); // Update with your actual MongoDB connection string
     const { orderItemId, vendorNote } = req.body;
     const orderItem = await OrderItem.findById(orderItemId);
 
