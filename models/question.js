@@ -39,6 +39,11 @@ const questionSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    questionType: {
+        type: String,
+        enum: ['상품문의', '일반문의', '배송문의', '반품문의', '기타문의'],
+        default: '상품문의'
+    },
 });
 
 const replySchema = new mongoose.Schema({
