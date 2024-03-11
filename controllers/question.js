@@ -69,6 +69,7 @@ exports.createQuestion = async (req, res) => {
             title,
             detail,
             productQuestion,
+            questiongType,
         };
 
         if (productId) {
