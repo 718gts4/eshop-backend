@@ -59,7 +59,7 @@ exports.getQuestionsByVendorId = async (req, res) => {
 // Create a new question
 exports.createQuestion = async (req, res) => {
     try {
-        const { userId, title, detail, vendorId, productId, productQuestion } = req.body;
+        const { userId, title, detail, vendorId, productId, productQuestion, questionType } = req.body;
         const objectUserId = mongoose.Types.ObjectId(userId);
         const objectVendorId = mongoose.Types.ObjectId(vendorId);
 
@@ -69,7 +69,7 @@ exports.createQuestion = async (req, res) => {
             title,
             detail,
             productQuestion,
-            questiongType,
+            questionType,
         };
 
         if (productId) {
