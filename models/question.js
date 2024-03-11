@@ -8,7 +8,7 @@ const questionSchema = new mongoose.Schema({
     },
     title: {
         type: String,
-        required: true
+        default: ''
     },
     detail: {
         type: String,
