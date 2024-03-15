@@ -129,7 +129,7 @@ exports.createReply = async (req, res) => {
         if (!question) {
             return res.status(404).json({ error: "질문을 찾을 수 없습니다" });
         }
-        const reply = new Reply({ questionId, userId, vendorId, content });
+        const reply = new Reply({ questionId, userId, vendorId, content, readByUser: false, });
         await reply.save();
         question.replies.push(reply._id);
         await question.save();
@@ -141,13 +141,12 @@ exports.createReply = async (req, res) => {
 
 // Edit a reply by ID
 exports.editReply = async (req, res) => {
-    const { replyId } = req.params;
-    const { readByUser } = req.body;
+    const { content, replyId } = req.body;
 
     try {
         const reply = await Reply.findByIdAndUpdate(
             replyId,
-            { readByUser: true },
+            { content, readByUser: false },
             { new: true }
         );
         if (!reply) {
