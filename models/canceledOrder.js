@@ -18,6 +18,14 @@ const canceledOrderSchema = mongoose.Schema({
         enum: ['삭제', '취소', '교환', '반품', '환불'],
         default: '삭제'
     },
+    vendorRequest: {
+        type: Boolean,
+        default: false,
+    },
+    approved: {
+        type: Boolean,
+        default: false,
+    },
     reasonForCancellation: String,
     refundAmount: Number,
     dateCreated:{
