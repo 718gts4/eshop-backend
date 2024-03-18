@@ -9,6 +9,7 @@ exports.createCanceledOrder = async (req, res) => {
             reasonForCancellation,
             refundAmount,
             status,
+            vendor,
         } = req.body;
 
         const existingCanceledItem = await CanceledOrder.findOne({canceledBy, orderItemId})
@@ -26,6 +27,7 @@ exports.createCanceledOrder = async (req, res) => {
             reasonForCancellation,
             refundAmount,
             status,
+            vendor,
         });
 
         // Save the canceled order to the database

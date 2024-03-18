@@ -13,6 +13,10 @@ const canceledOrderSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
+    vendor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
     status: {
         type: String,
         enum: ['삭제', '취소', '교환', '반품', '환불'],
