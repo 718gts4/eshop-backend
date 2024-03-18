@@ -122,7 +122,7 @@ const userSchema = mongoose.Schema({
         type: Date,
         required: false,
     }
-});
+}, {timestamps: true});
 
 userSchema.pre("save", function (next) {
     if (!this.username) {
