@@ -192,7 +192,7 @@ exports.updateProduct = async (req, res) => {
             saleStartDate,
             saleEndDate,
             onSale: req.body.onSale,
-            sku: req.boyd.sku,
+            sku: req.body.sku,
         },
         { new: true}
     );
