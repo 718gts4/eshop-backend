@@ -46,6 +46,10 @@ const vendorSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        clients: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        }],
     },
     { timestaps: true }
 );

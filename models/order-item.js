@@ -93,63 +93,55 @@ const orderItemSchema = mongoose.Schema({
     },
 })
 
-// Pre-save middleware to update the date when isCompleted turns true
-orderItemSchema.pre('save', function (next) {
+// Pre-save middleware to update the date when isCompleted changes to true
+orderItemSchema.pre('save', function(next) {
     const orderStatus = this.orderStatus;
-  
-    // Check if isCompleted is true in the last orderStatus object
-    if (orderStatus.length > 0 && orderStatus[orderStatus.length - 1].isCompleted) {
+    const lastOrderStatus = orderStatus[orderStatus.length - 1];
+
+    // Check if isCompleted changed to true
+    if (lastOrderStatus.isCompleted && this.isModified('orderStatus')) {
         // Update the date property to Date.now()
-        orderStatus[orderStatus.length - 1].date = Date.now();
+        lastOrderStatus.date = Date.now();
     }
-  
+
     // Continue with the save operation
     next();
 });
 
 
-// Define a function to update isFinal to true
-const updateIsFinal = async (orderItemId) => {
+// Function to update isFinal field of order items
+const updateIsFinal = async () => {
     try {
-        const orderItem = await mongoose.model("OrderItem").findById(orderItemId);
-  
-        if (orderItem) {
-            // Find the last orderStatus object with isCompleted set to true
-            const lastCompletedStatus = orderItem.orderStatus
-                .slice()
-                .reverse()
-                .find((status) => status.isCompleted);
+        // Query order items from the database
+        const orderItems = await OrderItem.find();
 
-            if (lastCompletedStatus) {
-                const completedDate = lastCompletedStatus.date;
-                const currentDate = new Date();
-        
-                // Calculate the difference in days
-                const daysDifference = Math.ceil(
-                    (currentDate - completedDate) / (1000 * 60 * 60 * 24)
-                );
-        
-                // If 7 days have passed, update isFinal to true
-                if (daysDifference >= 7) {  // change 1 to 7 !!
-                    console.log('7 days have passed after isCompleted')
+        // Iterate through each order item
+        for (const orderItem of orderItems) {
+            // Check if orderStatus[3].isCompleted is true
+            if (orderItem.orderStatus.length >= 4 && orderItem.orderStatus[3].isCompleted) {
+                // Calculate 7 days after orderStatus[3].date
+                const completedDate = new Date(orderItem.orderStatus[3].date);
+                const sevenDaysLater = new Date(completedDate.getTime() + ( 60 * 60 * 1000));
+                                                                        // add 7 * 24 * after testing
+                // Check if 7 days have passed
+                if (new Date() >= sevenDaysLater) {
+                    // Update isFinal field to true
                     orderItem.isFinal = true;
+
+                    // Save the updated order item
                     await orderItem.save();
                 }
             }
         }
     } catch (error) {
-        console.error("Error updating isFinal:", error);
+        console.error('Error updating isFinal:', error);
     }
 };
   
-// Schedule a daily job to check and update isFinal
+// Schedule the function to run daily
 cron.schedule('0 0 * * *', async () => {
     console.log('Running daily job to update isFinal...');
-    const orderItems = await mongoose.model("OrderItem").find();
-  
-    for (const orderItem of orderItems) {
-        await updateIsFinal(orderItem._id);
-    }
+    await updateIsFinal();
 });
 
 exports.OrderItem = mongoose.model("OrderItem", orderItemSchema);
