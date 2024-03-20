@@ -34,6 +34,10 @@ const productSchema = mongoose.Schema({
         ref: "User",
         required: true,
     },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
     description: {
         type: String,
         required: true,
@@ -205,10 +209,6 @@ const productSchema = mongoose.Schema({
     dropDate: {
         type: Date,
         default: Date.now,
-    },
-    createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
     },
     onSale: {
         type: Boolean,
