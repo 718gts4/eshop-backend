@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const cron = require('node-cron');
 
+
 const orderItemSchema = mongoose.Schema({
     product: {
         type: mongoose.Schema.Types.ObjectId,
@@ -108,6 +109,8 @@ orderItemSchema.pre('save', function(next) {
     next();
 });
 
+// Define the OrderItem model
+const OrderItem = mongoose.model("OrderItem", orderItemSchema);
 
 // Function to update isFinal field of order items
 const updateIsFinal = async () => {
@@ -144,4 +147,6 @@ cron.schedule('* * * * *', async () => {
     await updateIsFinal();
 });
 
-exports.OrderItem = mongoose.model("OrderItem", orderItemSchema);
+// exports.OrderItem = mongoose.model("OrderItem", orderItemSchema);
+
+module.exports = { OrderItem };
