@@ -75,7 +75,7 @@ exports.generatePasswordResetEmailTemplate = code => {
         <body>
         <div>
             <div style="max-width: 620px; margin: 0 auto; font-family: sans-serif; color:#272727;">
-                <p>6자리 비밀번호 재설정 인증번호를 앱에 입력하세요</p>
+                <p>6자리 비밀번호 재설정 인증번호를 앱 또는 웹사이트에 입력하세요</p>
                 <p style="width: 120px; margin: 0 auto; font-weight: bold; text-align: center; background: #f6f6f6; border-radius: 5px; font-size: 30px;"
                 >${code}</p>
             </div>
