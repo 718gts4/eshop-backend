@@ -139,7 +139,7 @@ const updateIsFinal = async () => {
 };
   
 // Schedule the function to run daily
-cron.schedule('0 0 * * *', async () => {
+cron.schedule('* * * * *', async () => {
     console.log('Running daily job to update isFinal...');
     await updateIsFinal();
 });
