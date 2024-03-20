@@ -124,7 +124,7 @@ const updateIsFinal = async () => {
             if (orderItem.orderStatus.length >= 4 && orderItem.orderStatus[3].isCompleted) {
                 // Calculate 7 days after orderStatus[3].date
                 const completedDate = new Date(orderItem.orderStatus[3].date);
-                const sevenDaysLater = new Date(completedDate.getTime() + ( 1000));
+                const sevenDaysLater = new Date(completedDate.getTime() + (7 * 24 * 60  * 60 * 1000));
                                                                         // add 7 * 24 * 60  * 60 after testing
                 // Check if 7 days have passed
                 if (new Date() >= sevenDaysLater) {
@@ -142,7 +142,7 @@ const updateIsFinal = async () => {
 };
   
 // Schedule the function to run daily
-cron.schedule('* * * * *', async () => {
+cron.schedule('0 0 * * *', async () => {
     console.log('Running daily job to update isFinal...');
     await updateIsFinal();
 });
