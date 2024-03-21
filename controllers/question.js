@@ -141,7 +141,8 @@ exports.createReply = async (req, res) => {
 
 // Edit a reply by ID
 exports.editReply = async (req, res) => {
-    const { content, replyId } = req.body;
+    const { content } = req.body;
+    const { replyId } = req.params;
     console.log('REPLY ID', replyId)
     try {
         // Check if the replyId corresponds to an existing reply
