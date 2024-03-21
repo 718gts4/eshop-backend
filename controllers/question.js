@@ -143,8 +143,7 @@ exports.createReply = async (req, res) => {
 exports.editReply = async (req, res) => {
     const { content } = req.body;
     const { replyId } = req.params;
-    console.log('REPLY ID', replyId)
-    console.log('CONTENT', content)
+    
     try {
         // Check if the replyId corresponds to an existing reply
         const existingReply = await Reply.findById(replyId);
