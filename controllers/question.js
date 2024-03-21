@@ -152,8 +152,9 @@ exports.editReply = async (req, res) => {
             return res.status(404).json({ error: "Reply not found" });
         }
 
-        // If the replyId is valid, update the reply content and set readByUser to true
-        existingReply.content = content;
+        if (content !== undefined) {
+            existingReply.content = content;
+        }
         existingReply.readByUser = true; // Update readByUser to true
 
         // Save the updated reply
