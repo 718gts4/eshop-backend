@@ -144,14 +144,20 @@ exports.editReply = async (req, res) => {
     const { content, replyId } = req.body;
     console.log('REPLY ID', replyId)
     try {
-        const reply = await Reply.findByIdAndUpdate(replyId,{ content, readByUser: false },{ new: true });
-        
-        if (!reply) {
+        // Check if the replyId corresponds to an existing reply
+        const existingReply = await Reply.findById(replyId);
+        if (!existingReply) {
             return res.status(404).json({ error: "Reply not found" });
         }
 
-        await reply.save();
-        res.json(reply);
+        // If the replyId is valid, update the reply content and set readByUser to true
+        existingReply.content = content;
+        existingReply.readByUser = true; // Update readByUser to true
+
+        // Save the updated reply
+        const updatedReply = await existingReply.save();
+
+        res.json(updatedReply);
     } catch (error) {
         res.status(500).json({ error: "Internal server error" });
     }
