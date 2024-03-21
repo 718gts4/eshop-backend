@@ -24,14 +24,22 @@ exports.getUsers = async (req, res) => {
 };
 
 exports.getUserId = async (req, res) => {
-    const user = await User.findById(req.params.id).select("-passwordHash");
+    try {
+        const user = await User.findById(req.params.id).select("-passwordHash");
 
-    if (!user) {
-        res.status(500).json({
-            message: "The user with the given ID was not found",
+        if (!user) {
+            return res.status(404).json({
+                message: "The user with the given ID was not found",
+            });
+        }
+
+        return res.status(200).json(user);
+    } catch (error) {
+        console.error("Error finding user:", error);
+        return res.status(500).json({
+            message: "An error occurred while finding the user",
         });
     }
-    res.status(200).send(user);
 };
 
 exports.updateUser = async (req, res) => {
