@@ -19,7 +19,7 @@ const canceledOrderSchema = mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['취소확인','취소요청', '취소진행중', '환불', '취소불가'],
+        enum: ['취소완료','취소요청', '취소진행중', '환불', '취소불가'],
         default: '삭제'
     },
     vendorRequest: {
