@@ -85,17 +85,12 @@ exports.postOrder = async (req, res) => {
         const sizeInfo = product.colorOptions.sizes.find(size =>
             size.size === selectedSize
         );
-            console.log('sizeInfo', sizeInfo);
 
         if (!sizeInfo) {
             throw new Error(`Size information not found for product ${product.name} in size ${selectedSize}`);
         }
 
         const availableStock = sizeInfo.stock || 0;
-
-        console.log('available stock', availableStock);
-        console.log('order item', orderItem)
-        console.log('orderItem qty!', orderItem.product.selectedQuantity);
 
         if (isNaN(availableStock) || isNaN(orderItem.product.selectedQuantity) || orderItem.product.selectedQuantity > availableStock) {
             throw new Error(`Invalid or insufficient stock for product ${product.name} in size ${selectedSize}`);
