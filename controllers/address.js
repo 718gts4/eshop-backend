@@ -29,6 +29,7 @@ exports.createAddress = async (req, res) => {
 }
 
 exports.updateDefaultAddress = async (req, res) => {
+    console.log('userId', req.body)
     const {id} = req.params;
     const {userId} = req.body;
 
