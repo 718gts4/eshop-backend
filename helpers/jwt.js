@@ -22,7 +22,7 @@ function authJwt() {
             },
             {
                 url: /\/api\/v1\/address(.*)/,
-                methods: ["GET", "POST", "DELETE", "OPTIONS"],
+                methods: ["GET", "POST", "DELETE", "OPTIONS", "PUT"],
             },
             {
                 url: /\/api\/v1\/videocomments(.*)/,
