@@ -8,15 +8,18 @@ const authJwt = require("./helpers/jwt");
 const errorHandler = require("./helpers/error-handler");
 const backgroundService = require("./backgroundService");
 
-app.use(
-    cors()
-    //     {
-    //     origin: "http://localhost:3000", // Replace with your frontend URL
-    //     methods: "GET,POST",
-    //     allowedHeaders: "Content-Type,Authorization",
-    // }
-);
-app.options("*", cors());
+// when in developement, allow requests from localhost:3000.
+const isProduction = process.env.NODE_ENV === "production";
+const corsOptions = isProduction
+    ? {} 
+    : {
+        origin: "http://localhost:3000", // Allow requests from your frontend server
+        methods: "GET,POST,PUT,PATCH,DELETE",
+        allowedHeaders: "Content-Type,Authorization",
+    };
+const options = cors(corsOptions);
+app.use(options);
+app.options("*", options);
 
 //Middlewear
 app.use(express.json());
