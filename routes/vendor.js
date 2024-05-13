@@ -110,4 +110,56 @@ router.post(`/create`, upload.array("image", 2), async (req, res) => {
     }
 });
 
+
+// multipart/form-data
+
+// Page 1: General Information
+router.patch('/general', upload.single("image", 2), async (req, res ) => {
+
+    let imageUrl = null;
+    try {
+        const { brand, link, name, brandDescription, username } = req.body;
+        const userId = req.user.userId; 
+
+        if (!req?.file) {
+          console.log("no file");
+          return null;
+        } else {
+          console.log("file");
+        }
+        const image = req.file ? { file: fs.readFileSync(req.file.path) } : null;
+        if (image) {
+          const uploadedImage = await uploadProfileToS3(image);
+          imageUrl = uploadedImage.key;
+          // ...
+        } else {
+          console.log("no image");
+        }
+
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {
+                brand,
+                image:imageUrl,
+                link,
+                name,
+                brandDescription,
+                username,
+            },
+            { new: true }
+        );
+        console.log('updated user',{userId,success:true})
+        res.status(200).json({ user: updatedUser });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error updating vendor' });
+    }
+});
+
+// Page 2: Managers
+
+// Page 3: Delivery Address
+
+
 module.exports = router;
