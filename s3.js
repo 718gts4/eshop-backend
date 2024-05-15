@@ -133,7 +133,7 @@ exports.uploadProfileToS3 = async (image) => {
 
     const buffer = await sharp(file.buffer).rotate().resize(600).toBuffer();
 
-    const key = `profiles/${uuid()}`;
+    const key = `profiles/${userId}`; 
     const command = new PutObjectCommand({
         Bucket: BUCKET,
         Key: key,
