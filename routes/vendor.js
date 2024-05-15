@@ -70,7 +70,6 @@ router.post(`/create`, upload.array("image", 2), async (req, res) => {
 
         const imageUrls = uploadedImages.map((result) => result.key);
         let vendor = new Vendor({
-            // profileImg: imageUrls[0],
             document: imageUrls[1],
             brandName,
             email,
