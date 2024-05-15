@@ -69,9 +69,8 @@ router.post(`/create`, upload.array("image", 2), async (req, res) => {
         const uploadedImages = await Promise.all(imageUploadPromises);
 
         const imageUrls = uploadedImages.map((result) => result.key);
-
         let vendor = new Vendor({
-            profileImg: imageUrls[0],
+            // profileImg: imageUrls[0],
             document: imageUrls[1],
             brandName,
             email,
@@ -114,37 +113,32 @@ router.post(`/create`, upload.array("image", 2), async (req, res) => {
 // multipart/form-data
 
 // Page 1: General Information
-router.patch('/general', upload.single("image", 2), async (req, res ) => {
+router.patch('/general', upload.single("image"), async (req, res ) => {
 
     let imageUrl = null;
+    if (!req?.file) {
+      console.log("profile image upload: no file");
+      return null;
+    }
     try {
         const { brand, link, name, brandDescription, username } = req.body;
         const userId = req.user.userId; 
-
-        if (!req?.file) {
-          console.log("no file");
-          return null;
-        } else {
-          console.log("file");
-        }
         const image = req.file ? { file: fs.readFileSync(req.file.path) } : null;
         if (image) {
           const uploadedImage = await uploadProfileToS3(image);
           imageUrl = uploadedImage.key;
-          // ...
         } else {
           console.log("no image");
         }
-
 
         const updatedUser = await User.findByIdAndUpdate(
             userId,
             {
                 brand,
+                brandDescription,
                 image:imageUrl,
                 link,
                 name,
-                brandDescription,
                 username,
             },
             { new: true }
