@@ -8,8 +8,12 @@ const authJwt = require("./helpers/jwt");
 const errorHandler = require("./helpers/error-handler");
 const backgroundService = require("./backgroundService");
 
-// when in developement, allow requests from localhost:3000.
+// when in development, allow requests from localhost:3000.
+// heroku sets NODE_ENV to production by default for hosted apps. 
+// When running locally, NODE_ENV is undefined
 const isProduction = process.env.NODE_ENV === "production";
+console.log("NODE_ENV:", process.env.NODE_ENV,{isProduction});
+
 const corsOptions = isProduction
     ? {} 
     : {
@@ -68,7 +72,6 @@ app.use(`${api}/client`, clientRoutes);
 
 // Schedule the task to run periodically (e.g., every hour)
 setInterval(backgroundService.updateProductsOnSaleStatus, 3600000);
-
 mongoose
     .connect(process.env.CONNECTION_STRING)
     .then(() => {

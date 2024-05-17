@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { uploadProfileToS3 } = require("../s3");
+const { uploadProfileToS3, deleteFileFromS3 } = require("../s3");
 const { Vendor } = require("../models/vendor");
 const { User } = require("../models/user");
 require("dotenv/config");
@@ -21,18 +21,16 @@ router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
 
     try {
         const userId = req.user.userId; 
-        const images = req.files.map((file) => ({
+        const [profileImage, documentImage]  = req.files.map((file) => ({
             file: fs.readFileSync(file.path),
         }));
-    const [profileImage, documentImage] = images;
-    const imageUploadPromises = [ 
-        uploadProfileToS3(profileImage,`${userId}-image`), 
-        uploadProfileToS3(documentImage,`${userId}-document`) 
-    ];
-
+        const imageUploadPromises = [ 
+            uploadProfileToS3(profileImage,`${userId}-image`), 
+            uploadProfileToS3(documentImage,`${userId}-document`) 
+        ];
         const uploadedImages = await Promise.all(imageUploadPromises);
         const [ imageKey, documentKey] = uploadedImages.map(({key}) => key);
-console.log({imageKey})
+
         let vendor = new Vendor({
             document: documentKey,
             brandName,
@@ -77,20 +75,23 @@ console.log({imageKey})
 
 // Page 1: General Information
 router.patch('/general', uploadImage.single("image"), async (req, res ) => {
-console.log('general::',{file:req.file, body:req.body})
     if (!req?.file) {
       console.log("profile image upload: no file");
       return null;
     }
     try {
         let imageUrl = null;
-        const { brand, link, name, brandDescription, username } = req.body;
         const userId = req.user.userId; 
+        const imageS3Key = `${userId}-image`
+        const currentUser = await User.findById(userId);
+        if (currentUser.image) {
+            await deleteFileFromS3(currentUser.image);
+        }
+        const { brand, link, name, brandDescription, username } = req.body;
         const image = req?.file ? { file: fs.readFileSync(req.file.path) } : null;
         if (image) {
-          const { key } = await uploadProfileToS3(image, `${userId}-image`);
+          const { key } = await uploadProfileToS3(image, imageS3Key);
           imageUrl = key;
-          console.log({imageUrl})
         } else {
           console.log("no image to upload");
         }

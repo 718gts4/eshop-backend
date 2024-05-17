@@ -2,6 +2,12 @@ const mongoose = require('mongoose');
 const {Product} = require('./models/product'); 
 
 async function updateProductsOnSaleStatus() {
+    // heroku sets NODE_ENV to production by default for hosted apps. 
+    // When running locally, NODE_ENV is undefined
+    if (process.env.NODE_ENV !== 'production') {
+        console.log('Skipping updateProductsOnSaleStatus function in non-production environment');
+        return;
+    }
     try {
 
         console.log('Running updateProductsOnSaleStatus function at:', new Date());
