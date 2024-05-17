@@ -128,12 +128,12 @@ exports.uploadProductImageToS3 = async (image) => {
     }
 };
 
-exports.uploadProfileToS3 = async (image) => {
+// to overwrite the existing image, pass a unique id, otherwise it will generate a random id.
+// random id will never be overwritten, but will stay saved in the S3 bucket.
+exports.uploadProfileToS3 = async (image, id = uuid()) => {
     const { file } = image;
-
     const buffer = await sharp(file.buffer).rotate().resize(600).toBuffer();
-
-    const key = `profiles/${userId}`; 
+    const key = `profiles/${id}`; 
     const command = new PutObjectCommand({
         Bucket: BUCKET,
         Key: key,
