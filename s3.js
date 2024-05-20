@@ -141,6 +141,17 @@ exports.deleteFileFromS3 = async (key) => {
     }
 }
 
+exports.deleteFile = (filePath) => {
+    fs.unlink(filePath, (err) => {
+        if (err) {
+            console.error("Error deleting temporary file:", err);
+        } else {
+            console.log("Temporary file deleted:", filePath);
+        }
+  });
+};    
+
+
 // to overwrite the existing image, pass a unique id, otherwise it will generate a random id.
 // random id will never be overwritten, but will stay saved in the S3 bucket.
 exports.uploadProfileToS3 = async (image, id ) => {

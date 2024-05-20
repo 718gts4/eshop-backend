@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { uploadProfileToS3, deleteFileFromS3 } = require("../s3");
+const { uploadProfileToS3, deleteFileFromS3, deleteFile } = require("../s3");
 const { Vendor } = require("../models/vendor");
 const { User } = require("../models/user");
 require("dotenv/config");
@@ -79,6 +79,7 @@ router.patch('/general', uploadImage.single("image"), async (req, res ) => {
       console.log("profile image upload: no file");
       return null;
     }
+    let filePath = req.file.path;
     try {
         let imageUrl = null;
         const userId = req.user.userId; 
@@ -113,11 +114,17 @@ router.patch('/general', uploadImage.single("image"), async (req, res ) => {
             updateFields,
             { new: true }
         );
-        console.log('updated user',{userId,success:true})
+        console.log('updated user',{userId})
         res.status(200).json({ user: updatedUser });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Server error updating vendor' });
+    } finally {
+        console.log({fPath:filePath});
+        if (req?.file?.path) {
+            // deletes the file in e.g. filePath: `/uploads/_rRqy8LA2-blob`
+            deleteFile(  filePath  );
+        }
     }
 });
 
