@@ -128,23 +128,50 @@ exports.uploadProductImageToS3 = async (image) => {
     }
 };
 
-exports.uploadProfileToS3 = async (image) => {
+exports.deleteFileFromS3 = async (key) => {
+    const deleteCommand = new DeleteObjectCommand({
+        Bucket: BUCKET,
+        Key: key,
+    });
+
+    try {
+        await s3.send(deleteCommand);
+    } catch (error) {
+        console.error(`Error deleting file: ${key}`, error);
+    }
+}
+
+exports.deleteFile = (filePath) => {
+    fs.unlink(filePath, (err) => {
+        if (err) {
+            console.error("Error deleting temporary file:", err);
+        } else {
+            console.log("Temporary file deleted:", filePath);
+        }
+  });
+};    
+
+
+// to overwrite the existing image, pass a unique id, otherwise it will generate a random id.
+// random id will never be overwritten, but will stay saved in the S3 bucket.
+exports.uploadProfileToS3 = async (image, id ) => {
     const { file } = image;
-
+    // rotate image to correct orientation and resize width to 600px
     const buffer = await sharp(file.buffer).rotate().resize(600).toBuffer();
-
-    const key = `profiles/${uuid()}`;
+    const key = id ? `profiles/${id}-${uuid()}` : `profiles/${uuid()}` ; 
     const command = new PutObjectCommand({
         Bucket: BUCKET,
         Key: key,
         Body: buffer,
         ContentType: file.mimetype,
+        CacheControl: 'no-cache, no-store, must-revalidate', 
     });
 
     try {
         await s3.send(command);
         return { key };
     } catch (error) {
+        console.log('Error sending command to S3:', error);
         return { error };
     }
 };

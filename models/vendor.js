@@ -2,10 +2,6 @@ const mongoose = require("mongoose");
 
 const vendorSchema = new mongoose.Schema(
     {
-        profileImg: {
-            type: String,
-            default: "",
-        },
         brandName: {
             type: String,
             required: true,

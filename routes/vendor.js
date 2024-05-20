@@ -1,51 +1,13 @@
 const express = require("express");
 const router = express.Router();
-
-const multer = require("multer");
-const multerS3 = require("multer-s3");
-const { S3Client } = require("@aws-sdk/client-s3");
-const shortid = require("shortid");
-const path = require("path");
-
-const { uploadProfileToS3, getFile, deleteProfileUrl } = require("../s3");
+const { uploadProfileToS3, deleteFileFromS3, deleteFile } = require("../s3");
 const { Vendor } = require("../models/vendor");
 const { User } = require("../models/user");
 require("dotenv/config");
-
 const fs = require("fs");
+const { uploadImage } = require("../utils/upload");
 
-const FILE_TYPE_MAP = {
-    "image/png": "png",
-    "image/jpeg": "jpeg",
-    "image/jpg": "jpg",
-};
-
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const isValid = FILE_TYPE_MAP[file.mimetype];
-        let uploadError = new Error(
-            "이미지 파일은 .png, .jpeg, .jpg만 가능합니다."
-        );
-        if (isValid) {
-            uploadError = null;
-        }
-
-        const uploadsFolder = path.join(path.dirname(__dirname), "uploads");
-        if (!fs.existsSync(uploadsFolder)) {
-            fs.mkdirSync(uploadsFolder);
-        }
-
-        cb(uploadError, uploadsFolder);
-    },
-    filename: function (req, file, cb) {
-        const fileName = file.originalname.split(" ").join("-");
-        cb(null, shortid.generate() + "-" + fileName);
-    },
-});
-
-const upload = multer({ storage });
-
-router.post(`/create`, upload.array("image", 2), async (req, res) => {
+router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
     const {
         brandName,
         email,
@@ -58,21 +20,19 @@ router.post(`/create`, upload.array("image", 2), async (req, res) => {
     } = req.body;
 
     try {
-        const images = req.files.map((file) => ({
+        const userId = req.user.userId; 
+        const [profileImage, documentImage]  = req.files.map((file) => ({
             file: fs.readFileSync(file.path),
         }));
-
-        const imageUploadPromises = images.map((image) =>
-            uploadProfileToS3(image)
-        );
-
+        const imageUploadPromises = [ 
+            uploadProfileToS3(profileImage,`${userId}-image`), 
+            uploadProfileToS3(documentImage,`${userId}-document`) 
+        ];
         const uploadedImages = await Promise.all(imageUploadPromises);
-
-        const imageUrls = uploadedImages.map((result) => result.key);
+        const [ imageKey, documentKey] = uploadedImages.map(({key}) => key);
 
         let vendor = new Vendor({
-            profileImg: imageUrls[0],
-            document: imageUrls[1],
+            document: documentKey,
             brandName,
             email,
             phone,
@@ -92,7 +52,7 @@ router.post(`/create`, upload.array("image", 2), async (req, res) => {
         const user = await User.findById(userId);
         user.$ignore = ["passwordHash", "email"];
         if (user) {
-            user.image = imageUrls[0];
+            user.image = imageKey;
             user.brand = brandName;
             user.phone = phone;
             user.submitted = true;
@@ -114,46 +74,57 @@ router.post(`/create`, upload.array("image", 2), async (req, res) => {
 // multipart/form-data
 
 // Page 1: General Information
-router.patch('/general', upload.single("image", 2), async (req, res ) => {
-
-    let imageUrl = null;
+router.patch('/general', uploadImage.single("image"), async (req, res ) => {
+    if (!req?.file) {
+      console.log("profile image upload: no file");
+      return null;
+    }
+    let filePath = req.file.path;
     try {
-        const { brand, link, name, brandDescription, username } = req.body;
+        let imageUrl = null;
         const userId = req.user.userId; 
-
-        if (!req?.file) {
-          console.log("no file");
-          return null;
-        } else {
-          console.log("file");
+        const imageS3Key = `${userId}-image`
+        const currentUser = await User.findById(userId);
+        if (currentUser.image) {
+            await deleteFileFromS3(currentUser.image);
         }
-        const image = req.file ? { file: fs.readFileSync(req.file.path) } : null;
+        const { brand, link, name, brandDescription, username } = req.body;
+        const image = req?.file ? { file: fs.readFileSync(req.file.path) } : null;
         if (image) {
-          const uploadedImage = await uploadProfileToS3(image);
-          imageUrl = uploadedImage.key;
-          // ...
+          const { key } = await uploadProfileToS3(image, imageS3Key);
+          imageUrl = key;
         } else {
-          console.log("no image");
+          console.log("no image to upload");
         }
 
+        let updateFields = {
+            brand,
+            brandDescription,
+            link,
+            name,
+            username,
+        };
+        
+        if (imageUrl) {
+            updateFields.image = imageUrl;
+        }
 
         const updatedUser = await User.findByIdAndUpdate(
             userId,
-            {
-                brand,
-                image:imageUrl,
-                link,
-                name,
-                brandDescription,
-                username,
-            },
+            updateFields,
             { new: true }
         );
-        console.log('updated user',{userId,success:true})
+        console.log('updated user',{userId})
         res.status(200).json({ user: updatedUser });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Server error updating vendor' });
+    } finally {
+        console.log({fPath:filePath});
+        if (req?.file?.path) {
+            // deletes the file in e.g. filePath: `/uploads/_rRqy8LA2-blob`
+            deleteFile(  filePath  );
+        }
     }
 });
 
