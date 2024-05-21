@@ -75,27 +75,21 @@ router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
 
 // Page 1: General Information
 router.patch('/general', uploadImage.single("image"), async (req, res ) => {
-    if (!req?.file) {
-      console.log("profile image upload: no file");
-      return null;
-    }
-    let filePath = req.file.path;
+    let ImageFilePath = req?.file?.path;
+    let imageUrl = null;
     try {
-        let imageUrl = null;
         const userId = req.user.userId; 
         const imageS3Key = `${userId}-image`
-        const currentUser = await User.findById(userId);
-        if (currentUser.image) {
-            await deleteFileFromS3(currentUser.image);
+        const {image: oldImage} = await User.findById(userId);
+        if (ImageFilePath) {
+            if (oldImage) {
+                await deleteFileFromS3(oldImage);
+            }
+            const newImage = { file: fs.readFileSync(ImageFilePath) };
+            const { key } = await uploadProfileToS3(newImage, imageS3Key);
+            imageUrl = key;
         }
         const { brand, link, name, brandDescription, username } = req.body;
-        const image = req?.file ? { file: fs.readFileSync(req.file.path) } : null;
-        if (image) {
-          const { key } = await uploadProfileToS3(image, imageS3Key);
-          imageUrl = key;
-        } else {
-          console.log("no image to upload");
-        }
 
         let updateFields = {
             brand,
@@ -120,10 +114,9 @@ router.patch('/general', uploadImage.single("image"), async (req, res ) => {
         console.error(error);
         res.status(500).json({ error: 'Server error updating vendor' });
     } finally {
-        console.log({fPath:filePath});
-        if (req?.file?.path) {
-            // deletes the file in e.g. filePath: `/uploads/_rRqy8LA2-blob`
-            deleteFile(  filePath  );
+        if (ImageFilePath) {
+            // After uploading to S3, deletes the temp file. e.g. filePath: `/uploads/_rRqy8LA2-blob`
+            deleteFile(  ImageFilePath  );
         }
     }
 });
