@@ -70,11 +70,31 @@ router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
     }
 });
 
+router.post('/validate-username/:username', async (req, res) => {
+    const { username } = req.params;
+    const { userId } = req.body;
+    try {
+        const user = await User.findOne({ username: username });
+        if(!user){
+            return res.status(200).json({ valid: true, message: 'Username is available.' });
+        }
+        if (user._id.toString() === userId) {
+            // If the username belongs to the current user, it's valid
+            return res.status(200).json({ valid: true, message: 'Username is valid.' });
+        } else {
+            // If the username belongs to a different user, it's not valid
+            return res.status(200).json({ valid: false, message: 'Username is already taken.' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error validating username.' });
+    }
+});
 
 // multipart/form-data
 
 // Page 1: General Information
-router.patch('/general', uploadImage.single("image"), async (req, res ) => {
+router.patch('/profile-form/general', uploadImage.single("image"), async (req, res ) => {
     let ImageFilePath = req?.file?.path;
     let imageUrl = null;
     try {
