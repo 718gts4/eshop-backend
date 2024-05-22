@@ -36,6 +36,7 @@ const shortid = require("shortid");
 const path = require("path");
 const ffmpeg = require("fluent-ffmpeg");
 const fs = require("fs");
+const { MEGABYTE } = require("../utils/upload");
 
 const FILE_TYPE_MAP = {
     "image/png": "png",
@@ -73,7 +74,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 1024 * 1024 * 50 }, // Set the maximum file size to 50MB (50 * 1024 * 1024 bytes)
+    limits: { fileSize: 50 * MEGABYTE }, // Set the maximum file size to 50MB (50 * 1024 * 1024 bytes)
 });
 
 router.get(`/`, getVideos);
