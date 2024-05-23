@@ -62,7 +62,7 @@ const errorMsg = {
 const imageStorage = createMulterStorage(validFileTypes.image, errorMsg.IMAGE);
 const uploadImage = multer({
   storage: imageStorage,
-  limits: { fileSize: 2 * MEGABYTE },
+  limits: { fileSize: 5 * MEGABYTE },
 });
 
 const videoStorage = createMulterStorage(validFileTypes.video, errorMsg.VIDEO);
@@ -71,4 +71,4 @@ const uploadVideo = multer({
   limits: { fileSize: 50 * MEGABYTE },
 });
 
-module.exports = { uploadImage, uploadVideo };
+module.exports = { uploadImage, uploadVideo, MEGABYTE };

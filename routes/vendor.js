@@ -70,32 +70,46 @@ router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
     }
 });
 
+router.post('/validate-username/:username', async (req, res) => {
+    const { username } = req.params;
+    const { userId } = req.body;
+    try {
+        const user = await User.findOne({ username: username });
+        if(!user){
+            return res.status(200).json({ valid: true, message: 'Username is available.' });
+        }
+        if (user._id.toString() === userId) {
+            // If the username belongs to the current user, it's valid
+            return res.status(200).json({ valid: true, message: 'Username is valid.' });
+        } else {
+            // If the username belongs to a different user, it's not valid
+            return res.status(200).json({ valid: false, message: 'Username is already taken.' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error validating username.' });
+    }
+});
 
 // multipart/form-data
 
 // Page 1: General Information
-router.patch('/general', uploadImage.single("image"), async (req, res ) => {
-    if (!req?.file) {
-      console.log("profile image upload: no file");
-      return null;
-    }
-    let filePath = req.file.path;
+router.patch('/profile-form/general', uploadImage.single("image"), async (req, res ) => {
+    let ImageFilePath = req?.file?.path;
+    let imageUrl = null;
     try {
-        let imageUrl = null;
         const userId = req.user.userId; 
         const imageS3Key = `${userId}-image`
-        const currentUser = await User.findById(userId);
-        if (currentUser.image) {
-            await deleteFileFromS3(currentUser.image);
+        const {image: oldImage} = await User.findById(userId);
+        if (ImageFilePath) {
+            if (oldImage) {
+                await deleteFileFromS3(oldImage);
+            }
+            const newImage = { file: fs.readFileSync(ImageFilePath) };
+            const { key } = await uploadProfileToS3(newImage, imageS3Key);
+            imageUrl = key;
         }
         const { brand, link, name, brandDescription, username } = req.body;
-        const image = req?.file ? { file: fs.readFileSync(req.file.path) } : null;
-        if (image) {
-          const { key } = await uploadProfileToS3(image, imageS3Key);
-          imageUrl = key;
-        } else {
-          console.log("no image to upload");
-        }
 
         let updateFields = {
             brand,
@@ -120,10 +134,9 @@ router.patch('/general', uploadImage.single("image"), async (req, res ) => {
         console.error(error);
         res.status(500).json({ error: 'Server error updating vendor' });
     } finally {
-        console.log({fPath:filePath});
-        if (req?.file?.path) {
-            // deletes the file in e.g. filePath: `/uploads/_rRqy8LA2-blob`
-            deleteFile(  filePath  );
+        if (ImageFilePath) {
+            // After uploading to S3, deletes the temp file. e.g. filePath: `/uploads/_rRqy8LA2-blob`
+            deleteFile(  ImageFilePath  );
         }
     }
 });
