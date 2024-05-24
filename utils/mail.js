@@ -25,8 +25,8 @@ exports.mailTransport = () =>
             user: process.env.EMAIL,
             pass: process.env.EMAIL_PASSWORD,
         }, 
-        debug: true,
-        logger: true,
+        debug: false,
+        logger: false,
 });
     
 exports.generateEmailTemplate = code => {
