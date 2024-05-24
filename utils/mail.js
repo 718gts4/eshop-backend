@@ -19,8 +19,8 @@ exports.generateResetCode = () => {
 };
 
 exports.mailTransport = () => 
-    console.log(process.env.EMAIL);
-    console.log(process.env.EMAIL_PASSWORD);
+    console.log('EMAIL CHECK',process.env.EMAIL);
+    console.log('PSW CHECK', process.env.EMAIL_PASSWORD);
     nodemailer.createTransport({
         service: "gmail",
         auth: {
