@@ -161,6 +161,7 @@ exports.register = async (req, res) => {
     }, (error, info) => {
         if(error){
             console.log('Error sending email', error.message);
+            return res.status(500).send('이메일 전송에 실패했습니다.');
         } else {
             console.log('Email sent', info.response);
         }
