@@ -158,6 +158,12 @@ exports.register = async (req, res) => {
         to: user.email,
         subject: "VOUTIQ 가입 PIN 번호입니다",
         html: generateEmailTemplate(OTP),
+    }, (error, info) => {
+        if(error){
+            console.log('Error sending email', error.message);
+        } else {
+            console.log('Email sent', info.response);
+        }
     });
 
     res.send(user);
