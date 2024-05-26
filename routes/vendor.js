@@ -20,7 +20,14 @@ router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
     } = req.body;
 
     try {
-        const userId = req.user.userId; 
+        if (!userId) {
+            return res.status(401).json({ error: "No userId!" });
+        }
+        // Check if req.files is defined and has at least one file
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ error: "No files were uploaded." });
+        }
+
         const [profileImage, documentImage]  = req.files.map((file) => ({
             file: fs.readFileSync(file.path),
         }));
@@ -33,16 +40,19 @@ router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
 
         let vendor = new Vendor({
             document: documentKey,
-            brandName,
+            // saved in User model
+            // brandName,
             email,
-            phone,
+            // saved in User model
+            // phone,
             bankName,
             bankAccount,
             bankOwner,
             userId,
             submitted: submitted || true,
+            // testing
+            // confirmed: true
         });
-
         vendor = await vendor.save();
 
         if (!vendor) {
@@ -142,8 +152,79 @@ router.patch('/profile-form/general', uploadImage.single("image"), async (req, r
 });
 
 // Page 2: Managers
+router.patch('/profile-form/managers', async (req, res) => {
+    const userId = req?.user?.userId;
+    console.log('hitting endpoint: /profile-form/managers', { userId })
+    try {
+        const userId = req.user.userId;
+        const { contacts } = req.body;
+
+        let updateFields = {
+            'contacts.store': contacts.store,
+            'contacts.customerService': contacts.customerService,
+            'contacts.finance': contacts.finance,
+        };
+
+        const vendor = await Vendor.findOne({ userId: userId });
+        console.log('vendor:', vendor);
+        if (!vendor) {
+            return res.status(404).json({ error: `Vendor not found for userId ${userId}` });
+        }
+
+        const updatedVendor = await Vendor.findOneAndUpdate(
+            { userId: userId },
+            updateFields,
+            { new: true }
+        );
+
+        if (!updatedVendor) {
+            return res.status(404).json({ error: 'Vendor not found' });
+        }
+
+        res.status(200).json({ vendor: updatedVendor });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error updating vendor' });
+    }
+});
 
 // Page 3: Delivery Address
 
+
+// Get vendor by user ID
+router.get('/user-id/:userId', async (req, res) => {
+    try {
+        const vendor = await Vendor.findOne({ userId: req.params.userId });
+
+        if (!vendor) {
+            return res.status(404).json({ message: 'No vendor found for this user' });
+        }
+
+        res.json(vendor);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Update delivery address for a vendor
+router.patch('/profile-form/delivery', async (req, res) => {
+    try {
+        const { address1, address2, city, zipCode } = req.body;
+        const userId = req.user.userId; // Corrected line
+        const vendor = await Vendor.findOne({ userId });
+
+        if (!vendor) {
+            return res.status(404).json({ message: 'No vendor found for this user' });
+        }
+
+        vendor.deliveryAddress = { address1, address2, city, zipCode };
+        await vendor.save();
+        res.json(vendor);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 module.exports = router;
