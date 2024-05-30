@@ -2,68 +2,55 @@ const mongoose = require("mongoose");
 
 const vendorSchema = new mongoose.Schema(
     {
-        // commented because brand is saved in User model
-        // brandName: {
-        //     type: String,
-        //     required: true,
-        // },
-        email: {
-            type: String,
-            required: true,
+        bank: {
+            accountName: { type: String, required: true },
+            accountNumber: { type: Number, required: true },
+            bankName: { type: String, required: true },
         },
-        // commented because phone is saved in User model
-        // phone: {
-        //     type: String,
-        //     required: true,
-        // },
-        bankName: {
-            type: String,
-            required: true,
-        },
-        bankAccount: {
-            type: Number,
-            required: true,
-        },
-        bankOwner: {
-            type: String,
-            required: true,
-        },
-        userId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-        },
+        bankHistory: [
+            {
+                accountName: { type: String },
+                accountNumber: { type: Number },
+                bankName: { type: String },
+                updatedAt: { type: Date },
+            },
+        ],
         document: {
             type: String,
             default: "",
         },
-        submitted: {
-            type: Boolean,
-            default: false,
-        },
+        documentHistory: [
+            {
+                document: { type: String },
+                updatedAt: { type: Date },
+            },
+        ],
+        clients: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
         confirmed: {
             type: Boolean,
             default: false,
         },
-        clients: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-        }],
-        contacts: { // store manager, customer service, finance
+        contacts: {
             store: {
-                name: { type: String },
                 email: { type: String },
                 mobile: { type: String },
+                name: { type: String },
                 phone: { type: String },
             },
             customerService: {
-                name: { type: String },
                 contactNumber: { type: String },
+                name: { type: String },
                 sameAsStoreManager: { type: Boolean, default: false },
             },
             finance: {
-                name: { type: String },
                 email: { type: String },
                 mobile: { type: String },
+                name: { type: String },
             },
         },
         deliveryAddress: {
@@ -72,18 +59,16 @@ const vendorSchema = new mongoose.Schema(
             city: { type: String },
             zipCode: { type: String },
         },
-        // possible to move bank details 
-        //     - bankName
-        //     - bankAccount
-        //     - bankOwner 
-        // from vendor root level to here
-        // bank: {
-        //     bankName: { type: String },
-        //     accountNumber: { type: String },
-        //     accountName: { type: String },
-        // },
+        submitted: {
+            type: Boolean,
+            default: false,
+        },
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        },
     },
-    { timestaps: true }
+    { timestamps: true }
 );
 
 vendorSchema.virtual("id").get(function () {
