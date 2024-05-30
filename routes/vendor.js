@@ -278,6 +278,17 @@ router.patch("/profile-form/delivery", async (req, res) => {
     }
 });
 
+function isDuplicateBankAccount(vendor) {
+    const lastBankAccount = vendor.bankHistory[vendor.bankHistory.length - 1];
+    const { accountName, accountNumber, bankName } = vendor.bank || {};
+    return (
+        lastBankAccount &&
+        lastBankAccount.accountName === accountName &&
+        lastBankAccount.accountNumber === accountNumber &&
+        lastBankAccount.bankName === bankName
+    );
+}
+
 router.patch(
     "/profile-form/business",
     uploadImage.single("document"),
@@ -310,15 +321,9 @@ router.patch(
                 accountNumber,
                 bankName,
             };
-            // Check if same bank account is being saved, prevent duplicates
-            const lastBankAccount =
-                vendor.bankHistory[vendor.bankHistory.length - 1];
-            if (
-                !lastBankAccount ||
-                lastBankAccount.accountName !== accountName ||
-                lastBankAccount.accountNumber !== accountNumber ||
-                lastBankAccount.bankName !== bankName
-            ) {
+            const noBankHistory =
+                !vendor.bankHistory || vendor.bankHistory.length === 0;
+            if (!isDuplicateBankAccount(vendor) || noBankHistory) {
                 vendor.bankHistory.push({
                     accountName,
                     accountNumber,
