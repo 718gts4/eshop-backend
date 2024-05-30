@@ -310,14 +310,15 @@ router.patch(
                 accountNumber,
                 bankName,
             };
-            // Check if the bank account details are already in the bankHistory array
-            const isBankAccountInHistory = vendor.bankHistory.some(
-                (bank) =>
-                    bank.bankName === bankName &&
-                    bank.accountNumber === accountNumber &&
-                    bank.accountName === accountName
-            );
-            if (!isBankAccountInHistory) {
+            // Check if same bank account is being saved, prevent duplicates
+            const lastBankAccount =
+                vendor.bankHistory[vendor.bankHistory.length - 1];
+            if (
+                !lastBankAccount ||
+                lastBankAccount.accountName !== accountName ||
+                lastBankAccount.accountNumber !== accountNumber ||
+                lastBankAccount.bankName !== bankName
+            ) {
                 vendor.bankHistory.push({
                     accountName,
                     accountNumber,
