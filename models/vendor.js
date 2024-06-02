@@ -53,10 +53,6 @@ const vendorSchema = new mongoose.Schema(
                 name: { type: String },
             },
         },
-        // is this necessary?
-        // changeRequestStatus:{
-
-        // },
         deliveryAddress: {
             address1: { type: String },
             address2: { type: String },
