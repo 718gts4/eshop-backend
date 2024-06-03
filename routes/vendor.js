@@ -278,67 +278,82 @@ router.patch("/profile-form/delivery", async (req, res) => {
     }
 });
 
-function isDuplicateBankAccount(vendor) {
+function isDuplicateBankAccount(vendor, newBank) {
     const lastBankAccount = vendor.bankHistory[vendor.bankHistory.length - 1];
-    const { accountName, accountNumber, bankName } = vendor.bank || {};
-    return (
+    const isDuplicate =
         lastBankAccount &&
-        lastBankAccount.accountName === accountName &&
-        lastBankAccount.accountNumber === accountNumber &&
-        lastBankAccount.bankName === bankName
-    );
+        lastBankAccount.accountName === newBank.accountName &&
+        lastBankAccount.accountNumber === newBank.accountNumber &&
+        lastBankAccount.bankName === newBank.bankName;
+    return isDuplicate;
 }
 
+router.patch("/profile-form/bank", async (req, res) => {
+    const userId = req.user.userId;
+    const { bankName, accountNumber, accountName } = req.body;
+    const newBank = { bankName, accountNumber, accountName };
+    const vendor = await Vendor.findOne({ userId });
+    if (!vendor) {
+        console.error(`Vendor not found for userId ${userId}`);
+        return res
+            .status(404)
+            .json({ error: `Vendor not found for user id ${userId}` });
+    }
+    if (isDuplicateBankAccount(vendor, newBank)) {
+        console.error("duplicate bank account");
+        return res.status(400).json({ error: `Duplicate bank account` });
+    }
+    try {
+        if (!vendor?.pending) {
+            vendor.pending = {};
+        }
+        if (!vendor.pending?.bank) {
+            vendor.pending.bank = {};
+        }
+        vendor.pending.bank = {
+            bankName,
+            accountNumber,
+            accountName,
+        };
+        await vendor.save();
+        res.status(200).json({ vendor });
+    } catch (error) {
+        console.error("catch error::: ", error);
+        res.status(500).json({ error: "Server error updating vendor" });
+    }
+});
+
 router.patch(
-    "/profile-form/business",
+    "/profile-form/registration-document",
     uploadImage.single("document"),
     async (req, res) => {
         const userId = req.user.userId;
-        const { bankName, accountNumber, accountName } = req.body;
         let documentFilePath = req?.file?.path;
         let documentUrl = null;
 
+        if (!documentFilePath) {
+            console.error("No document file provided");
+            return res.status(400).json({ error: "No document file provided" });
+        }
+
+        const vendor = await Vendor.findOne({ userId });
+        if (!vendor) {
+            return res
+                .status(404)
+                .json({ error: `Vendor not found for userId ${userId}` });
+        }
+
         try {
-            const vendor = await Vendor.findOne({ userId: userId });
-            if (!vendor) {
-                return res
-                    .status(404)
-                    .json({ error: `Vendor not found for userId ${userId}` });
-            }
+            const documentS3KeyWord = `${userId}-document`;
+            const newDocument = { file: fs.readFileSync(documentFilePath) };
+            const { key } = await uploadProfileToS3(
+                newDocument,
+                documentS3KeyWord
+            );
+            documentUrl = key;
 
-            if (documentFilePath) {
-                const documentS3Key = `${userId}-document`;
-                const newDocument = { file: fs.readFileSync(documentFilePath) };
-                const { key } = await uploadProfileToS3(
-                    newDocument,
-                    documentS3Key
-                );
-                documentUrl = key;
-            }
-
-            vendor.bank = {
-                accountName,
-                accountNumber,
-                bankName,
-            };
-            const noBankHistory =
-                !vendor.bankHistory || vendor.bankHistory.length === 0;
-            if (!isDuplicateBankAccount(vendor) || noBankHistory) {
-                vendor.bankHistory.push({
-                    accountName,
-                    accountNumber,
-                    bankName,
-                    updatedAt: Date.now(),
-                });
-            }
-
-            if (documentUrl) {
-                vendor.document = documentUrl;
-                vendor.documentHistory.push({
-                    document: documentUrl,
-                    updatedAt: Date.now(),
-                });
-            }
+            // Store the pending document
+            vendor.pending.document = documentUrl;
 
             await vendor.save();
             res.status(200).json({ vendor });
@@ -346,11 +361,127 @@ router.patch(
             console.error(error);
             res.status(500).json({ error: "Server error updating vendor" });
         } finally {
-            if (documentFilePath) {
-                deleteFile(documentFilePath);
-            }
+            deleteFile(documentFilePath);
         }
     }
 );
+
+// DEBUG delete pending bank details
+router.delete('/bank-account/pending/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const vendor = await Vendor.findOne({ userId });
+
+        if (!vendor) {
+            return res.status(404).json({ error: 'Vendor not found' });
+        }
+
+        // Delete the pending bank details
+        vendor.pending.bank = undefined;
+
+        await vendor.save();
+        res.status(200).json({ vendor });
+    } catch (error) {
+        console.error("catch error::: ", error);
+        res.status(500).json({ error: "Server error deleting vendor's bank details" });
+    }
+});
+
+router.delete('/bank-account/history/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const vendor = await Vendor.findOne({ userId });
+
+    if (!vendor) {
+      return res.status(404).json({ error: 'Vendor not found' });
+    }
+
+    // Delete bank history array
+    vendor.bankHistory = []; 
+
+    await vendor.save();
+    res.json({ message: 'Bank history deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error deleting bank history' });
+  }
+});
+
+router.get('/document-history/:userId', async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const vendor = await Vendor.findOne({ userId });
+  
+      if (!vendor) {
+        return res.status(404).json({ error: 'Vendor not found' });
+      }
+  
+      res.json({ documentHistory: vendor.documentHistory });
+    } catch (err) {
+      res.status(500).json({ error: 'Server error retrieving document history' });
+    }
+  });
+
+
+
+
+
+// //
+router.patch('/bank-account/pending/:userId/promote', async (req, res) => {
+    const userId = req.params.userId;
+    const vendor = await Vendor.findOne({ userId });
+    if (!vendor) {
+        return res.status(404).json({ error: 'No vendor found for this user' });
+    }
+    const pending = vendor?.pending;
+    if (!pending?.bank) {
+        return res.status(404).json({ error: 'No pending bank details found for this user' });
+    }
+    if (pending.bank.accountName && pending.bank.accountNumber && pending.bank.bankName) {
+        // Move current bank account to bank history
+        vendor.bankHistory.push({
+            accountName: vendor.bank.accountName,
+            accountNumber: vendor.bank.accountNumber,
+            bankName: vendor.bank.bankName,
+            updatedAt: new Date(),
+        });
+
+        // Promote pending bank account to current bank account
+        vendor.bank.accountName = pending.bank.accountName;
+        vendor.bank.accountNumber = pending.bank.accountNumber;
+        vendor.bank.bankName = pending.bank.bankName;
+
+        // Clear pending bank account
+        pending.bank.accountName = "";
+        pending.bank.accountNumber = null;
+        pending.bank.bankName = "";
+
+        try {
+            await vendor.save();
+            return res.status(200).json({ message: 'Bank account promoted successfully' });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'An error occurred while promoting the bank account' });
+        }
+    } else {
+        return res.status(400).json({ error: 'No pending bank account to promote' });
+    }
+});
+
+router.patch('/document/pending/:userId/promote', async (req, res) => {
+    const userId = req.params.userId;
+    const vendor = await Vendor.findOne({ userId });
+    const pending = vendor?.pending;
+    if (!vendor) {
+        return res.status(404).json({ error: 'No vendor found for this user' });
+    }
+    if (!pending?.document) {
+        return res.status(404).json({ error: 'No pending document found for this user' });
+    }
+    // Promote the pending document
+    vendor.document = vendor.pending.document;
+    vendor.pending.document = null;
+    await vendor.save();
+    res.status(200).send({ message: 'Document promoted successfully' });
+});
 
 module.exports = router;

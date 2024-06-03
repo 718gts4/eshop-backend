@@ -59,6 +59,14 @@ const vendorSchema = new mongoose.Schema(
             city: { type: String },
             zipCode: { type: String },
         },
+        pending: {
+            document: { type: String, default: "" },
+            bank: {
+                accountName: { type: String, default: "" },
+                accountNumber: { type: Number, default: "" },
+                bankName: { type: String, default: "" },
+            },
+        },
         submitted: {
             type: Boolean,
             default: false,
@@ -77,6 +85,15 @@ vendorSchema.virtual("id").get(function () {
 
 vendorSchema.set("toJSON", {
     virtuals: true,
+});
+
+vendorSchema.virtual("isPendingBank").get(function () {
+    return Boolean(
+        this.pending.bank &&
+            this.pending.bank.accountName &&
+            this.pending.bank.accountNumber &&
+            this.pending.bank.bankName
+    );
 });
 
 // exports.Vendor = mongoose.model("Vendor", vendorSchema);
