@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { uploadProfileToS3, deleteFileFromS3, deleteFile } = require("../s3");
+const {
+    uploadProfileToS3,
+    deleteFileFromS3,
+    deleteFile,
+    deleteUrl,
+} = require("../s3");
 const { Vendor } = require("../models/vendor");
 const { User } = require("../models/user");
 require("dotenv/config");
@@ -9,9 +14,10 @@ const { uploadImage } = require("../utils/upload");
 const bcrypt = require("bcryptjs");
 
 router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
+    console.log("routes/vendor:::", `router.post('/create'`);
     const {
         brandName,
-        email,
+        // email, // remove email from onboarding. As we keep the existing user email
         phone,
         bankName,
         bankAccount,
@@ -53,8 +59,7 @@ router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
                     updatedAt: Date.now(),
                 },
             ],
-            document: documentKey,
-            email,
+            document: { s3Key: documentKey },
             submitted: submitted || true,
             userId,
         });
@@ -86,6 +91,9 @@ router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
 });
 
 router.post("/validate-username/:username", async (req, res) => {
+    console.log(
+        "routes/vendor::: post /validate-username/:username"
+    );
     const { username } = req.params;
     const { userId } = req.body;
     try {
@@ -119,9 +127,7 @@ router.patch(
     "/profile-form/general",
     uploadImage.single("image"),
     async (req, res) => {
-        console.log("hitting endpoint: /profile-form/general", {
-            user: req.user,
-        });
+        console.log("routes/vendor:::", `patch /profile-form/general`);
 
         let ImageFilePath = req?.file?.path;
         let imageUrl = null;
@@ -199,8 +205,7 @@ router.patch(
 
 // Page 2: Managers
 router.patch("/profile-form/managers", async (req, res) => {
-    const userId = req?.user?.userId;
-    console.log("hitting endpoint: /profile-form/managers", { userId });
+    console.log("routes/vendor::: patch /profile-form/managers");
     try {
         const userId = req.user.userId;
         const { contacts } = req.body;
@@ -212,7 +217,6 @@ router.patch("/profile-form/managers", async (req, res) => {
         };
 
         const vendor = await Vendor.findOne({ userId });
-        console.log("vendor:", vendor);
         if (!vendor) {
             return res
                 .status(404)
@@ -240,6 +244,15 @@ router.patch("/profile-form/managers", async (req, res) => {
 
 // Get vendor by user ID
 router.get("/user-id/:userId", async (req, res) => {
+    console.log("routes/vendor::: get /user-id/:userId");
+
+    Vendor.find({}, function (err, vendors) {
+        if (err) {
+            console.error("Error finding vendors /user-id/:userId:::", err);
+            return;
+        }
+    });
+
     try {
         const vendor = await Vendor.findOne({ userId: req.params.userId });
 
@@ -248,7 +261,6 @@ router.get("/user-id/:userId", async (req, res) => {
                 .status(404)
                 .json({ message: "No vendor found for this user" });
         }
-
         res.json(vendor);
     } catch (err) {
         console.error(err);
@@ -258,6 +270,7 @@ router.get("/user-id/:userId", async (req, res) => {
 
 // Update delivery address for a vendor
 router.patch("/profile-form/delivery", async (req, res) => {
+    console.log("routes/vendor::: patch /profile-form/delivery");
     try {
         const { address1, address2, city, zipCode } = req.body;
         const userId = req.user.userId; // Corrected line
@@ -288,7 +301,9 @@ function isDuplicateBankAccount(vendor, newBank) {
     return isDuplicate;
 }
 
+// save bank account as pending bank account
 router.patch("/profile-form/bank", async (req, res) => {
+    console.log("routes/vendor::: patch /profile-form/bank");
     const userId = req.user.userId;
     const { bankName, accountNumber, accountName } = req.body;
     const newBank = { bankName, accountNumber, accountName };
@@ -323,16 +338,20 @@ router.patch("/profile-form/bank", async (req, res) => {
     }
 });
 
+// save image of registration document as pending document
 router.patch(
     "/profile-form/registration-document",
     uploadImage.single("document"),
     async (req, res) => {
+        console.log(
+            "routes/vendor::: /profile-form/registration-document"
+        );
+
         const userId = req.user.userId;
         let documentFilePath = req?.file?.path;
-        let documentUrl = null;
 
         if (!documentFilePath) {
-            console.error("No document file provided");
+            console.error("\n No document file provided", { file: req?.file });
             return res.status(400).json({ error: "No document file provided" });
         }
 
@@ -346,19 +365,20 @@ router.patch(
         try {
             const documentS3KeyWord = `${userId}-document`;
             const newDocument = { file: fs.readFileSync(documentFilePath) };
-            const { key } = await uploadProfileToS3(
+            const { key: s3Key } = await uploadProfileToS3(
                 newDocument,
                 documentS3KeyWord
             );
-            documentUrl = key;
 
             // Store the pending document
-            vendor.pending.document = documentUrl;
-
+            vendor.pending.document = {
+                s3Key,
+                uploadedAt: new Date(),
+            };
             await vendor.save();
             res.status(200).json({ vendor });
         } catch (error) {
-            console.error(error);
+            console.error("regg::", { error });
             res.status(500).json({ error: "Server error updating vendor" });
         } finally {
             deleteFile(documentFilePath);
@@ -367,13 +387,16 @@ router.patch(
 );
 
 // DEBUG delete pending bank details
-router.delete('/bank-account/pending/:userId', async (req, res) => {
+router.delete("/bank-account/pending/:userId", async (req, res) => {
+    console.log(
+        "routes/vendor::: delete /bank-account/pending/:userId"
+    );
     try {
         const userId = req.params.userId;
         const vendor = await Vendor.findOne({ userId });
 
         if (!vendor) {
-            return res.status(404).json({ error: 'Vendor not found' });
+            return res.status(404).json({ error: "Vendor not found" });
         }
 
         // Delete the pending bank details
@@ -383,60 +406,76 @@ router.delete('/bank-account/pending/:userId', async (req, res) => {
         res.status(200).json({ vendor });
     } catch (error) {
         console.error("catch error::: ", error);
-        res.status(500).json({ error: "Server error deleting vendor's bank details" });
+        res.status(500).json({
+            error: "Server error deleting vendor's bank details",
+        });
     }
 });
 
-router.delete('/bank-account/history/:userId', async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    const vendor = await Vendor.findOne({ userId });
-
-    if (!vendor) {
-      return res.status(404).json({ error: 'Vendor not found' });
-    }
-
-    // Delete bank history array
-    vendor.bankHistory = []; 
-
-    await vendor.save();
-    res.json({ message: 'Bank history deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error deleting bank history' });
-  }
-});
-
-router.get('/document-history/:userId', async (req, res) => {
+// DEBUG delete pending document
+router.delete("/bank-account/history/:userId", async (req, res) => {
+    console.log(
+        "routes/vendor::: /bank-account/history/:userId"
+    );
     try {
-      const userId = req.params.userId;
-      const vendor = await Vendor.findOne({ userId });
-  
-      if (!vendor) {
-        return res.status(404).json({ error: 'Vendor not found' });
-      }
-  
-      res.json({ documentHistory: vendor.documentHistory });
+        const userId = req.params.userId;
+        const vendor = await Vendor.findOne({ userId });
+
+        if (!vendor) {
+            return res.status(404).json({ error: "Vendor not found" });
+        }
+
+        // Delete bank history array
+        vendor.bankHistory = [];
+
+        await vendor.save();
+        res.json({ message: "Bank history deleted successfully" });
     } catch (err) {
-      res.status(500).json({ error: 'Server error retrieving document history' });
+        res.status(500).json({ error: "Server error deleting bank history" });
     }
-  });
+});
 
+// Get document history
 
+router.get("/document-history/:userId", async (req, res) => {
+    console.log("routes/vendor::: get document-history/:userId");
+    try {
+        const userId = req.params.userId;
+        const vendor = await Vendor.findOne({ userId });
 
+        if (!vendor) {
+            return res.status(404).json({ error: "Vendor not found" });
+        }
 
+        res.json({ documentHistory: vendor.documentHistory });
+    } catch (err) {
+        res.status(500).json({
+            error: "Server error retrieving document history",
+        });
+    }
+});
 
-// //
-router.patch('/bank-account/pending/:userId/promote', async (req, res) => {
+// promote pending bank account to current bank account
+router.patch("/bank-account/pending/:userId/promote", async (req, res) => {
+    console.log(
+        "routes/vendor::: patch /bank-account/pending/:userId/promote"
+    );
     const userId = req.params.userId;
     const vendor = await Vendor.findOne({ userId });
     if (!vendor) {
-        return res.status(404).json({ error: 'No vendor found for this user' });
+        return res.status(404).json({ error: "No vendor found for this user" });
     }
     const pending = vendor?.pending;
     if (!pending?.bank) {
-        return res.status(404).json({ error: 'No pending bank details found for this user' });
+        return res
+            .status(404)
+            .json({ error: "No pending bank details found for this user" });
     }
-    if (pending.bank.accountName && pending.bank.accountNumber && pending.bank.bankName) {
+    if (
+        pending.bank.accountName &&
+        pending.bank.accountNumber &&
+        pending.bank.bankName
+    ) {
         // Move current bank account to bank history
         vendor.bankHistory.push({
             accountName: vendor.bank.accountName,
@@ -457,31 +496,81 @@ router.patch('/bank-account/pending/:userId/promote', async (req, res) => {
 
         try {
             await vendor.save();
-            return res.status(200).json({ message: 'Bank account promoted successfully' });
+            return res
+                .status(200)
+                .json({ message: "Bank account promoted successfully" });
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ error: 'An error occurred while promoting the bank account' });
+            return res.status(500).json({
+                error: "An error occurred while promoting the bank account",
+            });
         }
     } else {
-        return res.status(400).json({ error: 'No pending bank account to promote' });
+        return res
+            .status(400)
+            .json({ error: "No pending bank account to promote" });
     }
 });
 
-router.patch('/document/pending/:userId/promote', async (req, res) => {
+// Promote pending document to current document
+router.patch("/document/pending/:userId/promote", async (req, res) => {
+    console.log("routes/vendor::: patch '/document/pending/:userId/promote'");
     const userId = req.params.userId;
     const vendor = await Vendor.findOne({ userId });
-    const pending = vendor?.pending;
     if (!vendor) {
-        return res.status(404).json({ error: 'No vendor found for this user' });
+        return res.status(404).json({ error: "No vendor found for this user" });
     }
-    if (!pending?.document) {
-        return res.status(404).json({ error: 'No pending document found for this user' });
+    if (!vendor?.pending?.document) {
+        return res.status(404).json({ error: "No pending document found" });
     }
     // Promote the pending document
-    vendor.document = vendor.pending.document;
+    vendor.document.s3Key = vendor.pending.document.s3Key;
+    vendor.document.uploadedAt = vendor.pending.document?.uploadedAt;
+    vendor.document.approvedAt = new Date(); 
+
+    vendor.documentHistory.push({
+        s3Key: vendor.pending.document.s3Key,
+        uploadedAt: vendor.pending.document.uploadedAt,
+        approvedAt: new Date(), // Current date
+    });
     vendor.pending.document = null;
     await vendor.save();
-    res.status(200).send({ message: 'Document promoted successfully' });
+    res.status(200).send({ message: "Document promoted successfully" });
+});
+
+// delete document history
+router.delete("/document-history/:userId", async (req, res) => {
+    console.log(
+        "routes/vendor::: delete('/document-history/:userId"
+    );
+    try {
+        const userId = req.params.userId;
+        const vendor = await Vendor.findOne({ userId });
+
+        if (!vendor) {
+            return res.status(404).json({ error: "Vendor not found" });
+        }
+
+        // Delete documents from S3 bucket
+        for (const doc of vendor.documentHistory) {
+            if (doc.s3Key) {
+                await deleteUrl(doc.s3Key);
+            } else {
+                console.log("no s3Key", { doc });
+            }
+        }
+
+        // Delete document history array
+        vendor.documentHistory = [];
+
+        await vendor.save();
+        res.json({ message: "Document history deleted successfully" });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            error: "Server error deleting document history",
+        });
+    }
 });
 
 module.exports = router;
