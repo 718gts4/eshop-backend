@@ -6,20 +6,22 @@ const vendorSchema = new mongoose.Schema(
             accountName: { type: String, required: true },
             accountNumber: { type: String, required: true },
             bankName: { type: String, required: true },
+            uploadedAt: { type: Date, default: Date.now },
+            approvedAt: { type: Date },
         },
         bankHistory: [
             {
                 accountName: { type: String },
                 accountNumber: { type: String },
                 bankName: { type: String },
-                updatedAt: { type: Date },
+                uploadedAt: { type: Date },
+                approvedAt: { type: Date },
             },
         ],
         document: {
             s3Key: { type: String, default: "" },
             uploadedAt: { type: Date, default: Date.now },
             approvedAt: { type: Date },
-
         },
         documentHistory: [
             {
@@ -72,6 +74,8 @@ const vendorSchema = new mongoose.Schema(
                 accountName: { type: String, default: "" },
                 accountNumber: { type: String, default: "" },
                 bankName: { type: String, default: "" },
+                uploadedAt: { type: Date, default: Date.now },
+                approvedAt: { type: Date },
             },
         },
         submitted: {

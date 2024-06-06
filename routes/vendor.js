@@ -56,7 +56,6 @@ router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
                     accountName: bankOwner,
                     accountNumber: bankAccount,
                     bankName,
-                    updatedAt: Date.now(),
                 },
             ],
             document: { s3Key: documentKey },
@@ -91,9 +90,7 @@ router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
 });
 
 router.post("/validate-username/:username", async (req, res) => {
-    console.log(
-        "routes/vendor::: post /validate-username/:username"
-    );
+    console.log("routes/vendor::: post /validate-username/:username");
     const { username } = req.params;
     const { userId } = req.body;
     try {
@@ -343,9 +340,7 @@ router.patch(
     "/profile-form/registration-document",
     uploadImage.single("document"),
     async (req, res) => {
-        console.log(
-            "routes/vendor::: /profile-form/registration-document"
-        );
+        console.log("routes/vendor::: /profile-form/registration-document");
 
         const userId = req.user.userId;
         let documentFilePath = req?.file?.path;
@@ -388,9 +383,7 @@ router.patch(
 
 // DEBUG delete pending bank details
 router.delete("/bank-account/pending/:userId", async (req, res) => {
-    console.log(
-        "routes/vendor::: delete /bank-account/pending/:userId"
-    );
+    console.log("routes/vendor::: delete /bank-account/pending/:userId");
     try {
         const userId = req.params.userId;
         const vendor = await Vendor.findOne({ userId });
@@ -414,9 +407,7 @@ router.delete("/bank-account/pending/:userId", async (req, res) => {
 
 // DEBUG delete pending document
 router.delete("/bank-account/history/:userId", async (req, res) => {
-    console.log(
-        "routes/vendor::: /bank-account/history/:userId"
-    );
+    console.log("routes/vendor::: /bank-account/history/:userId");
     try {
         const userId = req.params.userId;
         const vendor = await Vendor.findOne({ userId });
@@ -425,8 +416,16 @@ router.delete("/bank-account/history/:userId", async (req, res) => {
             return res.status(404).json({ error: "Vendor not found" });
         }
 
-        // Delete bank history array
-        vendor.bankHistory = [];
+        // Delete bank history array leaving current bank account
+        
+        // Check if current bank account exists
+        if (vendor.bank.accountName || vendor.bank.accountNumber || vendor.bank.bankName) {
+            // Replace bank history array with current bank account
+            vendor.bankHistory = [vendor.bank];
+        } else {
+            // Delete bank history array
+            vendor.bankHistory = [];
+        }
 
         await vendor.save();
         res.json({ message: "Bank history deleted successfully" });
@@ -455,11 +454,16 @@ router.get("/document-history/:userId", async (req, res) => {
     }
 });
 
+const NULL_BANK_ACCOUNT = {
+        accountName: "",
+        accountNumber: "",
+        bankName: "",
+        uploadedAt: null,
+        approvedAt: null
+}
 // promote pending bank account to current bank account
-router.patch("/bank-account/pending/:userId/promote", async (req, res) => {
-    console.log(
-        "routes/vendor::: patch /bank-account/pending/:userId/promote"
-    );
+router.patch("/bank-account/pending/:userId/approve", async (req, res) => {
+    console.log("routes/vendor::: patch /bank-account/pending/:userId/approve");
     const userId = req.params.userId;
     const vendor = await Vendor.findOne({ userId });
     if (!vendor) {
@@ -478,43 +482,39 @@ router.patch("/bank-account/pending/:userId/promote", async (req, res) => {
     ) {
         // Move current bank account to bank history
         vendor.bankHistory.push({
-            accountName: vendor.bank.accountName,
-            accountNumber: vendor.bank.accountNumber,
-            bankName: vendor.bank.bankName,
-            updatedAt: new Date(),
+            ...vendor.bank,
         });
 
-        // Promote pending bank account to current bank account
-        vendor.bank.accountName = pending.bank.accountName;
-        vendor.bank.accountNumber = pending.bank.accountNumber;
-        vendor.bank.bankName = pending.bank.bankName;
+        // Approve pending bank account to be current bank account and add approval date
+        vendor.bank = {
+            ...pending.bank,
+            approvedAt: new Date(),
+        };
 
         // Clear pending bank account
-        pending.bank.accountName = "";
-        pending.bank.accountNumber = null;
-        pending.bank.bankName = "";
+        pending.bank = { ...NULL_BANK_ACCOUNT };
 
         try {
             await vendor.save();
             return res
                 .status(200)
-                .json({ message: "Bank account promoted successfully" });
+                .json({ message: "Bank account approved successfully" });
         } catch (error) {
             console.error(error);
             return res.status(500).json({
-                error: "An error occurred while promoting the bank account",
+                error: "An error occurred while approving the bank account",
             });
         }
     } else {
         return res
             .status(400)
-            .json({ error: "No pending bank account to promote" });
+            .json({ error: "No pending bank account to approve" });
     }
 });
 
 // Promote pending document to current document
-router.patch("/document/pending/:userId/promote", async (req, res) => {
-    console.log("routes/vendor::: patch '/document/pending/:userId/promote'");
+router.patch("/document/pending/:userId/approve", async (req, res) => {
+    console.log("routes/vendor::: patch '/document/pending/:userId/approve'");
     const userId = req.params.userId;
     const vendor = await Vendor.findOne({ userId });
     if (!vendor) {
@@ -523,26 +523,18 @@ router.patch("/document/pending/:userId/promote", async (req, res) => {
     if (!vendor?.pending?.document) {
         return res.status(404).json({ error: "No pending document found" });
     }
-    // Promote the pending document
-    vendor.document.s3Key = vendor.pending.document.s3Key;
-    vendor.document.uploadedAt = vendor.pending.document?.uploadedAt;
-    vendor.document.approvedAt = new Date(); 
-
-    vendor.documentHistory.push({
-        s3Key: vendor.pending.document.s3Key,
-        uploadedAt: vendor.pending.document.uploadedAt,
-        approvedAt: new Date(), // Current date
-    });
+    const approvedDocument = { ...vendor.pending.document,  approvedAt: new Date() };
+    // Approve the pending document
+    vendor.document = approvedDocument;
+    vendor.documentHistory.push( approvedDocument );
     vendor.pending.document = null;
     await vendor.save();
-    res.status(200).send({ message: "Document promoted successfully" });
+    res.status(200).send({ message: "Document approved successfully" });
 });
 
 // delete document history
 router.delete("/document-history/:userId", async (req, res) => {
-    console.log(
-        "routes/vendor::: delete('/document-history/:userId"
-    );
+    console.log("routes/vendor::: delete('/document-history/:userId");
     try {
         const userId = req.params.userId;
         const vendor = await Vendor.findOne({ userId });
@@ -551,8 +543,14 @@ router.delete("/document-history/:userId", async (req, res) => {
             return res.status(404).json({ error: "Vendor not found" });
         }
 
+        const currentDocument = vendor.document;
+
         // Delete documents from S3 bucket
         for (const doc of vendor.documentHistory) {
+            // Skip the current document
+            if (doc.approvedAt.getTime() === currentDocument.approvedAt.getTime()) {
+                continue;
+            }
             if (doc.s3Key) {
                 await deleteUrl(doc.s3Key);
             } else {
@@ -561,7 +559,7 @@ router.delete("/document-history/:userId", async (req, res) => {
         }
 
         // Delete document history array
-        vendor.documentHistory = [];
+        vendor.documentHistory = [currentDocument];
 
         await vendor.save();
         res.json({ message: "Document history deleted successfully" });
