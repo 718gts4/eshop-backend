@@ -4,25 +4,30 @@ const vendorSchema = new mongoose.Schema(
     {
         bank: {
             accountName: { type: String, required: true },
-            accountNumber: { type: Number, required: true },
+            accountNumber: { type: String, required: true },
             bankName: { type: String, required: true },
+            uploadedAt: { type: Date, default: Date.now },
+            approvedAt: { type: Date },
         },
         bankHistory: [
             {
                 accountName: { type: String },
-                accountNumber: { type: Number },
+                accountNumber: { type: String },
                 bankName: { type: String },
-                updatedAt: { type: Date },
+                uploadedAt: { type: Date },
+                approvedAt: { type: Date },
             },
         ],
         document: {
-            type: String,
-            default: "",
+            s3Key: { type: String, default: "" },
+            uploadedAt: { type: Date, default: Date.now },
+            approvedAt: { type: Date },
         },
         documentHistory: [
             {
-                document: { type: String },
-                updatedAt: { type: Date },
+                s3Key: { type: String },
+                uploadedAt: { type: Date },
+                approvedAt: { type: Date },
             },
         ],
         clients: [
@@ -60,11 +65,17 @@ const vendorSchema = new mongoose.Schema(
             zipCode: { type: String },
         },
         pending: {
-            document: { type: String, default: "" },
+            document: {
+                s3Key: { type: String, default: "" },
+                uploadedAt: { type: Date, default: Date.now },
+                approvedAt: { type: Date },
+            },
             bank: {
                 accountName: { type: String, default: "" },
-                accountNumber: { type: Number, default: "" },
+                accountNumber: { type: String, default: "" },
                 bankName: { type: String, default: "" },
+                uploadedAt: { type: Date, default: Date.now },
+                approvedAt: { type: Date },
             },
         },
         submitted: {
@@ -96,7 +107,6 @@ vendorSchema.virtual("isPendingBank").get(function () {
     );
 });
 
-// exports.Vendor = mongoose.model("Vendor", vendorSchema);
 const Vendor = mongoose.model("Vendor", vendorSchema);
 
 module.exports = { Vendor };
