@@ -23,6 +23,7 @@ exports.getVideos = async (req, res) => {
 };
 
 exports.getFollowingVideos = async (req, res) => {
+    console.log('req body following', req.body)
     let limit = 10;
     let skip = parseInt(req.query.skip) || 0;
 
