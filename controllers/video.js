@@ -27,9 +27,14 @@ exports.getFollowingVideos = async (req, res) => {
     let limit = 10;
     let skip = parseInt(req.query.skip) || 0;
 
+    const user = await User.findById(req.body.userId);
+    let following = [];
+    following = Object.keys(user.following)
+    console.log('FOLLOWING', following)
+
     let videos = [];
     const followingVideos = await Promise.all(
-        req.body.following.map(async (video) => {
+        following.map(async (video) => {
             const followingVideo = await Video.find({ createdBy: video })
                 .populate("createdBy")
                 .populate("videoItems")
