@@ -28,8 +28,7 @@ exports.getFollowingVideos = async (req, res) => {
     let skip = parseInt(req.query.skip) || 0;
 
     const user = await User.findById(req.body.userId);
-    let following = [];
-    following = Object.keys(user.following)
+    let following = Object.keys(user.following);
     console.log('FOLLOWING', following)
 
     let videos = [];
