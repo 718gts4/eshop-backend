@@ -393,6 +393,8 @@ exports.deleteAllSearchWords = async (req, res) => {
 exports.bookmarkProduct = async (req, res) => {
     try {
         const { productId, userId } = req.params;
+        console.log('product id', productId);
+        console.log('userid', userId);
         const user = await User.findById(userId);
 
         let bookmarkIndex = -1;
