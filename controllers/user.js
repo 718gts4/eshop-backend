@@ -412,7 +412,7 @@ exports.bookmarkProduct = async (req, res) => {
             // If the product is not bookmarked, add it to the array
             user.bookmarkProducts.push(productId);
         }
-
+        console.log('book prod', user.bookmarkProducts)
         const updatedUser = await user.save();
         res.status(200).json(updatedUser);
     } catch (err) {
