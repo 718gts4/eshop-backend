@@ -404,7 +404,7 @@ exports.bookmarkProduct = async (req, res) => {
                 break;
             }
         }
-
+        console.log('bookmark index', bookmarkIndex)
         if (bookmarkIndex > -1) {
             // If the product is already bookmarked, remove it from the array
             user.bookmarkProducts.splice(bookmarkIndex, 1);
