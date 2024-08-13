@@ -16,11 +16,13 @@ exports.getRecentlyViewed = async (req, res) => {
 
 exports.saveRecentlyViewed = async (req, res) => {
     const { userId, productId } = req.body;
+    console.log('req body', req.body);
     const existingViewedItem = await RecentlyViewed.findOne({
         user: userId,
         product: productId,
     });
     if (existingViewedItem) {
+        console.log('Item already exists:', existingViewedItem);
         return res.status(400).send("이미 저장된 상품입니다.");
     }
 
