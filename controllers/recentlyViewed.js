@@ -16,13 +16,11 @@ exports.getRecentlyViewed = async (req, res) => {
 
 exports.saveRecentlyViewed = async (req, res) => {
     const { userId, productId } = req.body;
-    console.log('req body', req.body);
     const existingViewedItem = await RecentlyViewed.findOne({
         user: userId,
         product: productId,
     });
     if (existingViewedItem) {
-        console.log('Item already exists:', existingViewedItem);
         return res.status(400).send("이미 저장된 상품입니다.");
     }
 
@@ -34,7 +32,7 @@ exports.saveRecentlyViewed = async (req, res) => {
     recentlyViewed = await recentlyViewed.save();
 
     if (!recentlyViewed)
-        return res.status(404).send("상품을 저장할 수 없습니다2.");
+        return res.status(500).send("상품을 저장에 문제가 발생했습니다.");
 
     res.send(recentlyViewed);
 };
