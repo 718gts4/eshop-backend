@@ -80,8 +80,7 @@ exports.getProductsByCategoryId = async (req, res) => {
     let filter = {};
     let limit = 10;
     let skip = parseInt(req.query.skip) || 0;
-    console.log('req.params.', req.params)
-    console.log('check ID')
+
     try {
         if(req.params.categoryId) {
             const categoryId = mongoose.Types.ObjectId(req.params.categoryId);
@@ -193,6 +192,8 @@ exports.updateProduct = async (req, res) => {
             saleEndDate,
             onSale: req.body.onSale,
             sku: req.body.sku,
+            sizeGuide: req.body.sizeGuide,
+            isSizeGuideVisible: req.body.isSizeGuideVisible,
         },
         { new: true}
     );

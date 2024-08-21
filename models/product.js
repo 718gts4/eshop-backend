@@ -244,6 +244,14 @@ const productSchema = mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    sizeGuide: {
+        type: String,
+        default: '',
+    },
+    isSizeGuideVisible: {
+        type: Boolean,
+        default: false,
+    }
 });
 
 productSchema.virtual("id").get(function () {
