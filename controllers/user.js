@@ -395,9 +395,15 @@ exports.bookmarkProduct = async (req, res) => {
         const { productId, userId } = req.params;
         const user = await User.findById(userId);
 
+        if (!user.bookmarkProducts) {
+            user.bookmarkProducts = [];
+        }
+
+        const productIdStr = productId.toString();
+
         let bookmarkIndex = -1;
         for (let i = 0; i < user.bookmarkProducts?.length; i++) {
-            if (user.bookmarkProducts[i].toString() === productId) {
+            if (user.bookmarkProducts[i].toString() === productIdStr) {
                 bookmarkIndex = i;
                 break;
             }

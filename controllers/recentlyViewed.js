@@ -32,7 +32,7 @@ exports.saveRecentlyViewed = async (req, res) => {
     recentlyViewed = await recentlyViewed.save();
 
     if (!recentlyViewed)
-        return res.status(404).send("상품을 저장할 수 없습니다2.");
+        return res.status(500).send("상품을 저장에 문제가 발생했습니다.");
 
     res.send(recentlyViewed);
 };
