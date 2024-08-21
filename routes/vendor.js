@@ -14,7 +14,7 @@ const { uploadImage } = require("../utils/upload");
 const bcrypt = require("bcryptjs");
 
 router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
-    console.log("routes/vendor:::", `router.post('/create'`);
+    console.log("routes/vendor::: CREATE", `router.post('/create'`);
     const {
         brandName,
         // email, // remove email from onboarding. As we keep the existing user email
@@ -90,7 +90,7 @@ router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
 });
 
 router.post("/validate-username/:username", async (req, res) => {
-    console.log("routes/vendor::: post /validate-username/:username");
+    console.log("routes/vendor::: POST /validate-username/:username");
     const { username } = req.params;
     const { userId } = req.body;
     try {
@@ -124,7 +124,7 @@ router.patch(
     "/profile-form/general",
     uploadImage.single("image"),
     async (req, res) => {
-        console.log("routes/vendor:::", `patch /profile-form/general`);
+        console.log("routes/vendor::: PATCH", `patch /profile-form/general`);
 
         let ImageFilePath = req?.file?.path;
         let imageUrl = null;
@@ -202,7 +202,7 @@ router.patch(
 
 // Page 2: Managers
 router.patch("/profile-form/managers", async (req, res) => {
-    console.log("routes/vendor::: patch /profile-form/managers");
+    console.log("routes/vendor::: PATCH /profile-form/managers");
     try {
         const userId = req.user.userId;
         const { contacts } = req.body;
@@ -241,19 +241,12 @@ router.patch("/profile-form/managers", async (req, res) => {
 
 // Get vendor by user ID
 router.get("/user-id/:userId", async (req, res) => {
-    console.log("routes/vendor::: get /user-id/:userId");
-
-    Vendor.find({}, function (err, vendors) {
-        if (err) {
-            console.error("Error finding vendors /user-id/:userId:::", err);
-            return;
-        }
-    });
-
+    console.log("routes/vendor::: GET /user-id/:userId",{ userId: req.params.userId });
     try {
         const vendor = await Vendor.findOne({ userId: req.params.userId });
-
+        console.log({vendorId: vendor._id, userId: vendor.userId})
         if (!vendor) {
+            console.log("No vendor found for this user");
             return res
                 .status(404)
                 .json({ message: "No vendor found for this user" });
@@ -267,7 +260,7 @@ router.get("/user-id/:userId", async (req, res) => {
 
 // Update delivery address for a vendor
 router.patch("/profile-form/delivery", async (req, res) => {
-    console.log("routes/vendor::: patch /profile-form/delivery");
+    console.log("routes/vendor::: PATCH /profile-form/delivery");
     try {
         const { address1, address2, city, zipCode } = req.body;
         const userId = req.user.userId; // Corrected line
@@ -300,7 +293,7 @@ function isDuplicateBankAccount(vendor, newBank) {
 
 // save bank account as pending bank account
 router.patch("/profile-form/bank", async (req, res) => {
-    console.log("routes/vendor::: patch /profile-form/bank");
+    console.log("routes/vendor::: PATCH /profile-form/bank");
     const userId = req.user.userId;
     const { bankName, accountNumber, accountName } = req.body;
     const newBank = { bankName, accountNumber, accountName };
@@ -340,7 +333,7 @@ router.patch(
     "/profile-form/registration-document",
     uploadImage.single("document"),
     async (req, res) => {
-        console.log("routes/vendor::: /profile-form/registration-document");
+        console.log("routes/vendor::: DELETE PATCH /profile-form/registration-document");
 
         const userId = req.user.userId;
         let documentFilePath = req?.file?.path;
@@ -383,7 +376,7 @@ router.patch(
 
 // DEBUG delete pending bank details
 router.delete("/bank-account/pending/:userId", async (req, res) => {
-    console.log("routes/vendor::: delete /bank-account/pending/:userId");
+    console.log("routes/vendor::: DELETE /bank-account/pending/:userId");
     try {
         const userId = req.params.userId;
         const vendor = await Vendor.findOne({ userId });
@@ -407,7 +400,7 @@ router.delete("/bank-account/pending/:userId", async (req, res) => {
 
 // DEBUG delete pending document
 router.delete("/bank-account/history/:userId", async (req, res) => {
-    console.log("routes/vendor::: /bank-account/history/:userId");
+    console.log("routes/vendor::: DELETE /bank-account/history/:userId");
     try {
         const userId = req.params.userId;
         const vendor = await Vendor.findOne({ userId });
@@ -437,7 +430,7 @@ router.delete("/bank-account/history/:userId", async (req, res) => {
 // Get document history
 
 router.get("/document-history/:userId", async (req, res) => {
-    console.log("routes/vendor::: get document-history/:userId");
+    console.log("routes/vendor::: GET document-history/:userId");
     try {
         const userId = req.params.userId;
         const vendor = await Vendor.findOne({ userId });
@@ -463,7 +456,7 @@ const NULL_BANK_ACCOUNT = {
 }
 // promote pending bank account to current bank account
 router.patch("/bank-account/pending/:userId/approve", async (req, res) => {
-    console.log("routes/vendor::: patch /bank-account/pending/:userId/approve");
+    console.log("routes/vendor::: PATCH /bank-account/pending/:userId/approve");
     const userId = req.params.userId;
     const vendor = await Vendor.findOne({ userId });
     if (!vendor) {
@@ -514,7 +507,7 @@ router.patch("/bank-account/pending/:userId/approve", async (req, res) => {
 
 // Promote pending document to current document
 router.patch("/document/pending/:userId/approve", async (req, res) => {
-    console.log("routes/vendor::: patch '/document/pending/:userId/approve'");
+    console.log("routes/vendor::: PATCH '/document/pending/:userId/approve'");
     const userId = req.params.userId;
     const vendor = await Vendor.findOne({ userId });
     if (!vendor) {
@@ -534,7 +527,7 @@ router.patch("/document/pending/:userId/approve", async (req, res) => {
 
 // delete document history
 router.delete("/document-history/:userId", async (req, res) => {
-    console.log("routes/vendor::: delete('/document-history/:userId");
+    console.log("routes/vendor::: DELETE('/document-history/:userId");
     try {
         const userId = req.params.userId;
         const vendor = await Vendor.findOne({ userId });
@@ -568,6 +561,38 @@ router.delete("/document-history/:userId", async (req, res) => {
         res.status(500).json({
             error: "Server error deleting document history",
         });
+    }
+});
+
+// Route to get all vendors with populated user details
+router.get("/all", async (req, res) => {
+    try {
+        const vendorsPopulated = await Vendor.find()
+            .populate("userId", "name username image email")
+            // .lean();
+
+        const vendorsWithUserDetails = vendorsPopulated.map(vendor => {
+            // Explicitly handle the case where userId is null after population
+            const isUserIdValid = vendor.userId !== null;
+
+            return {
+                // .toJSON() is needed whenever we modify the object directly, as below.
+                ...vendor.toJSON(),
+                user: isUserIdValid ? {
+                    name: vendor.userId.name,
+                    username: vendor.userId.username,
+                    image: vendor.userId.image,
+                    email: vendor.userId.email,
+                } : null, // Set user to null if userId refers to user that does not exist
+                // Keep the original userId reference, even if it wasn't populated
+                userId: vendor.userId?._id ?? null,
+            };
+        });
+
+        res.json(vendorsWithUserDetails);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: err.message });
     }
 });
 

@@ -2,6 +2,16 @@ const mongoose = require("mongoose");
 
 const vendorSchema = new mongoose.Schema(
     {
+        // DELETED ITEMS
+        // -------------
+        // bankAccount:{ type: String},
+        // bankName:{ type: String},
+        // bankOwner:{ type: String},
+        // brandName:{ type: String},
+        // email:{ type: String},
+        // phone:{ type: String},
+        // profileImg:{ type: String},
+        // username:{ type: String},
         bank: {
             accountName: { type: String, required: true },
             accountNumber: { type: String, required: true },
@@ -107,6 +117,18 @@ vendorSchema.virtual("isPendingBank").get(function () {
     );
 });
 
+vendorSchema.virtual("isPending").get(function () {
+    return Boolean(
+        (this.pending.bank &&
+            this.pending.bank.accountName &&
+            this.pending.bank.accountNumber &&
+            this.pending.bank.bankName) ||
+        (this.pending?.document?.s3Key)
+    );
+});
+
+vendorSchema.set('toJSON', { virtuals: true });
+vendorSchema.set('toObject', { virtuals: true });
 const Vendor = mongoose.model("Vendor", vendorSchema);
 
 module.exports = { Vendor };
