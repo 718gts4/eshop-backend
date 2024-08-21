@@ -5,7 +5,6 @@ const {
     deleteProduct,
     getProductCount,
     getFeaturedProductsOfCounts,
-    createProduct,
     updateGalleryImages,
     getAdminProducts,
     likeProduct,
@@ -87,8 +86,7 @@ router.post(`/create-sale`, createSaleProduct);
 router.get(`/sale/products`, getSaleProducts);
 router.post(`/:id/reviews`, createProductReview, requireSignin);
 
-router.post(
-    `/create`,
+router.post(`/create`,
     upload.array("image", 5), requireSignin, adminMiddleware, async (req, res) => {
         const {
             name,
@@ -114,6 +112,8 @@ router.post(
             sellerId,
             preorder,
             sku,
+            sizeGuide,
+            isSizeGuideVisible,
         } = req.body;
 
         let hasStocks = false;
@@ -165,6 +165,8 @@ router.post(
                 preorder,
                 hasStocks,
                 sku,
+                sizeGuide,
+                isSizeGuideVisible,
             });
 
             if (product.sale) {

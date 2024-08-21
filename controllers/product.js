@@ -405,19 +405,7 @@ exports.getSearchProducts = async (req, res) => {
         console.error('Error', error);
         res.status(500).json({message: 'Server Error'});
     }
-}
-
-// exports.getCategoryProducts = async (req, res) => {
-//     try {
-//         const { categoryId } = req.query;
-//         const products = await Product.find({ category: categoryId });
-    
-//         res.json(products);
-//     } catch (error) {
-//         console.error('Error', error);
-//         res.status(500).json({ message: 'Server Error' });
-//     }   
-// }
+};
 
 exports.editSaleDuration = async (req, res) => {
     const productId = req.params.id;
