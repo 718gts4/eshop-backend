@@ -178,7 +178,7 @@ exports.updateProduct = async (req, res) => {
             rating: req.body.rating,
             numReviews: req.body.numReviews,
             isFeatured: req.body.isFeatured,
-            colorOptions: JSON.parse(req.body.colorOptions || '{}'),
+            // colorOptions: JSON.parse(req.body.colorOptions || '{}'),
             subOption1: JSON.parse(req.body.subOption1 || null),
             subOption2: JSON.parse(req.body.subOption2 || null),
             subOption3: JSON.parse(req.body.subOption3 || null),
