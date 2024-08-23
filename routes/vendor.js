@@ -241,17 +241,19 @@ router.patch("/profile-form/managers", async (req, res) => {
 
 // Get vendor by user ID
 router.get("/user-id/:userId", async (req, res) => {
-    console.log("routes/vendor::: GET /user-id/:userId",{ userId: req.params.userId });
+    console.log("routes/vendor::: GET /user-id/:userId", { userId: req.params.userId });
     try {
-        const vendor = await Vendor.findOne({ userId: req.params.userId });
-        console.log({vendorId: vendor._id, userId: vendor.userId})
-        if (!vendor) {
-            console.log("No vendor found for this user");
-            return res
-                .status(404)
-                .json({ message: "No vendor found for this user" });
+        const user = await User.findById(req.params.userId);
+        if (!user) {
+            console.log("No user found with this ID");
+            return res.status(404).json({ message: "No user found with this ID" });
         }
-        res.json(vendor);
+        if (!user.vendor) {
+            console.log("No vendor information found for this user");
+            return res.status(404).json({ message: "No vendor information found for this user" });
+        }
+        console.log({ vendorId: user.vendor._id, userId: user._id });
+        res.json(user.vendor);
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error" });
