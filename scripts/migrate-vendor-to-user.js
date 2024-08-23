@@ -1,7 +1,7 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 const { User } = require("../models/user");
-const { Vendor } = require("../models/vendor");
+const { Vendor } = require("../models/vendor").Vendor;
 
 mongoose
     .connect(process.env.CONNECTION_STRING, {
