@@ -215,17 +215,18 @@ router.patch("/profile-form/managers", async (req, res) => {
                 .json({ error: `Vendor information not found for userId ${userId}` });
         }
 
-        const updatedVendor = await Vendor.findOneAndUpdate(
-            { userId },
-            updateFields,
-            { new: true }
-        );
+        user.vendor = {
+            ...user.vendor,
+            contacts: {
+                store: contacts.store,
+                customerService: contacts.customerService,
+                finance: contacts.finance
+            }
+        };
 
-        if (!updatedVendor) {
-            return res.status(404).json({ error: "Vendor not found" });
-        }
+        await user.save();
 
-        res.status(200).json({ vendor: updatedVendor });
+        res.status(200).json({ vendor: user.vendor });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Server error updating vendor" });
@@ -261,17 +262,17 @@ router.patch("/profile-form/delivery", async (req, res) => {
     try {
         const { address1, address2, city, zipCode } = req.body;
         const userId = req.user.userId; // Corrected line
-        const vendor = await Vendor.findOne({ userId });
+        const user = await User.findById(userId);
 
-        if (!vendor) {
+        if (!user || !user.vendor) {
             return res
                 .status(404)
                 .json({ message: "No vendor found for this user" });
         }
 
-        vendor.deliveryAddress = { address1, address2, city, zipCode };
-        await vendor.save();
-        res.json(vendor);
+        user.vendor.deliveryAddress = { address1, address2, city, zipCode };
+        await user.save();
+        res.json(user.vendor);
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error" });
