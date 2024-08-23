@@ -182,6 +182,7 @@ router.patch(
                 }
             );
             console.log("updated user", { userId });
+            updatedUser.$ignore = ["passwordHash", "email"];
             res.status(200).json({ user: updatedUser });
         } catch (error) {
             console.error(error);
