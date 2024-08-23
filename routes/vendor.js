@@ -400,6 +400,7 @@ router.delete("/bank-account/pending/:userId", async (req, res) => {
         }
 
         await user.save();
+        user.$ignore = ["passwordHash", "email"];
         res.status(200).json({ vendor: user.vendor });
     } catch (error) {
         console.error("catch error::: ", error);
