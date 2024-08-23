@@ -188,46 +188,9 @@ exports.login = async (req, res) => {
             secret,
             { expiresIn: twentyYearsInSeconds }
         );
-        const {
-            _id,
-            email,
-            role,
-            name,
-            isAdmin,
-            image,
-            username,
-            following,
-            followers,
-            brand,
-            brandDescription,
-            link,
-            phone,
-            gender,
-            birthday,
-            verified,
-            vendor,
-        } = user;
         res.status(200).json({
             token,
-            user: {
-                _id,
-                birthday,
-                brand,
-                brandDescription,
-                email,
-                following,
-                followers,
-                gender,
-                image,
-                isAdmin,
-                link,
-                name,
-                phone,
-                role,
-                username,
-                verified,
-                vendor,
-            },
+            user
         });
     } else {
         res.status(400).send("password is wrong!");
