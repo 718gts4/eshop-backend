@@ -373,6 +373,7 @@ router.patch(
                 uploadedAt: new Date(),
             };
             await user.save();
+            user.$ignore = ["passwordHash", "email"];
             res.status(200).json({ vendor: user.vendor });
         } catch (error) {
             console.error("regg::", { error });
