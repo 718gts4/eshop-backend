@@ -42,20 +42,21 @@ const vendorSchema = new mongoose.Schema(
         },
         contacts: {
             store: {
+                name: { type: String },
                 email: { type: String },
                 mobile: { type: String },
-                name: { type: String },
                 phone: { type: String },
             },
             customerService: {
-                contactNumber: { type: String },
                 name: { type: String },
+                email: { type: String },
+                mobile: { type: String },
                 sameAsStoreManager: { type: Boolean, default: false },
             },
             finance: {
+                name: { type: String },
                 email: { type: String },
                 mobile: { type: String },
-                name: { type: String },
             },
         },
         deliveryAddress: {
