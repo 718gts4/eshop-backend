@@ -129,13 +129,14 @@ exports.register = async (req, res) => {
         passwordHash: bcrypt.hashSync(req.body.password, 10),
         phone: req.body.phone,
         isAdmin: req.body.isAdmin,
-        role: req.body.role,
+        role: req.body.role || 'user',
         brand: req.body.brand,
         brandDescription: req.body.brandDescription,
         bookmarkProducts: req.body.bookmarkProducts,
         followers: {},
         following: {},
         likes: {},
+        vendor: req.body.role === 'admin' ? {} : undefined,
     });
 
     const OTP = generateOTP();
@@ -204,6 +205,7 @@ exports.login = async (req, res) => {
             gender,
             birthday,
             verified,
+            vendor,
         } = user;
         res.status(200).json({
             token,
@@ -224,6 +226,7 @@ exports.login = async (req, res) => {
                 role,
                 username,
                 verified,
+                vendor,
             },
         });
     } else {
