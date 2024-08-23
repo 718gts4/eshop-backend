@@ -22,18 +22,7 @@ async function migrateData() {
             return;
         }
 
-        user.vendor = {
-            bank: vendor.bank,
-            bankHistory: vendor.bankHistory,
-            document: vendor.document,
-            documentHistory: vendor.documentHistory,
-            clients: vendor.clients,
-            confirmed: vendor.confirmed,
-            contacts: vendor.contacts,
-            deliveryAddress: vendor.deliveryAddress,
-            pending: vendor.pending,
-            submitted: vendor.submitted,
-        };
+        user.vendor = vendor.toObject();
 
         user.role = 'admin';
 
