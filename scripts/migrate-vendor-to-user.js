@@ -12,7 +12,7 @@ mongoose
     .catch((err) => console.error("Could not connect to MongoDB", err));
 
 async function migrateData() {
-    const vendors = await Vendor.find({}).lean();
+    const vendors = await Vendor.find({});
 
     const savePromises = vendors.map(async (vendor) => {
         const user = await User.findById(vendor.userId);
