@@ -219,11 +219,7 @@ router.patch("/profile-form/managers", async (req, res) => {
 
         user.vendor = {
             ...user.vendor,
-            contacts: {
-                store: contacts.store,
-                customerService: contacts.customerService,
-                finance: contacts.finance
-            }
+            contacts
         };
 
         await user.save();
