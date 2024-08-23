@@ -568,8 +568,7 @@ router.delete("/document-history/:userId", async (req, res) => {
 router.get("/all", async (req, res) => {
     try {
         const vendorsPopulated = await Vendor.find()
-            .populate("userId", "name username image email")
-            // .lean();
+            .populate("userId", "name username image email");
 
         const vendorsWithUserDetails = vendorsPopulated.map(vendor => {
             // Explicitly handle the case where userId is null after population
