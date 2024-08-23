@@ -23,7 +23,6 @@ async function migrateData() {
         }
 
         user.vendor = vendor.toObject();
-
         user.role = 'admin';
 
         return user.save();
