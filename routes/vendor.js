@@ -44,7 +44,12 @@ router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
         const uploadedImages = await Promise.all(imageUploadPromises);
         const [imageKey, documentKey] = uploadedImages.map(({ key }) => key);
 
-        let vendor = new Vendor({
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).send("사용자를 찾을 수 없습니다");
+        }
+
+        user.vendor = {
             bank: {
                 accountName: bankOwner,
                 accountNumber: bankAccount,
@@ -59,29 +64,20 @@ router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
             ],
             document: { s3Key: documentKey },
             submitted: submitted || true,
-            userId,
-        });
-        vendor = await vendor.save();
+        };
 
-        if (!vendor) {
-            return res.status(500).send("사업자를 생성할 수 없습니다");
-        }
+        user.image = imageKey;
+        user.brand = brandName;
+        user.phone = phone;
+        user.submitted = true;
+        user.followers = {};
+        user.following = {};
+        user.likes = {};
+        user.role = "admin";
 
-        const user = await User.findById(userId);
-        user.$ignore = ["passwordHash", "email"];
-        if (user) {
-            user.image = imageKey;
-            user.brand = brandName;
-            user.phone = phone;
-            user.submitted = true;
-            user.followers = {};
-            user.following = {};
-            user.likes = {};
-            user.role = "admin";
-            await user.save({ validateBeforeSave: false });
-        }
+        await user.save({ validateBeforeSave: false });
 
-        res.status(201).json({ vendor });
+        res.status(201).json({ vendor: user.vendor });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Server error adding product" });
@@ -298,7 +294,8 @@ router.patch("/profile-form/bank", async (req, res) => {
     const userId = req.user.userId;
     const { bankName, accountNumber, accountName } = req.body;
     const newBank = { bankName, accountNumber, accountName };
-    const vendor = await Vendor.findOne({ userId });
+    const user = await User.findOne({ _id: userId });
+    const vendor = user ? user.vendor : null;
     if (!vendor) {
         console.error(`Vendor not found for userId ${userId}`);
         return res
