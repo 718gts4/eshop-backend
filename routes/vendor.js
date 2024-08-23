@@ -273,6 +273,7 @@ router.patch("/profile-form/delivery", async (req, res) => {
 
         user.vendor.deliveryAddress = { address1, address2, city, zipCode };
         await user.save();
+        user.$ignore = ["passwordHash", "email"];
         res.json(user.vendor);
     } catch (err) {
         console.error(err);
@@ -324,6 +325,7 @@ router.patch("/profile-form/bank", async (req, res) => {
             accountName,
         };
         await user.save();
+        user.$ignore = ["passwordHash", "email"];
         res.status(200).json({ vendor: user.vendor });
     } catch (error) {
         console.error("catch error::: ", error);
@@ -587,6 +589,7 @@ router.get("/all", async (req, res) => {
             .select('name username image email vendor');
 
         const vendorsWithUserDetails = users.map(user => {
+            user.$ignore = ["passwordHash"];
             return {
                 ...user.vendor.toJSON(),
                 user: {
