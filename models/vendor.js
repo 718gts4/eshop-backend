@@ -116,6 +116,7 @@ vendorSchema.virtual("isPending").get(function () {
 vendorSchema.set('toJSON', { virtuals: true });
 vendorSchema.set('toObject', { virtuals: true });
 
-const Vendor = mongoose.model('Vendor', vendorSchema);
+// we delete the Vendor model. The vendorSchema is exported instead.
+// exports.Vendor = mongoose.model("Vendor", vendorSchema);
 
-module.exports = { vendorSchema, Vendor };
+exports.vendorSchema = vendorSchema
