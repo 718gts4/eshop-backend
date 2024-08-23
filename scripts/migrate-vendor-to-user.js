@@ -22,7 +22,12 @@ async function migrateData() {
             return;
         }
 
-        user.vendor = vendor.toObject();
+        const vendorObject = vendor.toObject();
+        delete vendorObject._id;
+        delete vendorObject.createdAt;
+        delete vendorObject.updatedAt;
+        delete vendorObject.__v;
+        user.vendor = vendorObject;
 
         user.role = 'admin';
 
