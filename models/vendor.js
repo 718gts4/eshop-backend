@@ -116,4 +116,6 @@ vendorSchema.virtual("isPending").get(function () {
 vendorSchema.set('toJSON', { virtuals: true });
 vendorSchema.set('toObject', { virtuals: true });
 
-module.exports = { vendorSchema };
+const Vendor = mongoose.model('Vendor', vendorSchema);
+
+module.exports = { vendorSchema, Vendor };
