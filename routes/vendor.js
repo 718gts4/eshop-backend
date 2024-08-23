@@ -77,6 +77,7 @@ router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
 
         await user.save({ validateBeforeSave: false });
 
+        user.$ignore = ["passwordHash", "email"];
         res.status(201).json({ vendor: user.vendor });
     } catch (error) {
         console.log(error);
