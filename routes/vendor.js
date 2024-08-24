@@ -300,11 +300,7 @@ router.patch("/profile-form/bank", async (req, res) => {
     try {
         user.vendor = user.vendor || {};
         user.vendor.pending = user.vendor.pending || {};
-        user.vendor.pending.bank = {
-            bankName,
-            accountNumber,
-            accountName,
-        };
+        user.vendor.pending.bank = newBank;
         await user.save();
         user.$ignore = ["passwordHash", "email"];
         res.status(200).json({ vendor: user.vendor });
