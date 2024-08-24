@@ -557,8 +557,16 @@ router.delete("/document-history/:userId", async (req, res) => {
 // Route to get all vendors with user details
 router.get("/all", async (req, res) => {
     try {
-        const users = await User.find({ 'vendor': { $exists: true, $ne: null } })
-            .select('name username image email vendor');
+        const users = await User.find({ isAdmin: true })
+            .select('name username image email vendor isAdmin');
+
+        // Log the first user with isAdmin === true
+        const adminUser = users.find(user => user.isAdmin === true);
+        if (adminUser) {
+            console.log("First admin user:", JSON.stringify(adminUser, null, 2));
+        } else {
+            console.log("No admin users found");
+        }
 
         const vendorsWithUserDetails = users.map(user => {
             const vendorData = user.vendor ? user.vendor.toObject() : {};
@@ -569,11 +577,12 @@ router.get("/all", async (req, res) => {
                     username: user.username,
                     image: user.image,
                     email: user.email,
+                    isAdmin: user.isAdmin,
                 },
                 userId: user._id,
             };
         });
-console.log({users});
+
         res.json(vendorsWithUserDetails);
     } catch (err) {
         console.error(err);
