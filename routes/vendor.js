@@ -19,8 +19,8 @@ router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
         // email, // remove email from onboarding. As we keep the existing user email
         phone,
         bankName,
-        bankAccount,
-        bankOwner,
+        bankAccount: accountNumber,
+        bankOwner: accountName,
         submitted,
         userId,
     } = req.body;
@@ -51,14 +51,14 @@ router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
 
         user.vendor = {
             bank: {
-                accountName: bankOwner,
-                accountNumber: bankAccount,
+                accountName,
+                accountNumber,
                 bankName,
             },
             bankHistory: [
                 {
-                    accountName: bankOwner,
-                    accountNumber: bankAccount,
+                    accountName,
+                    accountNumber,
                     bankName,
                 },
             ],
