@@ -49,8 +49,7 @@ const vendorSchema = new mongoose.Schema(
             },
             customerService: {
                 name: { type: String },
-                email: { type: String },
-                mobile: { type: String },
+                contactNumber: { type: String },
                 sameAsStoreManager: { type: Boolean, default: false },
             },
             finance: {
