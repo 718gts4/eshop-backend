@@ -49,19 +49,10 @@ router.post(`/create`, uploadImage.array("image", 2), async (req, res) => {
             return res.status(404).send("사용자를 찾을 수 없습니다");
         }
 
+        const bank = { accountName, accountNumber, bankName };
         user.vendor = {
-            bank: {
-                accountName,
-                accountNumber,
-                bankName,
-            },
-            bankHistory: [
-                {
-                    accountName,
-                    accountNumber,
-                    bankName,
-                },
-            ],
+            bank,
+            bankHistory: [bank],
             document: { s3Key: documentKey },
             submitted: submitted || true,
         };
