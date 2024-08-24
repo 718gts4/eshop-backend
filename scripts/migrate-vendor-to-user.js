@@ -1,12 +1,9 @@
 require("dotenv").config();
+const connectToDatabase = require("../config/database");
 const mongoose = require("mongoose");
 const { User } = require("../models/user");
 
-mongoose
-    .connect(process.env.CONNECTION_STRING, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
+connectToDatabase()
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.error("Could not connect to MongoDB", err));
 
