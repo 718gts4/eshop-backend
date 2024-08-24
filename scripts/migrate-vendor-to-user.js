@@ -1,39 +1,36 @@
 require("dotenv").config();
-const connectToDatabase = require("../config/database");
-const mongoose = require("mongoose");
+const mongoose = require("../config/database");
 const { User } = require("../models/user");
-
-connectToDatabase();
+const { Vendor } = require("../models/vendor");
 
 async function migrateData() {
-    // Before deleting the Vendor model, we need to migrate the data to the User model.
-    const vendors = await Vendor.find({});
+    try {
+        const vendors = await Vendor.find({});
+        console.log(`Found ${vendors.length} vendors to migrate`);
 
-    const promisesVendors = vendors.map(async (vendor) => {
-        const user = await User.findById(vendor.userId);
+        for (const vendor of vendors) {
+            const user = await User.findById(vendor.userId);
 
-        if (!user) {
-            console.log(`No user found for vendor ${vendor._id}`);
-            return;
+            if (!user) {
+                console.log(`No user found for vendor ${vendor._id}`);
+                continue;
+            }
+
+            user.vendor = vendor.toObject();
+            user.role = "admin";
+
+            await user.save();
+            console.log(`Migrated vendor ${vendor._id} to user ${user._id}`);
         }
 
-        user.vendor = vendor.toObject();
-        user.role = "admin";
-
-        return user.save();
-    });
-
-    await Promise.all(promisesVendors);
-    console.log("All vendors migrated to users");
+        console.log("All vendors migrated to users");
+    } catch (error) {
+        console.error("Error during migration:", error);
+    } finally {
+        await mongoose.connection.close();
+    }
 }
 
 migrateData()
-    .then(() => {
-        console.log("Migration completed");
-    })
-    .catch((error) => {
-        console.error("Error during migration:", error);
-    })
-    .finally(() => {
-        mongoose.connection.close();
-    });
+    .then(() => console.log("Migration completed"))
+    .catch((error) => console.error("Unhandled error during migration:", error));
