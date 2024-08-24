@@ -497,7 +497,7 @@ router.patch("/document/pending/:userId/approve", async (req, res) => {
     console.log("routes/vendor::: PATCH '/document/pending/:userId/approve'");
     const userId = req.params.userId;
     const user = await User.findById(userId);
-    if (!user || !user.vendor) {
+    if (!user?.vendor) {
         return res.status(404).json({ error: "No vendor information found for this user" });
     }
     if (!user.vendor?.pending?.document) {
@@ -522,7 +522,7 @@ router.delete("/document-history/:userId", async (req, res) => {
         const userId = req.params.userId;
         const user = await User.findById(userId);
 
-        if (!user || !user.vendor) {
+        if (!user?.vendor) {
             return res.status(404).json({ error: "Vendor information not found" });
         }
 
