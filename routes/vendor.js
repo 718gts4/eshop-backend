@@ -573,7 +573,7 @@ router.get("/all", async (req, res) => {
                 userId: user._id,
             };
         });
-
+console.log({users});
         res.json(vendorsWithUserDetails);
     } catch (err) {
         console.error(err);
