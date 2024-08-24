@@ -298,15 +298,8 @@ router.patch("/profile-form/bank", async (req, res) => {
         return res.status(400).json({ error: `Duplicate bank account` });
     }
     try {
-        if (!user.vendor) {
-            user.vendor = {};
-        }
-        if (!user.vendor.pending) {
-            user.vendor.pending = {};
-        }
-        if (!user.vendor.pending.bank) {
-            user.vendor.pending.bank = {};
-        }
+        user.vendor = user.vendor || {};
+        user.vendor.pending = user.vendor.pending || {};
         user.vendor.pending.bank = {
             bankName,
             accountNumber,
