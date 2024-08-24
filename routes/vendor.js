@@ -253,10 +253,8 @@ router.patch("/profile-form/delivery", async (req, res) => {
         const userId = req.user.userId; // Corrected line
         const user = await User.findById(userId);
 
-        if (!user || !user.vendor) {
-            return res
-                .status(404)
-                .json({ message: "No vendor found for this user" });
+        if (!user?.vendor) {
+            return res.status(404).json({ message: "No vendor found for this user" });
         }
 
         user.vendor.deliveryAddress = { address1, address2, city, zipCode };
@@ -326,10 +324,8 @@ router.patch(
         }
 
         const user = await User.findById(userId);
-        if (!user || !user.vendor) {
-            return res
-                .status(404)
-                .json({ error: `Vendor information not found for userId ${userId}` });
+        if (!user?.vendor) {
+            return res.status(404).json({ error: `Vendor information not found for userId ${userId}` });
         }
 
         try {
@@ -341,9 +337,7 @@ router.patch(
             );
 
             // Store the pending document
-            if (!user.vendor.pending) {
-                user.vendor.pending = {};
-            }
+            user.vendor.pending = user.vendor.pending || {};
             user.vendor.pending.document = {
                 s3Key,
                 uploadedAt: new Date(),
@@ -367,14 +361,13 @@ router.delete("/bank-account/pending/:userId", async (req, res) => {
         const userId = req.params.userId;
         const user = await User.findById(userId);
 
-        if (!user || !user.vendor) {
+        if (!user?.vendor) {
             return res.status(404).json({ error: "Vendor information not found" });
         }
 
         // Delete the pending bank details
-        if (user.vendor.pending) {
-            user.vendor.pending.bank = undefined;
-        }
+        user.vendor.pending = user.vendor.pending || {};
+        user.vendor.pending.bank = undefined;
 
         await user.save();
         user.$ignore = ["passwordHash", "email"];
@@ -394,7 +387,7 @@ router.delete("/bank-account/history/:userId", async (req, res) => {
         const userId = req.params.userId;
         const user = await User.findById(userId);
 
-        if (!user || !user.vendor) {
+        if (!user?.vendor) {
             return res.status(404).json({ error: "Vendor information not found" });
         }
 
