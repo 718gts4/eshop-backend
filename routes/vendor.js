@@ -202,7 +202,7 @@ router.patch("/profile-form/managers", async (req, res) => {
         };
 
         const user = await User.findById(userId);
-        if (!user || !user.vendor) {
+        if (!user?.vendor) {
             return res
                 .status(404)
                 .json({ error: `Vendor information not found for userId ${userId}` });
