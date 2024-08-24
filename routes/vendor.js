@@ -284,7 +284,7 @@ router.patch("/profile-form/bank", async (req, res) => {
     console.log("routes/vendor::: PATCH /profile-form/bank");
     const userId = req.user.userId;
     const { bankName, accountNumber, accountName } = req.body;
-    const newBank = { bankName, accountNumber, accountName };
+    const updatedBankInfo = { bankName, accountNumber, accountName };
     const user = await User.findOne({ _id: userId });
     const vendor = user ? user.vendor : null;
     if (!vendor) {
@@ -293,14 +293,14 @@ router.patch("/profile-form/bank", async (req, res) => {
             .status(404)
             .json({ error: `Vendor not found for user id ${userId}` });
     }
-    if (isDuplicateBankAccount(vendor, newBank)) {
+    if (isDuplicateBankAccount(vendor, updatedBankInfo)) {
         console.error("duplicate bank account");
         return res.status(400).json({ error: `Duplicate bank account` });
     }
     try {
         user.vendor = user.vendor || {};
         user.vendor.pending = user.vendor.pending || {};
-        user.vendor.pending.bank = newBank;
+        user.vendor.pending.bank = updatedBankInfo;
         await user.save();
         user.$ignore = ["passwordHash", "email"];
         res.status(200).json({ vendor: user.vendor });
