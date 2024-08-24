@@ -554,25 +554,22 @@ router.delete("/document-history/:userId", async (req, res) => {
     }
 });
 
-// Route to get all vendors with populated user details
+// Route to get all vendors with user details
 router.get("/all", async (req, res) => {
     try {
         const users = await User.find({ 'vendor': { $exists: true } })
             .select('name username image email vendor');
 
-        const vendorsWithUserDetails = users.map(user => {
-            user.$ignore = ["passwordHash"];
-            return {
-                ...user.vendor.toJSON(),
-                user: {
-                    name: user.name,
-                    username: user.username,
-                    image: user.image,
-                    email: user.email,
-                },
-                userId: user._id,
-            };
-        });
+        const vendorsWithUserDetails = users.map(user => ({
+            ...user.vendor.toObject(),
+            user: {
+                name: user.name,
+                username: user.username,
+                image: user.image,
+                email: user.email,
+            },
+            userId: user._id,
+        }));
 
         res.json(vendorsWithUserDetails);
     } catch (err) {
