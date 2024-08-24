@@ -560,16 +560,18 @@ router.get("/all", async (req, res) => {
         const users = await User.find({ isAdmin: true })
             .select('name username image email vendor isAdmin');
 
-        // Log the first user with isAdmin === true
-        const adminUser = users.find(user => user.isAdmin === true);
-        if (adminUser) {
-            console.log("First admin user:", JSON.stringify(adminUser, null, 2));
-        } else {
-            console.log("No admin users found");
-        }
+        console.log("All admin users:", JSON.stringify(users, null, 2));
 
         const vendorsWithUserDetails = users.map(user => {
-            const vendorData = user.vendor ? user.vendor.toObject() : {};
+            console.log(`Processing user ${user._id}:`, JSON.stringify(user, null, 2));
+            
+            let vendorData = {};
+            if (user.vendor) {
+                vendorData = user.vendor.toObject ? user.vendor.toObject() : user.vendor;
+            } else {
+                console.log(`User ${user._id} does not have vendor data`);
+            }
+
             return {
                 ...vendorData,
                 user: {
@@ -583,9 +585,11 @@ router.get("/all", async (req, res) => {
             };
         });
 
+        console.log("Processed vendors:", JSON.stringify(vendorsWithUserDetails, null, 2));
+
         res.json(vendorsWithUserDetails);
     } catch (err) {
-        console.error(err);
+        console.error("Error in /all route:", err);
         res.status(500).json({ message: err.message });
     }
 });
