@@ -594,7 +594,7 @@ router.get("/all", async (req, res) => {
     }
 });
 
-// Delete a vendor
+// Delete a vendor (for superUser)
 router.delete("/:userId", async (req, res) => {
     console.log("routes/vendor::: DELETE /:userId");
     try {
@@ -613,6 +613,11 @@ router.delete("/:userId", async (req, res) => {
         user.vendor = undefined;
         user.role = "user";  // Change role back to regular user
         user.isAdmin = false;  // Remove admin privileges
+
+        // Remove vendor-related fields
+        user.brand = undefined;
+        user.brandDescription = undefined;
+        user.link = undefined;
 
         await user.save();
 
