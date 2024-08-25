@@ -594,4 +594,33 @@ router.get("/all", async (req, res) => {
     }
 });
 
+// Delete a vendor
+router.delete("/:userId", async (req, res) => {
+    console.log("routes/vendor::: DELETE /:userId");
+    try {
+        const userId = req.params.userId;
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        if (!user.vendor) {
+            return res.status(404).json({ error: "Vendor information not found for this user" });
+        }
+
+        // Remove vendor information
+        user.vendor = undefined;
+        user.role = "user";  // Change role back to regular user
+        user.isAdmin = false;  // Remove admin privileges
+
+        await user.save();
+
+        res.status(200).json({ message: "Vendor successfully deleted" });
+    } catch (error) {
+        console.error("Error deleting vendor:", error);
+        res.status(500).json({ error: "Server error deleting vendor" });
+    }
+});
+
 module.exports = router;
