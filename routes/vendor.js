@@ -581,8 +581,6 @@ router.get("/all", async (req, res) => {
             };
         });
 
-        console.log("Processed vendors:", JSON.stringify(vendorsWithUserDetails, null, 2));
-
         res.json(vendorsWithUserDetails);
     } catch (err) {
         console.error("Error in /all route:", err);
