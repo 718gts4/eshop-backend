@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { vendorSchema } = require("./vendor");
 
 const userSchema = mongoose.Schema({
     name: {
@@ -121,7 +122,8 @@ const userSchema = mongoose.Schema({
     resettokenExpiration: {
         type: Date,
         required: false,
-    }
+    },
+    vendor: vendorSchema,
 }, {timestamps: true});
 
 userSchema.pre("save", function (next) {

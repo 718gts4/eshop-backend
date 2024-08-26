@@ -2,16 +2,6 @@ const mongoose = require("mongoose");
 
 const vendorSchema = new mongoose.Schema(
     {
-        // DELETED ITEMS
-        // -------------
-        // bankAccount:{ type: String},
-        // bankName:{ type: String},
-        // bankOwner:{ type: String},
-        // brandName:{ type: String},
-        // email:{ type: String},
-        // phone:{ type: String},
-        // profileImg:{ type: String},
-        // username:{ type: String},
         bank: {
             accountName: { type: String, required: true },
             accountNumber: { type: String, required: true },
@@ -52,20 +42,20 @@ const vendorSchema = new mongoose.Schema(
         },
         contacts: {
             store: {
+                name: { type: String },
                 email: { type: String },
                 mobile: { type: String },
-                name: { type: String },
                 phone: { type: String },
             },
             customerService: {
-                contactNumber: { type: String },
                 name: { type: String },
+                contactNumber: { type: String },
                 sameAsStoreManager: { type: Boolean, default: false },
             },
             finance: {
+                name: { type: String },
                 email: { type: String },
                 mobile: { type: String },
-                name: { type: String },
             },
         },
         deliveryAddress: {
@@ -129,6 +119,8 @@ vendorSchema.virtual("isPending").get(function () {
 
 vendorSchema.set('toJSON', { virtuals: true });
 vendorSchema.set('toObject', { virtuals: true });
-const Vendor = mongoose.model("Vendor", vendorSchema);
 
-module.exports = { Vendor };
+// we delete the Vendor model. The vendorSchema is exported instead.
+// exports.Vendor = mongoose.model("Vendor", vendorSchema);
+
+exports.vendorSchema = vendorSchema

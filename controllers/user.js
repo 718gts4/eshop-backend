@@ -129,13 +129,14 @@ exports.register = async (req, res) => {
         passwordHash: bcrypt.hashSync(req.body.password, 10),
         phone: req.body.phone,
         isAdmin: req.body.isAdmin,
-        role: req.body.role,
+        role: req.body.role || 'user',
         brand: req.body.brand,
         brandDescription: req.body.brandDescription,
         bookmarkProducts: req.body.bookmarkProducts,
         followers: {},
         following: {},
         likes: {},
+        vendor: req.body.role === 'admin' ? {} : undefined,
     });
 
     const OTP = generateOTP();
@@ -187,44 +188,9 @@ exports.login = async (req, res) => {
             secret,
             { expiresIn: twentyYearsInSeconds }
         );
-        const {
-            _id,
-            email,
-            role,
-            name,
-            isAdmin,
-            image,
-            username,
-            following,
-            followers,
-            brand,
-            brandDescription,
-            link,
-            phone,
-            gender,
-            birthday,
-            verified,
-        } = user;
         res.status(200).json({
             token,
-            user: {
-                _id,
-                birthday,
-                brand,
-                brandDescription,
-                email,
-                following,
-                followers,
-                gender,
-                image,
-                isAdmin,
-                link,
-                name,
-                phone,
-                role,
-                username,
-                verified,
-            },
+            user
         });
     } else {
         res.status(400).send("password is wrong!");
