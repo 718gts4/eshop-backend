@@ -1,7 +1,9 @@
 require("dotenv").config();
 const mongoose = require("../config/database");
 const { User } = require("../models/user");
-const { Vendor } = require("../models/vendor");
+// const { Vendor } = require("../models/vendor");
+const { vendorSchema } = require("../models/vendor");
+const Vendor = mongoose.model("Vendor", vendorSchema);
 
 async function migrateData() {
     try {
@@ -15,7 +17,9 @@ async function migrateData() {
                 console.log(`No user found for vendor ${vendor._id}`);
                 continue;
             }
-
+            if (user) {
+                console.log(`User found for vendor ${vendor._id}`);
+            }
             user.vendor = vendor.toObject();
             user.role = "admin";
 
