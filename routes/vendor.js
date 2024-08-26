@@ -599,23 +599,29 @@ router.delete("/:userId", async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
-        if (!user.vendor) {
-            return res.status(404).json({ error: "Vendor information not found for this user" });
+        // Remove vendor information if it exists
+        if (user.vendor) {
+            user.vendor = undefined;
         }
 
-        // Remove vendor information
-        user.vendor = undefined;
-        user.role = "user";  // Change role back to regular user
-        user.isAdmin = false;  // Remove admin privileges
+        // Reset user role and remove admin privileges
+        user.role = "user";
+        user.isAdmin = false;
 
         // Remove vendor-related fields
         user.brand = undefined;
         user.brandDescription = undefined;
         user.link = undefined;
 
+        // Reset other vendor-related fields if they exist
+        user.contacts = undefined;
+        user.followers = undefined;
+        user.following = undefined;
+        user.likes = undefined;
+
         await user.save();
 
-        res.status(200).json({ message: "Vendor successfully deleted" });
+        res.status(200).json({ message: "Vendor successfully deleted and user reset to regular status" });
     } catch (error) {
         console.error("Error deleting vendor:", error);
         res.status(500).json({ error: "Server error deleting vendor" });
