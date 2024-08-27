@@ -3,7 +3,7 @@ const {ReturnBank} = require('../models/returnBank');
 
 exports.getReturnBank = async (req, res) => {
     try {
-        const returnBank = await ReturnBank.find({userId:req.params.id})
+        const returnBank = await ReturnBank.find({_id:req.params.id})
             
         if(!returnBank){
             res.status(500).json({message:'The bank account with the given ID was not found'});
@@ -18,7 +18,7 @@ exports.getReturnBank = async (req, res) => {
 exports.createReturnBank = async (req, res) => {
     const { accountName, accountNumber, bankName } = req.body;
     const { userId } = req.params.id;
-    console.log('req params', req.params)
+  
     let newBankAccount = new ReturnBank({ accountName, accountNumber, bankName, userId });
 
     newBankAccount = await newBankAccount.save();
