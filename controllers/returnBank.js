@@ -37,7 +37,6 @@ exports.updateReturnBank = async (req, res) => {
             accountName: req.body.accountName,
             accountNumber: req.body.accountNumber,
             bankName: req.body.bankName,
-            userId: req.params.id,
         },
         { new: true}
     )
