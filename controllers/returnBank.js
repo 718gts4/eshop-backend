@@ -16,7 +16,9 @@ exports.getReturnBank = async (req, res) => {
 }
 
 exports.createReturnBank = async (req, res) => {
-    const { accountName, accountNumber, bankName, userId } = req.body;
+    const { accountName, accountNumber, bankName } = req.body;
+    const { userId } = req.params.id;
+    console.log('req params', req.params)
     let newBankAccount = new Address({ accountName, accountNumber, bankName, userId });
 
     newBankAccount = await newBankAccount.save();
