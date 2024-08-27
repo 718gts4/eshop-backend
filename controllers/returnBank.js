@@ -31,8 +31,7 @@ exports.createReturnBank = async (req, res) => {
 
 exports.updateReturnBank = async (req, res) => {
     console.log('USER ID', req.params.id)
-    const returnBank = await ReturnBank.findByIdAndUpdate(
-        req.params.id,
+    const returnBank = await ReturnBank.findOneAndUpdate({userId:req.params.id},
         {   
             accountName: req.body.accountName,
             accountNumber: req.body.accountNumber,
