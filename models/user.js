@@ -124,6 +124,10 @@ const userSchema = mongoose.Schema({
         required: false,
     },
     vendor: vendorSchema,
+    chats: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Chat'
+    }]
 }, {timestamps: true});
 
 userSchema.pre("save", function (next) {

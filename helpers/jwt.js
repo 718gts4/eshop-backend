@@ -1,13 +1,20 @@
 const expressJwt = require("express-jwt");
 
+const isRevoked = async (req, payload, done) => {
+    if (!payload.isAdmin) {
+        done(null, true);
+    }
+    done();
+};
+
 function authJwt() {
     const secret = process.env.secret;
     const api = process.env.API_URL;
 
     return expressJwt({
-        secret: secret,
+        secret,
         algorithms: ["HS256"],
-        isRevoked: isRevoked,
+        isRevoked,
     }).unless({
         path: [
             { url: /\/uploads(.*)/, methods: ["GET", "OPTIONS"] },
@@ -82,14 +89,6 @@ function authJwt() {
             `${api}/admin/login`,
         ],
     });
-}
-
-async function isRevoked(req, payload, done) {
-    if (!payload.isAdmin) {
-        done(null, true);
-    }
-
-    done();
 }
 
 module.exports = authJwt;

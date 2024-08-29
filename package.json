@@ -34,6 +34,7 @@
     "nodemailer-smtp-transport": "^2.7.4",
     "nodemon": "^2.0.20",
     "punycode": "^2.3.1",
+    "sanitize-html": "^2.13.0",
     "sharp": "^0.32.0",
     "shortid": "^2.2.16",
     "slugify": "^1.6.5",

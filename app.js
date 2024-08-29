@@ -50,6 +50,7 @@ const purchaseRoutes = require("./routes/purchase");
 const vendorRoutes = require("./routes/vendor");
 const clientRoutes = require("./routes/client");
 const returnBankRoutes = require("./routes/returnBank");
+const chatRoutes = require("./routes/chat");
 
 const api = process.env.API_URL;
 
@@ -71,6 +72,7 @@ app.use(`${api}/purchase`, purchaseRoutes);
 app.use(`${api}/vendor`, vendorRoutes);
 app.use(`${api}/client`, clientRoutes);
 app.use(`${api}/returnBank`, returnBankRoutes);
+app.use(`${api}/chat`, chatRoutes);
 
 // Schedule the task to run periodically (e.g., every hour)
 setInterval(backgroundService.updateProductsOnSaleStatus, 3600000);
