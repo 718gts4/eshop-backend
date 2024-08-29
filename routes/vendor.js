@@ -554,10 +554,10 @@ router.delete("/document-history/:userId", async (req, res) => {
     }
 });
 
-// Route to get all vendors with user details
+// Route to get all vendors (approved and pending) with user details
 router.get("/all", async (req, res) => {
     try {
-        const users = await User.find({ isAdmin: true })
+        const users = await User.find({ $or: [{ isAdmin: true }, { vendor: { $exists: true } }] })
             .select('name username image email vendor isAdmin');
 
         const vendorsWithUserDetails = users.map(user => {            
@@ -578,6 +578,7 @@ router.get("/all", async (req, res) => {
                     isAdmin: user.isAdmin,
                 },
                 userId: user._id,
+                status: user.isAdmin ? 'approved' : 'pending',
             };
         });
 
