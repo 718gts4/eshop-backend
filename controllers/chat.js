@@ -1,10 +1,10 @@
-const Chat = require('../models/chat');
+const VendorSupportQuery = require('../models/vendorSupportQuery');
 const User = require('../models/user').User;
 const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
 const sanitizeHtml = require('sanitize-html');
 
-const validateChat = [
+const validateVendorSupportQuery = [
     body('queryType').isIn(['Product', 'Customer', 'Settlement', 'Order', 'Video']).withMessage('Invalid query type'),
     body('initialMessage').isString().trim().isLength({ min: 1, max: 1000 }).withMessage('Initial message must be between 1 and 1000 characters')
 ];
@@ -14,7 +14,7 @@ const validateMessage = [
 ];
 
 // Controller function
-const createChat = async (req, res) => {
+const createVendorSupportQuery = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -27,10 +27,10 @@ const createChat = async (req, res) => {
         const initiator = await User.findById(initiatorId);
 
         if (!initiator || (initiator.role !== 'admin' && initiator.role !== 'superAdmin' && initiator.role !== 'vendor')) {
-            return res.status(403).json({ message: 'Chat can only be initiated by a vendor or admin' });
+            return res.status(403).json({ message: 'Vendor support query can only be initiated by a vendor or admin' });
         }
 
-        const chat = new Chat({
+        const vendorSupportQuery = new VendorSupportQuery({
             participants: [initiatorId],
             queryType,
             messages: [{
@@ -39,53 +39,53 @@ const createChat = async (req, res) => {
             }]
         });
 
-        const savedChat = await chat.save();
-        await User.findByIdAndUpdate(initiatorId, { $push: { chats: savedChat._id } });
+        const savedVendorSupportQuery = await vendorSupportQuery.save();
+        await User.findByIdAndUpdate(initiatorId, { $push: { vendorSupportQueries: savedVendorSupportQuery._id } });
 
-        console.log(`[INFO] Chat created by user ${initiatorId}`, { chatId: savedChat._id });
-        res.status(201).json(savedChat);
+        console.log(`[INFO] Vendor support query created by user ${initiatorId}`, { queryId: savedVendorSupportQuery._id });
+        res.status(201).json(savedVendorSupportQuery);
     } catch (error) {
-        console.log(`[ERROR] Error creating chat`, { error: error.message, userId: req.user.id });
-        res.status(500).json({ message: 'Error creating chat', error: error.message });
+        console.log(`[ERROR] Error creating vendor support query`, { error: error.message, userId: req.user.id });
+        res.status(500).json({ message: 'Error creating vendor support query', error: error.message });
     }
 };
 
 // Export the route handler with middleware
-exports.createChat = [validateChat, createChat];
+exports.createVendorSupportQuery = [validateVendorSupportQuery, createVendorSupportQuery];
 
-exports.getChat = async (req, res) => {
+exports.getVendorSupportQuery = async (req, res) => {
     try {
-        const chatId = req.params.id;
+        const queryId = req.params.id;
 
-        if (!mongoose.Types.ObjectId.isValid(chatId)) {
-            return res.status(400).json({ message: 'Invalid chat ID' });
+        if (!mongoose.Types.ObjectId.isValid(queryId)) {
+            return res.status(400).json({ message: 'Invalid vendor support query ID' });
         }
 
-        const chat = await Chat.findById(chatId).populate({
+        const vendorSupportQuery = await VendorSupportQuery.findById(queryId).populate({
             path: 'participants',
             select: 'name email role'
         });
         
-        if (!chat) {
-            return res.status(404).json({ message: 'Chat not found' });
+        if (!vendorSupportQuery) {
+            return res.status(404).json({ message: 'Vendor support query not found' });
         }
 
-        if (!chat.participants.some(p => p._id.toString() === req.user.id)) {
-            console.log(`[WARN] Unauthorized chat access attempt`, { userId: req.user.id, chatId });
-            return res.status(403).json({ message: 'You are not authorized to view this chat' });
+        if (!vendorSupportQuery.participants.some(p => p._id.toString() === req.user.id)) {
+            console.log(`[WARN] Unauthorized vendor support query access attempt`, { userId: req.user.id, queryId });
+            return res.status(403).json({ message: 'You are not authorized to view this vendor support query' });
         }
 
         // Populate sender information for each message
-        await Chat.populate(chat, {
+        await VendorSupportQuery.populate(vendorSupportQuery, {
             path: 'messages.sender',
             select: 'name email role'
         });
 
-        console.log(`[INFO] Chat retrieved`, { userId: req.user.id, chatId });
-        res.json(chat);
+        console.log(`[INFO] Vendor support query retrieved`, { userId: req.user.id, queryId });
+        res.json(vendorSupportQuery);
     } catch (error) {
-        console.log(`[ERROR] Error retrieving chat`, { error: error.message, userId: req.user.id });
-        res.status(500).json({ message: 'Error retrieving chat', error: error.message });
+        console.log(`[ERROR] Error retrieving vendor support query`, { error: error.message, userId: req.user.id });
+        res.status(500).json({ message: 'Error retrieving vendor support query', error: error.message });
     }
 };
 
@@ -98,38 +98,38 @@ const addMessageController = async (req, res) => {
     try {
         const { content } = req.body;
         const senderId = req.user.id;
-        const chatId = req.params.id;
+        const queryId = req.params.id;
 
-        if (!mongoose.Types.ObjectId.isValid(chatId)) {
-            return res.status(400).json({ message: 'Invalid chat ID' });
+        if (!mongoose.Types.ObjectId.isValid(queryId)) {
+            return res.status(400).json({ message: 'Invalid vendor support query ID' });
         }
 
-        const chat = await Chat.findById(chatId);
+        const vendorSupportQuery = await VendorSupportQuery.findById(queryId);
         
-        if (!chat) {
-            return res.status(404).json({ message: 'Chat not found' });
+        if (!vendorSupportQuery) {
+            return res.status(404).json({ message: 'Vendor support query not found' });
         }
 
-        if (!chat.participants.includes(senderId)) {
-            return res.status(403).json({ message: 'User is not a participant in this chat' });
+        if (!vendorSupportQuery.participants.includes(senderId)) {
+            return res.status(403).json({ message: 'User is not a participant in this vendor support query' });
         }
 
-        chat.messages.push({ sender: senderId, content: sanitizeHtml(content) });
-        chat.lastMessage = Date.now();
+        vendorSupportQuery.messages.push({ sender: senderId, content: sanitizeHtml(content) });
+        vendorSupportQuery.lastMessage = Date.now();
         
-        const updatedChat = await chat.save();
+        const updatedVendorSupportQuery = await vendorSupportQuery.save();
 
-        console.log(`[INFO] Message added to chat`, { chatId, senderId });
-        res.json(updatedChat);
+        console.log(`[INFO] Message added to vendor support query`, { queryId, senderId });
+        res.json(updatedVendorSupportQuery);
     } catch (error) {
-        console.log(`[ERROR] Error adding message to chat`, { error: error.message, userId: req.user.id });
+        console.log(`[ERROR] Error adding message to vendor support query`, { error: error.message, userId: req.user.id });
         res.status(500).json({ message: 'Error adding message', error: error.message });
     }
 };
 
 exports.addMessage = [validateMessage, addMessageController];
 
-exports.getChatsByUser = async (req, res) => {
+exports.getVendorSupportQueriesByUser = async (req, res) => {
     try {
         const userId = req.params.userId;
 
@@ -137,54 +137,54 @@ exports.getChatsByUser = async (req, res) => {
             return res.status(400).json({ message: 'Invalid user ID' });
         }
 
-        // Only allow vendors to access their own chats, or helpdesk support to access any chats
+        // Only allow vendors to access their own vendor support queries, or helpdesk support to access any queries
         if (userId !== req.user.id && req.user.role !== 'superAdmin') {
-            return res.status(403).json({ message: 'You are not authorized to view these chats' });
+            return res.status(403).json({ message: 'You are not authorized to view these vendor support queries' });
         }
 
         // If the user is not a helpdesk support, force the userId to be their own
         const queryUserId = (req.user.role === 'superAdmin') ? userId : req.user.id;
 
-        const chats = await Chat.find({ participants: queryUserId })
+        const vendorSupportQueries = await VendorSupportQuery.find({ participants: queryUserId })
                                 .populate('participants', 'name email')
                                 .sort({ lastMessage: -1 });
-        res.json(chats);
+        res.json(vendorSupportQueries);
     } catch (error) {
-        res.status(500).json({ message: 'Error retrieving chats', error: error.message });
+        res.status(500).json({ message: 'Error retrieving vendor support queries', error: error.message });
     }
 };
 
-vendorSupportQueryController.markMessagesAsRead = async (req, res) => {
+exports.markMessagesAsRead = async (req, res) => {
     try {
-        const chatId = req.params.id;
+        const queryId = req.params.id;
         const userId = req.user.id;
 
-        if (!mongoose.Types.ObjectId.isValid(chatId) || !mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).json({ message: 'Invalid chat ID or user ID' });
+        if (!mongoose.Types.ObjectId.isValid(queryId) || !mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid vendor support query ID or user ID' });
         }
 
-        const chat = await Chat.findById(chatId);
+        const vendorSupportQuery = await VendorSupportQuery.findById(queryId);
 
-        if (!chat) {
-            return res.status(404).json({ message: 'Chat not found' });
+        if (!vendorSupportQuery) {
+            return res.status(404).json({ message: 'Vendor support query not found' });
         }
 
-        if (!chat.participants.includes(userId)) {
-            return res.status(403).json({ message: 'User is not a participant in this chat' });
+        if (!vendorSupportQuery.participants.includes(userId)) {
+            return res.status(403).json({ message: 'User is not a participant in this vendor support query' });
         }
 
         // Mark all unread messages as read
-        chat.messages.forEach(message => {
+        vendorSupportQuery.messages.forEach(message => {
             if (!message.readBy.includes(userId)) {
                 message.readBy.push(userId);
             }
         });
 
-        const updatedChat = await chat.save();
-        res.json(updatedChat);
+        const updatedVendorSupportQuery = await vendorSupportQuery.save();
+        res.json(updatedVendorSupportQuery);
     } catch (error) {
         res.status(500).json({ message: 'Error marking messages as read', error: error.message });
     }
 };
 
-module.exports = vendorSupportQueryController;
+module.exports = exports;
