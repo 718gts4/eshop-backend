@@ -48,6 +48,7 @@ const vendorSupportQueryController = {
     } catch (error) {
         console.log(`[ERROR] Error creating chat`, { error: error.message, userId: req.user.id });
         res.status(500).json({ message: 'Error creating chat', error: error.message });
+    }
     },
 
     // Export the route handler with middleware
