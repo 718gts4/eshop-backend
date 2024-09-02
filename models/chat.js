@@ -20,7 +20,7 @@ const messageSchema = new mongoose.Schema({
     }]
 });
 
-const chatSchema = new mongoose.Schema({
+const generalChatSchema = new mongoose.Schema({
     participants: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
@@ -30,11 +30,10 @@ const chatSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    queryType: {                                                                            
-        type: String,                                                                       
-        enum: ['Product', 'Customer', 'Settlement', 'Order', 'Video'],                      
-        required: true                                                                      
-    },
+    chatType: {
+        type: String,
+        required: true
+    }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Chat', chatSchema);
+module.exports = mongoose.model('GeneralChat', generalChatSchema);

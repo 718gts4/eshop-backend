@@ -126,7 +126,11 @@ const userSchema = mongoose.Schema({
     vendor: vendorSchema,
     chats: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Chat'
+        ref: 'GeneralChat'
+    }],
+    vendorSupportQueries: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'VendorSupportQuery'
     }]
 }, {timestamps: true});
 
