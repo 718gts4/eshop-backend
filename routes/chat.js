@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const chatController = require('../controllers/chat');
+const vendorSupportQueryController = require('../controllers/chat');
 const authJwt = require('../helpers/jwt');
 
-router.post('/', authJwt(), chatController.createChat);
-router.get('/:id', authJwt(), chatController.getChat);
-router.post('/:id/messages', authJwt(), chatController.addMessage);
-router.get('/user/:userId', authJwt(), chatController.getChatsByUser);
-router.post('/:id/read', authJwt(), chatController.markMessagesAsRead);
+router.post('/', authJwt(), vendorSupportQueryController.createChat);
+router.get('/:id', authJwt(), vendorSupportQueryController.getChat);
+router.post('/:id/messages', authJwt(), vendorSupportQueryController.addMessage);
+router.get('/user/:userId', authJwt(), vendorSupportQueryController.getChatsByUser);
+router.post('/:id/read', authJwt(), vendorSupportQueryController.markMessagesAsRead);
 
 module.exports = router;

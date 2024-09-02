@@ -3,6 +3,9 @@ const User = require('../models/user');
 const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
 const sanitizeHtml = require('sanitize-html');
+
+// Rename to vendorSupportQueryController
+const vendorSupportQueryController = {
 const validateChat = [
     body('queryType').isIn(['Product', 'Customer', 'Settlement', 'Order', 'Video']).withMessage('Invalid query type'),
     body('initialMessage').isString().trim().isLength({ min: 1, max: 1000 }).withMessage('Initial message must be between 1 and 1000 characters')
@@ -153,7 +156,7 @@ exports.getChatsByUser = async (req, res) => {
     }
 };
 
-exports.markMessagesAsRead = async (req, res) => {
+vendorSupportQueryController.markMessagesAsRead = async (req, res) => {
     try {
         const chatId = req.params.id;
         const userId = req.user.id;
@@ -185,3 +188,5 @@ exports.markMessagesAsRead = async (req, res) => {
         res.status(500).json({ message: 'Error marking messages as read', error: error.message });
     }
 };
+
+module.exports = vendorSupportQueryController;
