@@ -50,7 +50,7 @@ const purchaseRoutes = require("./routes/purchase");
 const vendorRoutes = require("./routes/vendor");
 const clientRoutes = require("./routes/client");
 const returnBankRoutes = require("./routes/returnBank");
-const vendorSupportQueryRoutes = require("./routes/chat");
+const vendorSupportQueryRoutes = require("./routes/vendor-support-query");
 
 const api = process.env.API_URL;
 
