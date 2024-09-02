@@ -17,6 +17,7 @@ function authJwt() {
         isRevoked,
     }).unless({
         path: [
+                    { url: /\/api\/v1\/vendor-support-query(.*)/, methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'] },
             { url: /\/uploads(.*)/, methods: ["GET", "OPTIONS"] },
             {
                 url: /\/api\/v1\/products(.*)/,

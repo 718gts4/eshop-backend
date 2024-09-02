@@ -1,5 +1,12 @@
 const express = require('express');
 const router = express.Router();
+
+// Rename the chat routes to vendor-support-query
+router.post('/vendor-support-query', authJwt(), chatController.createChat);
+router.get('/vendor-support-query/:id', authJwt(), chatController.getChat);
+router.post('/vendor-support-query/:id/messages', authJwt(), chatController.addMessage);
+router.get('/vendor-support-query/user/:userId', authJwt(), chatController.getChatsByUser);
+router.post('/vendor-support-query/:id/read', authJwt(), chatController.markMessagesAsRead);
 const chatController = require('../controllers/chat');
 const authJwt = require('../helpers/jwt');
 
