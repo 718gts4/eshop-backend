@@ -1,4 +1,4 @@
-const VendorSupportQuery = require('../models/vendorSupportQuery');
+const VendorSupportQuery = require('../models/vendor-support-query');
 const User = require('../models/user').User;
 const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');

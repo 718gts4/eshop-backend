@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const vendorSupportQueryController = require('../controllers/vendorSupportQuery');
+const vendorSupportQueryController = require('../controllers/vendor-support-query');
 const authJwt = require('../helpers/jwt');
 
 router.post('/', authJwt(), vendorSupportQueryController.createVendorSupportQuery);
