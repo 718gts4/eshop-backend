@@ -1,5 +1,5 @@
 const Chat = require('../models/chat');
-const User = require('../models/user');
+const User = require('../models/user').User;
 const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
 const sanitizeHtml = require('sanitize-html');
@@ -48,11 +48,15 @@ const vendorSupportQueryController = {
     } catch (error) {
         console.log(`[ERROR] Error creating chat`, { error: error.message, userId: req.user.id });
         res.status(500).json({ message: 'Error creating chat', error: error.message });
+    },
+
+    // Export the route handler with middleware
+    createChat: function() {
+        return [this.validateChat, this.createChatController];
     }
 };
 
-// Export the route handler with middleware
-vendorSupportQueryController.createChat = [vendorSupportQueryController.validateChat, vendorSupportQueryController.createChatController];
+module.exports = vendorSupportQueryController;
 
 exports.getChat = async (req, res) => {
     try {
