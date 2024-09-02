@@ -4,19 +4,18 @@ const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
 const sanitizeHtml = require('sanitize-html');
 
-// Rename to vendorSupportQueryController
 const vendorSupportQueryController = {
-const validateChat = [
-    body('queryType').isIn(['Product', 'Customer', 'Settlement', 'Order', 'Video']).withMessage('Invalid query type'),
-    body('initialMessage').isString().trim().isLength({ min: 1, max: 1000 }).withMessage('Initial message must be between 1 and 1000 characters')
-];
+    validateChat: [
+        body('queryType').isIn(['Product', 'Customer', 'Settlement', 'Order', 'Video']).withMessage('Invalid query type'),
+        body('initialMessage').isString().trim().isLength({ min: 1, max: 1000 }).withMessage('Initial message must be between 1 and 1000 characters')
+    ],
 
-const validateMessage = [
-    body('content').isString().trim().isLength({ min: 1, max: 1000 }).withMessage('Message must be between 1 and 1000 characters')
-];
+    validateMessage: [
+        body('content').isString().trim().isLength({ min: 1, max: 1000 }).withMessage('Message must be between 1 and 1000 characters')
+    ],
 
-// Controller function
-const createChatController = async (req, res) => {
+    // Controller function
+    createChatController: async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -53,7 +52,7 @@ const createChatController = async (req, res) => {
 };
 
 // Export the route handler with middleware
-exports.createChat = [validateChat, createChatController];
+vendorSupportQueryController.createChat = [vendorSupportQueryController.validateChat, vendorSupportQueryController.createChatController];
 
 exports.getChat = async (req, res) => {
     try {
