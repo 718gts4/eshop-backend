@@ -8,13 +8,12 @@ function authJwt() {
         expressJwt({
             secret,
             algorithms: ["HS256"],
-            isRevoked: async (req, token) => {
-                
-                if (!token.payload.isAdmin) {
-                    return true;
+            credentialsRequired: false,
+            onAuthorize: (req, payload) => {
+                if (payload) {
+                    req.user = payload;
+                    console.log("User set in request:", req.user);
                 }
-                console.log("isRevoked: token", token);
-                return false;
             },
         }).unless({
         path: [
