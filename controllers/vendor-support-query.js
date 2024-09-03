@@ -89,6 +89,8 @@ exports.getVendorSupportQuery = async (req, res) => {
             return res.status(403).json({ message: 'You are not authorized to view this vendor support query' });
         }
 
+        console.log('[DEBUG] Populated vendor support query:', JSON.stringify(vendorSupportQuery, null, 2));
+
         // Populate sender information for each message
         await VendorSupportQuery.populate(vendorSupportQuery, {
             path: 'messages.sender',
