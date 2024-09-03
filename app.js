@@ -29,6 +29,12 @@ app.options("*", options);
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authJwt());
+app.use((req, res, next) => {
+    if (req.auth) {
+        req.user = req.auth;
+    }
+    next();
+});
 app.use(errorHandler);
 app.use("/uploads", express.static(__dirname + "/uploads"));
 
