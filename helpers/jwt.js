@@ -7,15 +7,12 @@ function authJwt() {
 
     return [
         (req, res, next) => {
-            console.log("authJwt middleware called");
-            console.log("Authorization header:", req.headers.authorization);
-            
+        
             if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
                 const token = req.headers.authorization.split(' ')[1];
                 try {
                     const decoded = jwt.verify(token, secret);
                     req.user = decoded;
-                    console.log("User set from decoded token:", req.user);
                 } catch (error) {
                     console.error("Error verifying token:", error);
                 }
@@ -57,8 +54,6 @@ function authJwt() {
             ],
         }),
         (req, res, next) => {
-            console.log("Final middleware in authJwt");
-            console.log("User object:", req.user);
             next();
         }
     ];
