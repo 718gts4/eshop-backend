@@ -129,7 +129,7 @@ const addMessageController = async (req, res) => {
         }
 
         vendorSupportQuery.messages.push({ sender: senderId, content: sanitizeHtml(content) });
-        vendorSupportQuery.lastMessage = Date.now();
+        vendorSupportQuery.lastMessageAt = Date.now();
         
         const updatedVendorSupportQuery = await vendorSupportQuery.save();
 

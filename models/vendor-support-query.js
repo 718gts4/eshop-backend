@@ -26,7 +26,7 @@ const vendorSupportQuerySchema = new mongoose.Schema({
         ref: 'User'
     }],
     messages: [messageSchema],
-    lastMessage: {
+    lastMessageAt: {
         type: Date,
         default: Date.now
     },

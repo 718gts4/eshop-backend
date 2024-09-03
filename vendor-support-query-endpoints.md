@@ -16,7 +16,7 @@
 2. Get all vendor support queries for a user:
    - Method: GET
    - Endpoint: `${baseURL}vendor-support-query/user/:userId`
-   - Response: An array of vendor support query objects for the specified user
+   - Response: An array of vendor support query objects for the specified user, sorted by `lastMessageAt` in descending order
 
 3. Get a specific vendor support query:
    - Method: GET
