@@ -7,7 +7,10 @@ const messageSchema = new mongoose.Schema({
         required: true
     },
     senderImage: {
-        type: String
+        type: String,
+        default: function() {
+            return this.sender.image;
+        }
     },
     content: {
         type: String,
