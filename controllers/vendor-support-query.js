@@ -25,14 +25,12 @@ const createVendorSupportQuery = async (req, res) => {
         console.log(`[INFO] Creating vendor support query`, { 
             body: req?.body, 
             user: req?.user,
-            headers: req.headers,
-            auth: req.auth
+            headers: req.headers
         });
         
         if (!req.user || !req.user.userId) {
             console.log("[ERROR] User not authenticated", { 
                 user: req.user, 
-                auth: req.auth,
                 headers: req.headers
             });
             return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
@@ -61,7 +59,7 @@ const createVendorSupportQuery = async (req, res) => {
         console.log(`[INFO] Vendor support query created by user ${initiatorId}`, { queryId: savedVendorSupportQuery._id });
         res.status(201).json(savedVendorSupportQuery);
     } catch (error) {
-        console.log(`[ERROR] Error creating vendor support query`, { error: error.message, userId: req.user ? req.user.id : 'Unknown' });
+        console.log(`[ERROR] Error creating vendor support query`, { error: error.message, userId: req.user ? req.user.userId : 'Unknown' });
         res.status(500).json({ message: 'Error creating vendor support query', error: error.message });
     }
 };
