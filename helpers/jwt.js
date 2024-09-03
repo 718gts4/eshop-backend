@@ -5,6 +5,11 @@ function authJwt() {
     const api = process.env.API_URL;
 
     return [
+        (req, res, next) => {
+            console.log("authJwt middleware called");
+            console.log("Authorization header:", req.headers.authorization);
+            next();
+        },
         expressJwt({
             secret,
             algorithms: ["HS256"],
@@ -12,17 +17,12 @@ function authJwt() {
             getToken: (req) => {
                 console.log("getToken called");
                 if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-                    return req.headers.authorization.split(' ')[1];
+                    const token = req.headers.authorization.split(' ')[1];
+                    console.log("Token extracted:", token);
+                    return token;
                 }
+                console.log("No token found in Authorization header");
                 return null;
-            },
-            isRevoked: (req, payload) => {
-                console.log("isRevoked called, payload:", payload);
-                if (payload) {
-                    req.user = payload;
-                    console.log("User set in request:", req.user);
-                }
-                return false;
             },
         }).unless({
         path: [
@@ -99,12 +99,31 @@ function authJwt() {
         ],
     }),
         (req, res, next) => {
+            console.log("Final middleware in authJwt");
             if (req.auth) {
                 req.user = req.auth;
+                console.log("User set from auth:", req.user);
+            } else {
+                console.log("No auth object found in request");
             }
             next();
         }
     ];
+}
+
+// Add this function at the end of the file
+function decodeJwt(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (error) {
+        console.error("Error decoding JWT:", error);
+        return null;
+    }
 }
 
 module.exports = authJwt;

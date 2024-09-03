@@ -22,13 +22,24 @@ const createVendorSupportQuery = async (req, res) => {
 
     try {
         const { queryType, initialMessage } = req.body;
-        console.log(`[INFO] Creating vendor support query`, { body: req?.body, user: req?.user });
+        console.log(`[INFO] Creating vendor support query`, { 
+            body: req?.body, 
+            user: req?.user,
+            headers: req.headers,
+            auth: req.auth
+        });
         
         if (!req.user || !req.user.userId) {
+            console.log("[ERROR] User not authenticated", { 
+                user: req.user, 
+                auth: req.auth,
+                headers: req.headers
+            });
             return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
         }
 
         const initiatorId = req.user.userId;
+        console.log("[INFO] Initiator ID:", initiatorId);
         const initiator = await User.findById(initiatorId);
 
         if (!initiator || (initiator.role !== 'admin' && initiator.role !== 'superAdmin' && initiator.role !== 'vendor')) {
