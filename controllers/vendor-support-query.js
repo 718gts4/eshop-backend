@@ -201,4 +201,18 @@ exports.markMessagesAsRead = async (req, res) => {
     }
 };
 
+exports.getAllVendorSupportQueries = async (req, res) => {                                      
+    try {                                                                                       
+      const queries = await VendorSupportQuery.find({})                                         
+        .populate('participants', 'name email')                                                 
+        .populate('messages.sender', 'name email')                                              
+        .sort({ createdAt: -1 });                                                               
+                                                                                                
+      res.status(200).json(queries);                                                            
+    } catch (error) {                                                                           
+      console.error('[ERROR] Error fetching vendor support queries:', error);                   
+      res.status(500).json({ message: 'Error fetching vendor support queries' });               
+    }                                                                                           
+  };  
+
 module.exports = exports;
