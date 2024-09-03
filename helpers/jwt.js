@@ -4,17 +4,17 @@ function authJwt() {
     const secret = process.env.secret;
     const api = process.env.API_URL;
 
-    return expressJwt({
-        secret,
-        algorithms: ["HS256"],
-        isRevoked: async (req, token) => {
-            if (!token.payload.isAdmin) {
-                return true;
-            }
-            req.user = token.payload;
-            return false;
-        },
-    }).unless({
+    return [
+        expressJwt({
+            secret,
+            algorithms: ["HS256"],
+            isRevoked: async (req, token) => {
+                if (!token.payload.isAdmin) {
+                    return true;
+                }
+                return false;
+            },
+        }).unless({
         path: [
             { url: /\/uploads(.*)/, methods: ["GET", "OPTIONS"] },
             {
@@ -87,7 +87,14 @@ function authJwt() {
             `${api}/admin/register`,
             `${api}/admin/login`,
         ],
-    });
+    }),
+        (req, res, next) => {
+            if (req.auth) {
+                req.user = req.auth;
+            }
+            next();
+        }
+    ];
 }
 
 module.exports = authJwt;
