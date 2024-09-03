@@ -38,9 +38,23 @@ const createVendorSupportQuery = async (req, res) => {
 
         const initiatorId = req.user.userId;
         console.log("[INFO] Initiator ID:", initiatorId);
-        const initiator = await User.findById(initiatorId);
+        const initiator = await User.findById(initiatorId).select('name email role image');
 
-        if (!initiator || (initiator.role !== 'admin' && initiator.role !== 'superAdmin' && initiator.role !== 'vendor')) {
+        if (!initiator) {
+            console.log("[ERROR] Initiator not found", { initiatorId });
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        console.log("[INFO] Initiator details:", {
+            id: initiator._id,
+            name: initiator.name,
+            email: initiator.email,
+            role: initiator.role,
+            hasImage: !!initiator.image,
+            imageValue: initiator.image
+        });
+
+        if (initiator.role !== 'admin' && initiator.role !== 'superAdmin' && initiator.role !== 'vendor') {
             return res.status(403).json({ message: 'Vendor support query can only be initiated by a vendor or admin' });
         }
 
