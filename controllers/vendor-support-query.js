@@ -240,8 +240,8 @@ exports.markMessagesAsRead = async (req, res) => {
 exports.getAllVendorSupportQueries = async (req, res) => {                                      
     try {                                                                                       
       const queries = await VendorSupportQuery.find({})                                         
-        .populate('participants', 'name email')                                                 
-        .populate('messages.sender', 'name email')                                              
+        .populate('participants', 'name email image')                                                 
+        .populate('messages.sender', 'name email image')                                              
         .sort({ createdAt: -1 });                                                               
                                                                                                 
       res.status(200).json(queries);                                                            
