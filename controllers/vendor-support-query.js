@@ -77,7 +77,7 @@ exports.getVendorSupportQuery = async (req, res) => {
 
         const vendorSupportQuery = await VendorSupportQuery.findById(queryId).populate({
             path: 'participants',
-            select: 'name email role'
+            select: 'name email role image'
         });
         
         if (!vendorSupportQuery) {
