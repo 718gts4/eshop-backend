@@ -9,11 +9,20 @@ function authJwt() {
             secret,
             algorithms: ["HS256"],
             credentialsRequired: false,
-            onAuthorize: (req, payload) => {
+            getToken: (req) => {
+                console.log("getToken called");
+                if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+                    return req.headers.authorization.split(' ')[1];
+                }
+                return null;
+            },
+            isRevoked: (req, payload) => {
+                console.log("isRevoked called, payload:", payload);
                 if (payload) {
                     req.user = payload;
                     console.log("User set in request:", req.user);
                 }
+                return false;
             },
         }).unless({
         path: [
