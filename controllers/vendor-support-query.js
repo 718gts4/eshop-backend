@@ -23,7 +23,11 @@ const createVendorSupportQuery = async (req, res) => {
     try {
         const { queryType, initialMessage } = req.body;
         console.log(`[INFO] Creating vendor support query`, { queryType, initialMessage, req });
-        const initiatorId = req.user.id;
+        const initiatorId = req.user ? req.user.id : null;
+
+        if (!initiatorId) {
+            return res.status(400).json({ message: 'User ID is required' });
+        }
 
         const initiator = await User.findById(initiatorId);
 
@@ -46,7 +50,7 @@ const createVendorSupportQuery = async (req, res) => {
         console.log(`[INFO] Vendor support query created by user ${initiatorId}`, { queryId: savedVendorSupportQuery._id });
         res.status(201).json(savedVendorSupportQuery);
     } catch (error) {
-        console.log(`[ERROR] Error creating vendor support query`, { error: error.message, userId: req.user.id });
+        console.log(`[ERROR] Error creating vendor support query`, { error: error.message, userId: req.user ? req.user.id : 'Unknown' });
         res.status(500).json({ message: 'Error creating vendor support query', error: error.message });
     }
 };
