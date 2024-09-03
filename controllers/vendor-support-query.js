@@ -161,7 +161,7 @@ exports.getVendorSupportQueriesByUser = async (req, res) => {
 
         const vendorSupportQueries = await VendorSupportQuery.find({ participants: queryUserId })
                                 .populate('participants', 'name email')
-                                .sort({ lastMessage: -1 });
+                                .sort({ lastMessageAt: -1 });
         res.json(vendorSupportQueries);
     } catch (error) {
         res.status(500).json({ message: 'Error retrieving vendor support queries', error: error.message });
