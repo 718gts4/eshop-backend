@@ -22,6 +22,7 @@ const createVendorSupportQuery = async (req, res) => {
 
     try {
         const { queryType, initialMessage } = req.body;
+        console.log(`[INFO] Creating vendor support query`, { queryType, initialMessage, req });
         const initiatorId = req.user.id;
 
         const initiator = await User.findById(initiatorId);
