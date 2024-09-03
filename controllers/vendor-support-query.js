@@ -91,10 +91,30 @@ exports.getVendorSupportQuery = async (req, res) => {
 
         console.log('[DEBUG] Populated vendor support query:', JSON.stringify(vendorSupportQuery, null, 2));
 
+        // Log information about each participant's image
+        vendorSupportQuery.participants.forEach((participant, index) => {
+            console.log(`[DEBUG] Participant ${index + 1} image:`, {
+                userId: participant._id,
+                name: participant.name,
+                hasImage: !!participant.image,
+                imageValue: participant.image
+            });
+        });
+
         // Populate sender information for each message
         await VendorSupportQuery.populate(vendorSupportQuery, {
             path: 'messages.sender',
-            select: 'name email role'
+            select: 'name email role image'
+        });
+
+        // Log information about each message sender's image
+        vendorSupportQuery.messages.forEach((message, index) => {
+            console.log(`[DEBUG] Message ${index + 1} sender image:`, {
+                userId: message.sender._id,
+                name: message.sender.name,
+                hasImage: !!message.sender.image,
+                imageValue: message.sender.image
+            });
         });
 
         console.log(`[INFO] Vendor support query retrieved`, { userId: req.user.id, queryId });
