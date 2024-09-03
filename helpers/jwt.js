@@ -9,9 +9,11 @@ function authJwt() {
             secret,
             algorithms: ["HS256"],
             isRevoked: async (req, token) => {
+                
                 if (!token.payload.isAdmin) {
                     return true;
                 }
+                console.log("isRevoked: token", token);
                 return false;
             },
         }).unless({
