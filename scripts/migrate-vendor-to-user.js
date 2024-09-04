@@ -23,8 +23,16 @@ async function migrateData() {
             user.vendor = vendor.toObject();
             user.role = "admin";
 
+            // Add debugging information
+            console.log(`Migrating vendor ${vendor._id} to user ${user._id}`);
+            console.log(`User data before save:`, JSON.stringify(user, null, 2));
+
             await user.save();
             console.log(`Migrated vendor ${vendor._id} to user ${user._id}`);
+
+            // Add more debugging information
+            const updatedUser = await User.findById(user._id);
+            console.log(`User data after save:`, JSON.stringify(updatedUser, null, 2));
         }
 
         console.log("All vendors migrated to users");
