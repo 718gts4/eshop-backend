@@ -248,10 +248,6 @@ exports.getAllVendorSupportQueries = async (req, res) => {
         .populate('messages.sender', 'name email image username')                                              
         .sort({ createdAt: -1 });                                                               
                                                                                                 
-      if (queries.length === 0) {
-        return res.status(404).json({ message: 'No vendor support queries found for this user' });
-      }
-
       res.status(200).json(queries);                                                            
     } catch (error) {                                                                           
       console.error('[ERROR] Error fetching vendor support queries:', error);                   
