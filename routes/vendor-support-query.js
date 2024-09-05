@@ -7,6 +7,7 @@ const {
   getVendorSupportQueriesByUser,
   getVendorSupportQuery,
   markMessagesAsRead,
+  getVendorSupportQueryMessages,
 } = require('../controllers/vendor-support-query');
 const authJwt = require('../helpers/jwt');
 
