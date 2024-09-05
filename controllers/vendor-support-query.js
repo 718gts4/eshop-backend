@@ -255,4 +255,24 @@ exports.getAllVendorSupportQueries = async (req, res) => {
     }                                                                                           
   };  
 
+exports.getVendorSupportQueryMessages = async (req, res) => {
+    try {
+        if (!req.user || !req.user.userId) {
+            return res.status(401).json({ message: 'User not authenticated' });
+        }
+
+        const queries = await VendorSupportQuery.find({ participants: req.user.userId })
+            .populate('participants', 'name email image username')
+            .populate('messages.sender', 'name email image username')
+            .sort({ createdAt: -1 });
+
+        const messages = queries.flatMap(query => query.messages);
+
+        res.status(200).json(messages);
+    } catch (error) {
+        console.error('[ERROR] Error fetching vendor support query messages:', error);
+        res.status(500).json({ message: 'Error fetching vendor support query messages' });
+    }
+};
+
 module.exports = exports;
