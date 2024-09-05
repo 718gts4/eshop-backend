@@ -18,6 +18,8 @@ async function updateUserRole(email, newRole) {
         const isAdmin = newRole === "admin" || newRole === "superAdmin";
         user.role = newRole;
         user.isAdmin = isAdmin;
+        // user.name = "ytrwarew"; // set name if needed
+        user.verified = true; // unverified users do not have access to admin
 
         await user.save();
 
@@ -35,9 +37,10 @@ async function updateUserRole(email, newRole) {
     }
 }
 
-const emails = ['q@mail.com', 'q4@mail.com'];
+const emails = ['q@mail.com'];
 const newRole = "superAdmin";
 
+// Set user(s) to admin or superAdmin
 Promise.all(emails.map(email => updateUserRole(email, newRole)))
     .then(() => console.log("All user role updates completed"))
     .catch((error) =>
