@@ -12,8 +12,8 @@ const {
 const authJwt = require('../helpers/jwt');
 
 router.post('/', authJwt(), createVendorSupportQuery);
-router.get('/list', authJwt(), getAllVendorSupportQueries);          
-router.get('/list/messages', authJwt(), getVendorSupportQueryMessages);
+router.get('/', authJwt(), getAllVendorSupportQueries);          
+router.get('/messages', authJwt(), getVendorSupportQueryMessages);
 router.get('/:id', authJwt(), getVendorSupportQuery);
 router.post('/:id/messages', authJwt(), addMessage);
 router.get('/user/:userId', authJwt(), getVendorSupportQueriesByUser);
