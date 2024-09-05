@@ -275,4 +275,7 @@ exports.getVendorSupportQueryMessages = async (req, res) => {
     }
 };
 
-module.exports = exports;
+module.exports = {
+    ...exports,
+    getVendorSupportQueryMessages
+};
