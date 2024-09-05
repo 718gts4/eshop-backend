@@ -1,7 +1,7 @@
 const expressJwt = require("express-jwt");
 const jwt = require('jsonwebtoken');
 
-function authJwt() {
+const authJwt = () => {
     const secret = process.env.secret;
     const api = process.env.API_URL;
 
@@ -59,4 +59,4 @@ function authJwt() {
     ];
 }
 
-module.exports = authJwt;
+module.exports = { authJwt };
