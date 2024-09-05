@@ -4,22 +4,25 @@ const { User } = require("../models/user");
 
 async function updateUserRole() {
     try {
-        const user = await User.findOne({ email: "v2@gmail.com" });
+        const user = await User.findOne({ email: "q4@mail.com" });
 
         if (!user) {
-            console.log("User with email v2@gmail.com not found");
+            console.log("User with email q4@mail.com not found");
             return;
         }
 
-        if (user.role === "superAdmin") {
-            console.log("User already has superAdmin role");
-            return;
-        }
+        // if (user.role === newRole) {
+        //     console.log(`User already has ${newRole} role`);
+        //     return;
+        // }
+        const newRole = 'admin'
 
-        user.role = "superAdmin";
+        user.role = newRole;
+        user.name = "ytrwarew";
+        user.verified=true// unverified users do not have access to admin
         await user.save();
 
-        console.log(`Updated user ${user._id} role to superAdmin`);
+        console.log(`Updated user ${user?.email} role to ${newRole}`);
     } catch (error) {
         console.error("Error during user role update:", error);
     } finally {
