@@ -36,12 +36,13 @@ exports.login = async (req, res) => {
     if (
         user &&
         bcrypt.compareSync(req.body.password, user.passwordHash) &&
-        user.role === "admin"
+        (user.role === "admin" || user.role === "superAdmin")
     ) {
         const token = jwt.sign(
             {
                 userId: user.id,
                 isAdmin: user?.isAdmin,
+                isSuperAdmin: user.role === 'superAdmin',
                 role: user.role,
                 verified: user.verified,
             },

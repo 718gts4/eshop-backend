@@ -22,8 +22,17 @@ exports.userMiddleware = async (req, res, next) => {
 
 exports.adminMiddleware = async (req, res, next) => {
     const adminUser = await req.user;
-    if(adminUser.isAdmin !== true){
+    if(adminUser.isAdmin !== true && adminUser.role !== 'superAdmin'){
         return res.status(400).json({ message: 'Admin access denied!'})
+    }
+
+    next();
+}
+
+exports.superAdminMiddleware = async (req, res, next) => {
+    const adminUser = await req.user;
+    if(adminUser.role !== 'superAdmin'){
+        return res.status(400).json({ message: 'Super Admin access denied!'})
     }
 
     next();
