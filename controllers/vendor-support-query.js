@@ -86,7 +86,7 @@ exports.getVendorSupportQuery = async (req, res) => {
         const queryId = req.params.id;
 
         if (!mongoose.Types.ObjectId.isValid(queryId)) {
-            return res.status(400).json({ message: 'Invalid vendor support query ID' });
+            return res.status(400).json({ message: 'get vendor query: Invalid vendor support query ID' });
         }
 
         const vendorSupportQuery = await VendorSupportQuery.findById(queryId).populate({
@@ -151,7 +151,7 @@ const addMessageController = async (req, res) => {
         const queryId = req.params.id;
 
         if (!mongoose.Types.ObjectId.isValid(queryId)) {
-            return res.status(400).json({ message: 'Invalid vendor support query ID' });
+            return res.status(400).json({ message: 'addMessage: Invalid vendor support query ID' });
         }
 
         const vendorSupportQuery = await VendorSupportQuery.findById(queryId);
