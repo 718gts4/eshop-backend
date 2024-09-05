@@ -238,12 +238,20 @@ exports.markMessagesAsRead = async (req, res) => {
 };
 
 exports.getAllVendorSupportQueries = async (req, res) => {                                      
-    try {                                                                                       
-      const queries = await VendorSupportQuery.find({})                                         
+    try {
+      if (!req.user || !req.user.userId) {
+        return res.status(401).json({ message: 'User not authenticated' });
+      }
+
+      const queries = await VendorSupportQuery.find({ participants: req.user.userId })                                         
         .populate('participants', 'name email image username')                                                 
         .populate('messages.sender', 'name email image username')                                              
         .sort({ createdAt: -1 });                                                               
                                                                                                 
+      if (queries.length === 0) {
+        return res.status(404).json({ message: 'No vendor support queries found for this user' });
+      }
+
       res.status(200).json(queries);                                                            
     } catch (error) {                                                                           
       console.error('[ERROR] Error fetching vendor support queries:', error);                   
