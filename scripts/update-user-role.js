@@ -3,11 +3,9 @@ const connectToDatabase = require("../config/database");
 const mongoose = require("mongoose");
 const { User } = require("../models/user");
 
-async function updateUserRole(email, newRole) {
+async function updateUserRole({email, newRole, name}) {
     await connectToDatabase();
     try {
-        console.log("Connected to MongoDB");
-
         const user = await User.findOne({ email });
 
         if (!user) {
@@ -18,7 +16,7 @@ async function updateUserRole(email, newRole) {
         const isAdmin = newRole === "admin" || newRole === "superAdmin";
         user.role = newRole;
         user.isAdmin = isAdmin;
-        // user.name = "ytrwarew"; // set name if needed
+        name && (user.name = name); // set name if needed
         user.verified = true; // unverified users do not have access to admin
 
         await user.save();
@@ -37,11 +35,12 @@ async function updateUserRole(email, newRole) {
     }
 }
 
-const emails = ['q@mail.com'];
-const newRole = "superAdmin";
+const emails = ['q@mail.com'];// array for setting more than one.
+const newRole = "admin";
+const name = "superAdmin";
 
 // Set user(s) to admin or superAdmin
-Promise.all(emails.map(email => updateUserRole(email, newRole)))
+Promise.all(emails.map(email => updateUserRole({email, newRole, name})))
     .then(() => console.log("All user role updates completed"))
     .catch((error) =>
         console.error("Unhandled error during user role updates:", error)
