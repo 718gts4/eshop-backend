@@ -1,37 +1,38 @@
 require("dotenv").config();
-const mongoose = require("../config/database");
+const connectToDatabase = require("../config/database");
+const mongoose = require("mongoose");
 const { User } = require("../models/user");
 
 async function updateUserRole() {
+    connectToDatabase();
+    const email = 'q@mail.com';
     try {
-        await mongoose.connect(process.env.MONGODB_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
         console.log("Connected to MongoDB");
 
-        const user = await User.findOne({ email: "q4@mail.com" });
+        const user = await User.findOne({ email });
 
         if (!user) {
-            console.log("User with email q4@mail.com not found");
+            console.log(`"User with email ${email} not found"`);
             return;
         }
 
-        const newRole = 'admin';
-
+        const newRole = "superAdmin";
+        const isAdmin = newRole === "admin" || newRole === "superAdmin";
+        console.log({ isAdmin });   
         user.role = newRole;
-        user.name = "ytrwarew";
-        user.verified = true; // unverified users do not have access to admin
-        user.emailVerified = new Date(); // Set email as verified
+        // user.isAdmin = true;
+        // user.name = "ytrwarew";
+        // user.verified = true; // unverified users do not have access to admin
+        // user.emailVerified = new Date(); // Set email as verified
 
         await user.save();
 
         console.log(`Updated user ${user.email}:`);
         console.log(`Role: ${user.role}`);
         console.log(`Name: ${user.name}`);
+        console.log(`isAdmin: ${user.isAdmin}`);
         console.log(`Verified: ${user.verified}`);
         console.log(`Email Verified: ${user.emailVerified}`);
-
     } catch (error) {
         console.error("Error during user role update:", error);
     } finally {
@@ -42,4 +43,6 @@ async function updateUserRole() {
 
 updateUserRole()
     .then(() => console.log("User role update completed"))
-    .catch((error) => console.error("Unhandled error during user role update:", error));
+    .catch((error) =>
+        console.error("Unhandled error during user role update:", error)
+    );
