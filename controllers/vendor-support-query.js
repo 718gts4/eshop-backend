@@ -89,6 +89,11 @@ exports.getVendorSupportQuery = async (req, res) => {
             return res.status(400).json({ message: 'get vendor query: Invalid vendor support query ID' });
         }
 
+        if (!req.user || !req.user.userId) {
+            console.log("[ERROR] User not authenticated", { headers: req.headers });
+            return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
+        }
+
         const vendorSupportQuery = await VendorSupportQuery.findById(queryId).populate({
             path: 'participants',
             select: 'name email role image'
@@ -98,8 +103,8 @@ exports.getVendorSupportQuery = async (req, res) => {
             return res.status(404).json({ message: 'Vendor support query not found' });
         }
 
-        if (!vendorSupportQuery.participants.some(p => p._id.toString() === req.user.id)) {
-            console.log(`[WARN] Unauthorized vendor support query access attempt`, { userId: req.user.id, queryId });
+        if (!vendorSupportQuery.participants.some(p => p._id.toString() === req.user.userId)) {
+            console.log(`[WARN] Unauthorized vendor support query access attempt`, { userId: req.user.userId, queryId });
             return res.status(403).json({ message: 'You are not authorized to view this vendor support query' });
         }
 
@@ -131,10 +136,10 @@ exports.getVendorSupportQuery = async (req, res) => {
             });
         });
 
-        console.log(`[INFO] Vendor support query retrieved`, { userId: req.user.id, queryId });
+        console.log(`[INFO] Vendor support query retrieved`, { userId: req.user.userId, queryId });
         res.json(vendorSupportQuery);
     } catch (error) {
-        console.log(`[ERROR] Error retrieving vendor support query`, { error: error.message, userId: req.user.id });
+        console.log(`[ERROR] Error retrieving vendor support query`, { error: error.message, userId: req.user ? req.user.userId : 'Unknown' });
         res.status(500).json({ message: 'Error retrieving vendor support query', error: error.message });
     }
 };
