@@ -15,7 +15,7 @@ router.post('/', authJwt(), createVendorSupportQuery);
 router.get('/', authJwt(), getUserVendorSupportQueries);          
 router.get('/all', authJwt(), getAllVendorSupportQueriesForSuperAdmin);
 router.get('/:id', authJwt(), getVendorSupportQuery);
-router.post('/:id/messages', authJwt(), addMessage);
+router.post('/:id', authJwt(), addMessage);
 router.get('/user/:userId', authJwt(), getVendorSupportQueriesByUser);
 router.post('/:id/read', authJwt(), markMessagesAsRead);
 
