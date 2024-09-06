@@ -275,4 +275,22 @@ exports.getVendorSupportQueryMessages = async (req, res) => {
     }
 };
 
+exports.getAllVendorSupportQueriesForSuperAdmin = async (req, res) => {
+    try {
+        if (!req.user || !req.user.userId || req.user.role !== 'superAdmin') {
+            return res.status(403).json({ message: 'Unauthorized: Only superAdmin can access this endpoint' });
+        }
+
+        const queries = await VendorSupportQuery.find()
+            .populate('participants', 'name email image username')
+            .populate('messages.sender', 'name email image username')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json(queries);
+    } catch (error) {
+        console.error('[ERROR] Error fetching all vendor support queries for superAdmin:', error);
+        res.status(500).json({ message: 'Error fetching all vendor support queries' });
+    }
+};
+
 module.exports = exports;
