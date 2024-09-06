@@ -1,7 +1,7 @@
 const expressJwt = require("express-jwt");
 const jwt = require('jsonwebtoken');
 
-const authJwt = () => {
+function authJwt() {
     const secret = process.env.secret;
     const api = process.env.API_URL;
 
@@ -46,7 +46,7 @@ const authJwt = () => {
                 { url: /\/api\/v1\/vendor(.*)/, methods: ["POST", "GET", "PUT"] },
                 { url: /\/api\/v1\/client(.*)/, methods: ["POST", "GET", "PUT", "DELETE"] },
                 { url: /\/api\/v1\/returnBank(.*)/, methods: ["POST", "GET", "PUT", "DELETE"] },
-                { url: /\/api\/v1\/vendor-support-query(.*)/, methods: ["POST", "GET", "PUT", "DELETE"] },
+                { url: /\/api\/v1\/vendor-support-query(.*)/, methods: ["GET", "OPTIONS"] },
                 `${api}/users/login`,
                 `${api}/users/register`,
                 `${api}/admin/register`,
@@ -59,4 +59,4 @@ const authJwt = () => {
     ];
 }
 
-module.exports = { authJwt };
+module.exports = authJwt;
