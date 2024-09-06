@@ -103,8 +103,8 @@ exports.getVendorSupportQuery = async (req, res) => {
             return res.status(404).json({ message: 'Vendor support query not found' });
         }
 
-        if (!vendorSupportQuery.participants.some(p => p._id.toString() === req.user.userId)) {
-            console.log(`[WARN] Unauthorized vendor support query access attempt`, { userId: req.user.userId, queryId });
+        if (req.user.role !== 'superAdmin' && !vendorSupportQuery.participants.some(p => p._id.toString() === req.user.userId)) {
+            console.log(`[WARN] Unauthorized vendor support query access attempt`, { userId: req.user.userId, queryId, userRole: req.user.role });
             return res.status(403).json({ message: 'You are not authorized to view this vendor support query' });
         }
 
