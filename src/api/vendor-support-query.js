@@ -6,12 +6,8 @@ export const useVendorSupportQueries = () => {
   return { data: Array.isArray(data) ? data : data?.data || [], error }
 }
 
-export const useVendorSupportQuery = (id) => {
-  return useFetchAuth(`vendor-support-query/${id}`)
-}
-
-export const useVendorSupportQueryMessages = (id) => {
-  return useFetchAuth(`vendor-support-query/${id}`)
+export const useVendorSupportQuery = (queryId) => {
+  return useFetchAuth(`vendor-support-query/${queryId}`)
 }
 
 export const createVendorSupportQuery = async (data, token) => {
@@ -40,8 +36,8 @@ export const createVendorSupportQuery = async (data, token) => {
 }
 
 // not used
-export const updateVendorSupportQuery = async (id, data, token) => {
-  return authRequest(`vendor-support-query/${id}`, {
+export const updateVendorSupportQuery = async (queryId, data, token) => {
+  return authRequest(`vendor-support-query/${queryId}`, {
     method: 'PUT',
     data,
     headers: { Authorization: `Bearer ${token}` },
@@ -49,15 +45,15 @@ export const updateVendorSupportQuery = async (id, data, token) => {
 }
 
 // not used
-export const deleteVendorSupportQuery = async (id, token) => {
-  return authRequest(`vendor-support-query/${id}`, {
+export const deleteVendorSupportQuery = async (queryId, token) => {
+  return authRequest(`vendor-support-query/${queryId}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   })
 }
 
-export const addMessageToVendorSupportQuery = async (id, data, token) => {
-  return authRequest(`vendor-support-query/${id}`, {
+export const addMessageToVendorSupportQuery = async (queryId, data, token) => {
+  return authRequest(`vendor-support-query/${queryId}`, {
     method: 'POST',
     data,
     headers: { Authorization: `Bearer ${token}` },
