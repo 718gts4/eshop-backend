@@ -3,16 +3,17 @@ const router = express.Router();
 const {
   addMessage,
   createVendorSupportQuery,
-  getAllVendorSupportQueries,
+  getUserVendorSupportQueries,
   getVendorSupportQueriesByUser,
   getVendorSupportQuery,
   markMessagesAsRead,
   getVendorSupportQueryMessages,
+  getAllVendorSupportQueriesForSuperAdmin
 } = require('../controllers/vendor-support-query');
 const authJwt = require('../helpers/jwt');
 
 router.post('/', authJwt(), createVendorSupportQuery);
-router.get('/', authJwt(), getAllVendorSupportQueries);          
+router.get('/', authJwt(), getUserVendorSupportQueries);          
 router.get('/messages', authJwt(), getVendorSupportQueryMessages);
 router.get('/all', authJwt(), getAllVendorSupportQueriesForSuperAdmin);
 router.get('/:id', authJwt(), getVendorSupportQuery);

@@ -237,7 +237,7 @@ exports.markMessagesAsRead = async (req, res) => {
     }
 };
 
-exports.getAllVendorSupportQueries = async (req, res) => {                                      
+exports.getUserVendorSupportQueries = async (req, res) => {                                      
     try {
       if (!req.user || !req.user.userId) {
         return res.status(401).json({ message: 'User not authenticated' });
@@ -250,8 +250,8 @@ exports.getAllVendorSupportQueries = async (req, res) => {
                                                                                                 
       res.status(200).json(queries);                                                            
     } catch (error) {                                                                           
-      console.error('[ERROR] Error fetching vendor support queries:', error);                   
-      res.status(500).json({ message: 'Error fetching vendor support queries' });               
+      console.error('[ERROR] Error fetching user vendor support queries:', error);                   
+      res.status(500).json({ message: 'Error fetching user vendor support queries' });               
     }                                                                                           
   };  
 
