@@ -237,6 +237,7 @@ exports.markMessagesAsRead = async (req, res) => {
     }
 };
 
+// Get all vendor support queries for the authenticated user
 exports.getUserVendorSupportQueries = async (req, res) => {                                      
     try {
       if (!req.user || !req.user.userId) {
@@ -255,7 +256,8 @@ exports.getUserVendorSupportQueries = async (req, res) => {
     }                                                                                           
   };  
 
-exports.getVendorSupportQueryMessages = async (req, res) => {
+// Get all messages from all vendor support queries for the authenticated user
+exports.getAllVendorSupportQueryMessages = async (req, res) => {
     try {
         if (!req.user || !req.user.userId) {
             return res.status(401).json({ message: 'User not authenticated' });
@@ -270,8 +272,8 @@ exports.getVendorSupportQueryMessages = async (req, res) => {
 
         res.status(200).json(messages);
     } catch (error) {
-        console.error('[ERROR] Error fetching vendor support query messages:', error);
-        res.status(500).json({ message: 'Error fetching vendor support query messages' });
+        console.error('[ERROR] Error fetching all vendor support query messages:', error);
+        res.status(500).json({ message: 'Error fetching all vendor support query messages' });
     }
 };
 
