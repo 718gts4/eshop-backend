@@ -46,7 +46,6 @@ function authJwt() {
                 { url: /\/api\/v1\/vendor(.*)/, methods: ["POST", "GET", "PUT"] },
                 { url: /\/api\/v1\/client(.*)/, methods: ["POST", "GET", "PUT", "DELETE"] },
                 { url: /\/api\/v1\/returnBank(.*)/, methods: ["POST", "GET", "PUT", "DELETE"] },
-                { url: /\/api\/v1\/vendor-support-query(.*)/, methods: ["GET", "OPTIONS"] },
                 `${api}/users/login`,
                 `${api}/users/register`,
                 `${api}/admin/register`,
