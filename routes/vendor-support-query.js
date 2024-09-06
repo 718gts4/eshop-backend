@@ -14,6 +14,7 @@ const authJwt = require('../helpers/jwt');
 router.post('/', authJwt(), createVendorSupportQuery);
 router.get('/', authJwt(), getUserVendorSupportQueries);          
 router.get('/all', authJwt(), getAllVendorSupportQueriesForSuperAdmin);
+// :id in both routes refers to the VendorSupportQuery ID
 router.get('/:id', authJwt(), getVendorSupportQuery);
 router.post('/:id', authJwt(), addMessage);
 router.get('/user/:userId', authJwt(), getVendorSupportQueriesByUser);
