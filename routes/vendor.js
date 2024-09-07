@@ -116,7 +116,7 @@ router.patch(
         let ImageFilePath = req?.file?.path;
         let imageUrl = null;
         try {
-            const userId = req.user.userId;
+            const userId = req.user.id;
             const imageS3Key = `${userId}-image`;
             const { image: oldImage } = await User.findById(userId);
             if (ImageFilePath) {
@@ -192,7 +192,7 @@ router.patch(
 router.patch("/profile-form/managers", async (req, res) => {
     console.log("routes/vendor::: PATCH /profile-form/managers");
     try {
-        const userId = req.user.userId;
+        const userId = req.user.id;
         const { contacts } = req.body;
 
         let updateFields = {
@@ -250,7 +250,7 @@ router.patch("/profile-form/delivery", async (req, res) => {
     console.log("routes/vendor::: PATCH /profile-form/delivery");
     try {
         const { address1, address2, city, zipCode } = req.body;
-        const userId = req.user.userId; // Corrected line
+        const userId = req.user.id; // Corrected line
         const user = await User.findById(userId);
 
         if (!user?.vendor) {
@@ -280,7 +280,7 @@ function isDuplicateBankAccount(vendor, newBank) {
 // save bank account as pending bank account
 router.patch("/profile-form/bank", async (req, res) => {
     console.log("routes/vendor::: PATCH /profile-form/bank");
-    const userId = req.user.userId;
+    const userId = req.user.id;
     const { bankName, accountNumber, accountName } = req.body;
     const updatedBankInfo = { bankName, accountNumber, accountName };
     const user = await User.findOne({ _id: userId });
@@ -315,7 +315,7 @@ router.patch(
     async (req, res) => {
         console.log("routes/vendor::: DELETE PATCH /profile-form/registration-document");
 
-        const userId = req.user.userId;
+        const userId = req.user.id;
         let documentFilePath = req?.file?.path;
 
         if (!documentFilePath) {

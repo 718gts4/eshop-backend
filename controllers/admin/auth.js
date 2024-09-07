@@ -41,6 +41,7 @@ exports.login = async (req, res) => {
         const token = jwt.sign(
             {
                 userId: user.id,
+                id: user.id,
                 isAdmin: user?.isAdmin,
                 isSuperAdmin: user.role === 'superAdmin',
                 role: user.role,
