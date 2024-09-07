@@ -269,8 +269,17 @@ exports.getUserVendorSupportQueries = async (req, res) => {
 
 exports.getAllVendorSupportQueries = async (req, res) => {
     try {
-        if (!req.user || !req.user.id || req.user.role !== 'superAdmin') {
-            return res.status(403).json({ message: 'Unauthorized: Only superAdmin can access this endpoint' });
+        console.log('[DEBUG] User object:', req.user);
+        console.log('[DEBUG] User role:', req.user ? req.user.role : 'No user');
+
+        if (!req.user || !req.user.id) {
+            console.log('[ERROR] User not authenticated');
+            return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
+        }
+
+        if (req.user.role !== 'superAdmin') {
+            console.log('[ERROR] User not authorized. Role:', req.user.role);
+            return res.status(403).json({ message: 'Forbidden: Only superAdmin can access this endpoint' });
         }
 
         const queries = await VendorSupportQuery.find()
@@ -278,6 +287,7 @@ exports.getAllVendorSupportQueries = async (req, res) => {
             .populate('messages.sender', 'name email image username')
             .sort({ createdAt: -1 });
 
+        console.log('[INFO] Successfully fetched all vendor support queries');
         res.status(200).json(queries);
     } catch (error) {
         console.error('[ERROR] Error fetching all vendor support queries for superAdmin:', error);
