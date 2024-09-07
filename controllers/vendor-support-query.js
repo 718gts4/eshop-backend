@@ -267,10 +267,10 @@ exports.getUserVendorSupportQueries = async (req, res) => {
   };  
 
 
-exports.getAllVendorSupportQueriesForSuperAdmin = async (req, res) => {
+exports.getAllVendorSupportQueries = async (req, res) => {
     try {
-        if (!req.user || !req.user.id || req.user.role !== 'superAdmin') {
-            return res.status(403).json({ message: 'Unauthorized: Only superAdmin can access this endpoint' });
+        if (!req.user || !req.user.id || (req.user.role !== 'superAdmin' && req.user.role !== 'admin')) {
+            return res.status(403).json({ message: 'Unauthorized: Only superAdmin or admin can access this endpoint' });
         }
 
         const queries = await VendorSupportQuery.find()
