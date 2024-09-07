@@ -272,7 +272,7 @@ exports.getAllVendorSupportQueries = async (req, res) => {
         console.log('[DEBUG] User object:', req.user);
         console.log('[DEBUG] User role:', req.user ? req.user.role : 'No user');
 
-        if (!req.user || !req.user.id) {
+        if (!req.user || (!req.user.id && !req.user.userId)) {
             console.log('[ERROR] User not authenticated');
             return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
         }
