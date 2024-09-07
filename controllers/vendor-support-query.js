@@ -28,7 +28,7 @@ const createVendorSupportQuery = async (req, res) => {
             headers: req.headers
         });
         
-        if (!req.user || !req.user.userId) {
+        if (!req.user || !req.user.id) {
             console.log("[ERROR] User not authenticated", { 
                 user: req.user, 
                 headers: req.headers
@@ -36,7 +36,7 @@ const createVendorSupportQuery = async (req, res) => {
             return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
         }
 
-        const initiatorId = req.user.userId;
+        const initiatorId = req.user.id;
         console.log("[INFO] Initiator ID:", initiatorId);
         const initiator = await User.findById(initiatorId).select('name email role image');
 
@@ -89,7 +89,7 @@ exports.getVendorSupportQuery = async (req, res) => {
             return res.status(400).json({ message: 'get vendor query: Invalid vendor support query ID' });
         }
 
-        if (!req.user || !req.user.userId) {
+        if (!req.user || !req.user.id) {
             console.log("[ERROR] User not authenticated", { headers: req.headers });
             return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
         }
@@ -103,10 +103,10 @@ exports.getVendorSupportQuery = async (req, res) => {
             return res.status(404).json({ message: 'Vendor support query not found' });
         }
 
-        const isParticipant = vendorSupportQuery.participants.some(p => p._id.toString() === req.user.userId);
+        const isParticipant = vendorSupportQuery.participants.some(p => p._id.toString() === req.user.id);
         const isSuperAdmin = req.user.role === 'superAdmin';
         if (!isSuperAdmin && !isParticipant) {
-            console.log(`[WARN] Unauthorized vendor support query access attempt`, { userId: req.user.userId, queryId, userRole: req.user.role });
+            console.log(`[WARN] Unauthorized vendor support query access attempt`, { userId: req.user.id, queryId, userRole: req.user.role });
             return res.status(403).json({ message: 'You are not authorized to view this vendor support query' });
         }
 
@@ -154,7 +154,7 @@ const addMessageController = async (req, res) => {
 
     try {
         const { content } = req.body;
-        const senderId = req.user.userId;
+        const senderId = req.user.id;
         const queryId = req.params.queryId;
 
         if (!mongoose.Types.ObjectId.isValid(queryId)) {
@@ -182,7 +182,7 @@ const addMessageController = async (req, res) => {
         console.log(`[INFO] Message added to vendor support query`, { queryId, senderId });
         res.json(updatedVendorSupportQuery);
     } catch (error) {
-        console.log(`[ERROR] Error adding message to vendor support query`, { error: error.message, userId: req.user.userId });
+        console.log(`[ERROR] Error adding message to vendor support query`, { error: error.message, userId: req.user.id });
         res.status(500).json({ message: 'Error adding message', error: error.message });
     }
 };
@@ -250,11 +250,11 @@ exports.markMessagesAsRead = async (req, res) => {
 // Get all vendor support queries for the authenticated user
 exports.getUserVendorSupportQueries = async (req, res) => {                                      
     try {
-      if (!req.user || !req.user.userId) {
+      if (!req.user || !req.user.id) {
         return res.status(401).json({ message: 'User not authenticated' });
       }
 
-      const queries = await VendorSupportQuery.find({ participants: req.user.userId })                                         
+      const queries = await VendorSupportQuery.find({ participants: req.user.id })                                         
         .populate('participants', 'name email image username')                                                 
         .populate('messages.sender', 'name email image username')                                              
         .sort({ createdAt: -1 });                                                               
@@ -269,7 +269,7 @@ exports.getUserVendorSupportQueries = async (req, res) => {
 
 exports.getAllVendorSupportQueriesForSuperAdmin = async (req, res) => {
     try {
-        if (!req.user || !req.user.userId || req.user.role !== 'superAdmin') {
+        if (!req.user || !req.user.id || req.user.role !== 'superAdmin') {
             return res.status(403).json({ message: 'Unauthorized: Only superAdmin can access this endpoint' });
         }
 
