@@ -73,7 +73,7 @@ const createVendorSupportQuery = async (req, res) => {
         console.log(`[INFO] Vendor support query created by user ${initiatorId}`, { queryId: savedVendorSupportQuery._id });
         res.status(201).json(savedVendorSupportQuery);
     } catch (error) {
-        console.log(`[ERROR] Error creating vendor support query`, { error: error.message, userId: req.user ? req.user.userId : 'Unknown' });
+        console.log(`[ERROR] Error creating vendor support query`, { error: error.message, userId: req.user ? req.user.id : 'Unknown' });
         res.status(500).json({ message: 'Error creating vendor support query', error: error.message });
     }
 };
@@ -138,7 +138,7 @@ exports.getVendorSupportQuery = async (req, res) => {
             });
         });
 
-        console.log(`[INFO] Vendor support query retrieved`, { userId: req.user.userId, queryId });
+        console.log(`[INFO] Vendor support query retrieved`, { userId: req.user.id, queryId });
         res.json(vendorSupportQuery);
     } catch (error) {
         console.log(`[ERROR] Error retrieving vendor support query`, { error: error.message, userId: req.user ? req.user.userId : 'Unknown' });
