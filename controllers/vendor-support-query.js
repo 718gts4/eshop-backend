@@ -154,7 +154,7 @@ const addMessageController = async (req, res) => {
 
     try {
         const { content } = req.body;
-        const senderId = req.user.id;
+        const senderId = req.user.userId;
         const queryId = req.params.queryId;
 
         if (!mongoose.Types.ObjectId.isValid(queryId)) {
@@ -167,8 +167,11 @@ const addMessageController = async (req, res) => {
             return res.status(404).json({ message: 'Vendor support query not found' });
         }
 
-        if (!vendorSupportQuery.participants.includes(senderId)) {
-            return res.status(403).json({ message: 'User is not a participant in this vendor support query' });
+        const isParticipant = vendorSupportQuery.participants.some(p => p.toString() === senderId);
+        const isSuperAdmin = req.user.role === 'superAdmin';
+
+        if (!isSuperAdmin && !isParticipant) {
+            return res.status(403).json({ message: 'User is not authorized to add a message to this vendor support query' });
         }
 
         vendorSupportQuery.messages.push({ sender: senderId, content: sanitizeHtml(content) });
@@ -179,7 +182,7 @@ const addMessageController = async (req, res) => {
         console.log(`[INFO] Message added to vendor support query`, { queryId, senderId });
         res.json(updatedVendorSupportQuery);
     } catch (error) {
-        console.log(`[ERROR] Error adding message to vendor support query`, { error: error.message, userId: req.user.id });
+        console.log(`[ERROR] Error adding message to vendor support query`, { error: error.message, userId: req.user.userId });
         res.status(500).json({ message: 'Error adding message', error: error.message });
     }
 };
