@@ -174,6 +174,11 @@ const addMessageController = async (req, res) => {
             return res.status(403).json({ message: 'User is not authorized to add a message to this vendor support query' });
         }
 
+        // Add the sender to participants if not already included
+        if (!isParticipant) {
+            vendorSupportQuery.participants.push(senderId);
+        }
+
         vendorSupportQuery.messages.push({ sender: senderId, content: sanitizeHtml(content) });
         vendorSupportQuery.lastMessageAt = Date.now();
         
