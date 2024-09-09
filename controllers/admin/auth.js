@@ -59,43 +59,21 @@ exports.login = async (req, res) => {
 
         const oneDayInSeconds = 60 * 60 * 24;
         if (isPasswordValid) {
-        if (user.role === "admin" || user.role === "superAdmin") {
-            const token = jwt.sign(
-                {
-                    userId: user.id,
-                    id: user.id,
-                    isAdmin: user.isAdmin,
-                    isSuperAdmin: user.role === 'superAdmin',
-                    role: user.role,
-                    verified: user.verified,
-                },
-                secret,
-                { expiresIn: oneDayInSeconds }
-            );
+            if (user.role === "admin" || user.role === "superAdmin") {
+                const token = jwt.sign(
+                    {
+                        userId: user.id,
+                        id: user.id,
+                        isAdmin: user.isAdmin,
+                        isSuperAdmin: user.role === 'superAdmin',
+                        role: user.role,
+                        verified: user.verified,
+                    },
+                    secret,
+                    { expiresIn: oneDayInSeconds }
+                );
 
-            const {
-                _id,
-                email,
-                role,
-                name,
-                isAdmin,
-                image,
-                username,
-                following,
-                followers,
-                brand,
-                brandDescription,
-                link,
-                phone,
-                verified,
-                submitted,
-                adminVerified,
-            } = user;
-            
-            console.log('[DEBUG] Login successful');
-            res.status(200).json({
-                token,
-                user: {
+                const {
                     _id,
                     email,
                     role,
@@ -112,15 +90,41 @@ exports.login = async (req, res) => {
                     verified,
                     submitted,
                     adminVerified,
-                },
-            });
+                } = user;
+                
+                console.log('[DEBUG] Login successful');
+                res.status(200).json({
+                    token,
+                    user: {
+                        _id,
+                        email,
+                        role,
+                        name,
+                        isAdmin,
+                        image,
+                        username,
+                        following,
+                        followers,
+                        brand,
+                        brandDescription,
+                        link,
+                        phone,
+                        verified,
+                        submitted,
+                        adminVerified,
+                    },
+                });
+            } else {
+                console.log('[DEBUG] Login failed: Not an admin or superAdmin');
+                res.status(403).json({ message: "Access denied. User is not an admin or superAdmin." });
+            }
         } else {
-            console.log('[DEBUG] Login failed: Not an admin or superAdmin');
-            res.status(403).json({ message: "Access denied. User is not an admin or superAdmin." });
+            console.log('[DEBUG] Login failed: Invalid password');
+            res.status(400).json({ message: "Invalid email or password" });
         }
-    } else {
-        console.log('[DEBUG] Login failed: Invalid password');
-        res.status(400).json({ message: "Invalid email or password" });
+    } catch (error) {
+        console.error('[ERROR] Login error:', error);
+        res.status(500).json({ message: "An error occurred during login" });
     }
 };
 
