@@ -91,7 +91,7 @@ exports.login = async (req, res) => {
                     submitted,
                     adminVerified,
                 } = user;
-                
+                console.log('[DEBUG]',{user});
                 console.log('[DEBUG] Login successful');
                 res.status(200).json({
                     token,
