@@ -63,6 +63,4 @@ Note: In the above endpoints, `baseURL` is 'http://localhost:3001/api/v1/'. The 
 const URL_ENDPOINT = `${baseURL}vendor-support-query/`
 ```
 
-These new endpoints allow the front-end to create, read, update, and delete vendor support queries, as well as add and retrieve messages for each query. The front-end team should implement corresponding API calls and UI components to interact with these endpoints, enabling users to manage their support queries and communicate with vendors or support staff.
-
-Remember to handle authentication and authorization appropriately when making these API calls from the front-end, as some of these endpoints may require specific user roles or permissions.
+These endpoints allow the front-end to create, read, update, and delete vendor support queries, as well as add and retrieve messages for each query.
