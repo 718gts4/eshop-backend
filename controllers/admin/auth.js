@@ -27,51 +27,42 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
+    console.log('[DEBUG] Login attempt:', { email: req.body.email });
     const user = await User.findOne({ email: req.body.email });
     const secret = process.env.secret;
+    
     if (!user) {
-        return res.status(400).send("The user not found");
+        console.log('[DEBUG] User not found');
+        return res.status(400).json({ message: "The user not found" });
     }
-    const oneDayInSeconds = 60 * 60 * 24;
-    if (
-        user &&
-        bcrypt.compareSync(req.body.password, user.passwordHash) &&
-        (user.role === "admin" || user.role === "superAdmin")
-    ) {
-        const token = jwt.sign(
-            {
-                userId: user.id,
-                id: user.id,
-                isAdmin: user?.isAdmin,
-                isSuperAdmin: user.role === 'superAdmin',
-                role: user.role,
-                verified: user.verified,
-            },
-            secret,
-            { expiresIn: oneDayInSeconds }
-        );
+    
+    console.log('[DEBUG] User found:', { 
+        id: user._id, 
+        email: user.email, 
+        role: user.role, 
+        isAdmin: user.isAdmin 
+    });
 
-        const {
-            _id,
-            email,
-            role,
-            name,
-            isAdmin,
-            image,
-            username,
-            following,
-            followers,
-            brand,
-            brandDescription,
-            link,
-            phone,
-            verified,
-            submitted,
-            adminVerified,
-        } = user;
-        res.status(200).json({
-            token,
-            user: {
+    const isPasswordValid = bcrypt.compareSync(req.body.password, user.passwordHash);
+    console.log('[DEBUG] Password validation:', isPasswordValid);
+
+    const oneDayInSeconds = 60 * 60 * 24;
+    if (isPasswordValid) {
+        if (user.role === "admin" || user.role === "superAdmin") {
+            const token = jwt.sign(
+                {
+                    userId: user.id,
+                    id: user.id,
+                    isAdmin: user.isAdmin,
+                    isSuperAdmin: user.role === 'superAdmin',
+                    role: user.role,
+                    verified: user.verified,
+                },
+                secret,
+                { expiresIn: oneDayInSeconds }
+            );
+
+            const {
                 _id,
                 email,
                 role,
@@ -88,10 +79,37 @@ exports.login = async (req, res) => {
                 verified,
                 submitted,
                 adminVerified,
-            },
-        });
+            } = user;
+            
+            console.log('[DEBUG] Login successful');
+            res.status(200).json({
+                token,
+                user: {
+                    _id,
+                    email,
+                    role,
+                    name,
+                    isAdmin,
+                    image,
+                    username,
+                    following,
+                    followers,
+                    brand,
+                    brandDescription,
+                    link,
+                    phone,
+                    verified,
+                    submitted,
+                    adminVerified,
+                },
+            });
+        } else {
+            console.log('[DEBUG] Login failed: Not an admin or superAdmin');
+            res.status(403).json({ message: "Access denied. User is not an admin or superAdmin." });
+        }
     } else {
-        res.status(400).send("Must be an Admin to login");
+        console.log('[DEBUG] Login failed: Invalid password');
+        res.status(400).json({ message: "Invalid email or password" });
     }
 };
 
