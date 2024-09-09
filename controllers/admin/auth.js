@@ -81,9 +81,8 @@ exports.login = async (req, res) => {
             { expiresIn: oneDayInSeconds }
         );
 
-        const { passwordHash, __v, ...safeUserData } = user.toObject();
         const userResponse = {
-            ...safeUserData,
+            ...user.toObject(),
             adminVerified: user.adminVerified
         };
         console.log('[DEBUG]', { user: userResponse });
