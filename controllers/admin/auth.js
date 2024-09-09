@@ -1,7 +1,6 @@
 const { User } = require("../../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-// const { validationResult} = require('express-validator');
 
 exports.register = async (req, res) => {
     const registerUser = await User.findOne({ email: req.body.email });
@@ -38,21 +37,13 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     console.log('[DEBUG] Login attempt:', { email: req.body.email });
     try {
-        console.log('[DEBUG] Searching for user in database...');
         const user = await User.findOne({ email: req.body.email });
         const secret = process.env.secret;
         
         if (!user) {
             console.log('[DEBUG] User not found in database');
-            return res.status(400).json({ message: "The user not found" });
+            return res.status(400).json({ message: "The user is not found" });
         }
-        
-        console.log('[DEBUG] User found:', { 
-            id: user._id, 
-            email: user.email, 
-            role: user.role, 
-            isAdmin: user.isAdmin 
-        });
 
         const isPasswordValid = bcrypt.compareSync(req.body.password, user.passwordHash);
         console.log('[DEBUG] Password validation:', isPasswordValid);
@@ -81,7 +72,6 @@ exports.login = async (req, res) => {
             { expiresIn: oneDayInSeconds }
         );
 
-        console.log('[DEBUG]', { user: user.toObject() });
         console.log('[DEBUG] Login successful');
         res.status(200).json({
             token,
