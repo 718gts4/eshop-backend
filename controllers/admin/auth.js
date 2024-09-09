@@ -58,39 +58,47 @@ exports.login = async (req, res) => {
         console.log('[DEBUG] Password validation:', isPasswordValid);
 
         const oneDayInSeconds = 60 * 60 * 24;
-        if (isPasswordValid) {
-            if (user.role === "admin" || user.role === "superAdmin") {
-                const token = jwt.sign(
-                    {
-                        userId: user.id,
-                        id: user.id,
-                        isAdmin: user.isAdmin,
-                        isSuperAdmin: user.role === 'superAdmin',
-                        role: user.role,
-                        verified: user.verified,
-                    },
-                    secret,
-                    { expiresIn: oneDayInSeconds }
-                );
+        if (!isPasswordValid) {
+            console.log('[DEBUG] Login failed: Invalid password');
+            return res.status(400).json({ message: "Invalid email or password" });
+        }
 
-                const {
-                    _id,
-                    email,
-                    role,
-                    name,
-                    isAdmin,
-                    image,
-                    username,
-                    following,
-                    followers,
-                    brand,
-                    brandDescription,
-                    link,
-                    phone,
-                    verified,
-                    submitted,
-                    adminVerified,
-                } = user;
+        if (user.role !== "admin" && user.role !== "superAdmin") {
+            console.log('[DEBUG] Login failed: Not an admin or superAdmin');
+            return res.status(403).json({ message: "Access denied. User is not an admin or superAdmin." });
+        }
+
+        const token = jwt.sign(
+            {
+                userId: user.id,
+                id: user.id,
+                isAdmin: user.isAdmin,
+                isSuperAdmin: user.role === 'superAdmin',
+                role: user.role,
+                verified: user.verified,
+            },
+            secret,
+            { expiresIn: oneDayInSeconds }
+        );
+
+        const userResponse = {
+            _id: user._id,
+            email: user.email,
+            role: user.role,
+            name: user.name,
+            isAdmin: user.isAdmin,
+            image: user.image,
+            username: user.username,
+            following: user.following,
+            followers: user.followers,
+            brand: user.brand,
+            brandDescription: user.brandDescription,
+            link: user.link,
+            phone: user.phone,
+            verified: user.verified,
+            submitted: user.submitted,
+            adminVerified: user.adminVerified,
+        };
                 console.log('[DEBUG]',{user});
                 console.log('[DEBUG] Login successful');
                 res.status(200).json({
