@@ -42,13 +42,12 @@ exports.login = async (req, res) => {
         
         if (!user) {
             console.log('[DEBUG] User not found in database');
-            return res.status(400).json({ message: "The user is not found" });
+            return res.status(400).json({ message: "Invalid email or password" });
         }
 
         const isPasswordValid = bcrypt.compareSync(req.body.password, user.passwordHash);
         console.log('[DEBUG] Password validation:', isPasswordValid);
 
-        const oneDayInSeconds = 60 * 60 * 24;
         if (!isPasswordValid) {
             console.log('[DEBUG] Login failed: Invalid password');
             return res.status(400).json({ message: "Invalid email or password" });
@@ -58,7 +57,8 @@ exports.login = async (req, res) => {
             console.log('[DEBUG] Login failed: Not an admin or superAdmin');
             return res.status(403).json({ message: "Access denied. User is not an admin or superAdmin." });
         }
-
+        
+        const oneDayInSeconds = 60 * 60 * 24;
         const token = jwt.sign(
             {
                 userId: user.id,
