@@ -81,15 +81,11 @@ exports.login = async (req, res) => {
             { expiresIn: oneDayInSeconds }
         );
 
-        const userResponse = {
-            ...user.toObject(),
-            adminVerified: user.adminVerified
-        };
-        console.log('[DEBUG]', { user: userResponse });
+        console.log('[DEBUG]', { user: user.toObject() });
         console.log('[DEBUG] Login successful');
         res.status(200).json({
             token,
-            user: userResponse
+            user: user.toObject()
         });
     } catch (error) {
         console.error('[ERROR] Login error:', error);

@@ -127,7 +127,11 @@ const userSchema = mongoose.Schema({
     vendorSupportQueries: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'VendorSupportQuery'
-    }]
+    }],
+    adminVerified: {
+        type: Boolean,
+        default: false
+    }
 }, {timestamps: true});
 
 userSchema.pre("save", function (next) {
