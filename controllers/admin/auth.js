@@ -53,16 +53,12 @@ exports.login = async (req, res) => {
             role: user.role, 
             isAdmin: user.isAdmin 
         });
-    } catch (error) {
-        console.error('[ERROR] Error during login:', error);
-        return res.status(500).json({ message: "An error occurred during login" });
-    }
 
-    const isPasswordValid = bcrypt.compareSync(req.body.password, user.passwordHash);
-    console.log('[DEBUG] Password validation:', isPasswordValid);
+        const isPasswordValid = bcrypt.compareSync(req.body.password, user.passwordHash);
+        console.log('[DEBUG] Password validation:', isPasswordValid);
 
-    const oneDayInSeconds = 60 * 60 * 24;
-    if (isPasswordValid) {
+        const oneDayInSeconds = 60 * 60 * 24;
+        if (isPasswordValid) {
         if (user.role === "admin" || user.role === "superAdmin") {
             const token = jwt.sign(
                 {
