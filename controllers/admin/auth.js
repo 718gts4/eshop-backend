@@ -81,23 +81,10 @@ exports.login = async (req, res) => {
             { expiresIn: oneDayInSeconds }
         );
 
+        const { passwordHash, __v, ...safeUserData } = user.toObject();
         const userResponse = {
-            _id: user._id,
-            email: user.email,
-            role: user.role,
-            name: user.name,
-            isAdmin: user.isAdmin,
-            image: user.image,
-            username: user.username,
-            following: user.following,
-            followers: user.followers,
-            brand: user.brand,
-            brandDescription: user.brandDescription,
-            link: user.link,
-            phone: user.phone,
-            verified: user.verified,
-            submitted: user.submitted,
-            adminVerified: user.adminVerified,
+            ...safeUserData,
+            adminVerified: user.adminVerified
         };
         console.log('[DEBUG]', { user: userResponse });
         console.log('[DEBUG] Login successful');
