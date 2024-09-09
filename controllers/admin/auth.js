@@ -99,37 +99,12 @@ exports.login = async (req, res) => {
             submitted: user.submitted,
             adminVerified: user.adminVerified,
         };
-                console.log('[DEBUG]',{user});
-                console.log('[DEBUG] Login successful');
-                res.status(200).json({
-                    token,
-                    user: {
-                        _id,
-                        email,
-                        role,
-                        name,
-                        isAdmin,
-                        image,
-                        username,
-                        following,
-                        followers,
-                        brand,
-                        brandDescription,
-                        link,
-                        phone,
-                        verified,
-                        submitted,
-                        adminVerified,
-                    },
-                });
-            } else {
-                console.log('[DEBUG] Login failed: Not an admin or superAdmin');
-                res.status(403).json({ message: "Access denied. User is not an admin or superAdmin." });
-            }
-        } else {
-            console.log('[DEBUG] Login failed: Invalid password');
-            res.status(400).json({ message: "Invalid email or password" });
-        }
+        console.log('[DEBUG]', { user: userResponse });
+        console.log('[DEBUG] Login successful');
+        res.status(200).json({
+            token,
+            user: userResponse
+        });
     } catch (error) {
         console.error('[ERROR] Login error:', error);
         res.status(500).json({ message: "An error occurred during login" });
