@@ -96,7 +96,7 @@ exports.getVendorSupportQuery = async (req, res) => {
 
         const vendorSupportQuery = await VendorSupportQuery.findById(queryId).populate({
             path: 'participants',
-            select: 'name email role image'
+            select: 'name email role image username'
         });
         
         if (!vendorSupportQuery) {
@@ -125,7 +125,7 @@ exports.getVendorSupportQuery = async (req, res) => {
         // Populate sender information for each message
         await VendorSupportQuery.populate(vendorSupportQuery, {
             path: 'messages.sender',
-            select: 'name email role image'
+            select: 'name email role image username'
         });
 
         // Log information about each message sender's image
@@ -211,7 +211,7 @@ exports.getVendorSupportQueriesByUser = async (req, res) => {
         const queryUserId = (req.user.role === 'superAdmin') ? userId : req.user.id;
 
         const vendorSupportQueries = await VendorSupportQuery.find({ participants: queryUserId })
-                                .populate('participants', 'name email')
+                                .populate('participants', 'name email username')
                                 .sort({ lastMessageAt: -1 });
         res.json(vendorSupportQueries);
     } catch (error) {
