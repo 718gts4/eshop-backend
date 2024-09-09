@@ -7,7 +7,7 @@ exports.register = async (req, res) => {
     const registerUser = await User.findOne({ email: req.body.email });
     if (registerUser)
         return res.status(400).json({
-            message: "Admin으로 등록된 이메일 주소입니다.",
+            message: "이미 등록된 이메일 주소입니다.",
         });
 
     let user = new User({
@@ -21,9 +21,18 @@ exports.register = async (req, res) => {
     });
     user = await user.save();
 
-    if (!user) return res.status(400).send("the Admin cannot be created!");
+    if (!user) return res.status(400).send("사용자를 생성할 수 없습니다!");
 
-    res.send(user);
+    res.status(201).json({
+        message: "사용자가 성공적으로 등록되었습니다. 관리자의 승인을 기다려주세요.",
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            isAdmin: user.isAdmin
+        }
+    });
 };
 
 exports.login = async (req, res) => {
