@@ -37,20 +37,26 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     console.log('[DEBUG] Login attempt:', { email: req.body.email });
-    const user = await User.findOne({ email: req.body.email });
-    const secret = process.env.secret;
-    
-    if (!user) {
-        console.log('[DEBUG] User not found');
-        return res.status(400).json({ message: "The user not found" });
+    try {
+        console.log('[DEBUG] Searching for user in database...');
+        const user = await User.findOne({ email: req.body.email });
+        const secret = process.env.secret;
+        
+        if (!user) {
+            console.log('[DEBUG] User not found in database');
+            return res.status(400).json({ message: "The user not found" });
+        }
+        
+        console.log('[DEBUG] User found:', { 
+            id: user._id, 
+            email: user.email, 
+            role: user.role, 
+            isAdmin: user.isAdmin 
+        });
+    } catch (error) {
+        console.error('[ERROR] Error during login:', error);
+        return res.status(500).json({ message: "An error occurred during login" });
     }
-    
-    console.log('[DEBUG] User found:', { 
-        id: user._id, 
-        email: user.email, 
-        role: user.role, 
-        isAdmin: user.isAdmin 
-    });
 
     const isPasswordValid = bcrypt.compareSync(req.body.password, user.passwordHash);
     console.log('[DEBUG] Password validation:', isPasswordValid);
