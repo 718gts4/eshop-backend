@@ -124,6 +124,14 @@ const userSchema = mongoose.Schema({
         required: false,
     },
     vendor: vendorSchema,
+    vendorSupportQueries: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'VendorSupportQuery'
+    }],
+    adminVerified: {
+        type: Boolean,
+        default: false
+    }
 }, {timestamps: true});
 
 userSchema.pre("save", function (next) {
@@ -141,5 +149,5 @@ userSchema.set("toJSON", {
     virtuals: true,
 });
 
-exports.User = mongoose.model("User", userSchema);
-exports.userSchema = userSchema;
+const User = mongoose.model("User", userSchema);
+module.exports = { User, userSchema };

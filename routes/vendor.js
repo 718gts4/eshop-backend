@@ -116,7 +116,7 @@ router.patch(
         let ImageFilePath = req?.file?.path;
         let imageUrl = null;
         try {
-            const userId = req.user.userId;
+            const userId = req.user.id;
             const imageS3Key = `${userId}-image`;
             const { image: oldImage } = await User.findById(userId);
             if (ImageFilePath) {
@@ -192,7 +192,7 @@ router.patch(
 router.patch("/profile-form/managers", async (req, res) => {
     console.log("routes/vendor::: PATCH /profile-form/managers");
     try {
-        const userId = req.user.userId;
+        const userId = req.user.id;
         const { contacts } = req.body;
 
         let updateFields = {
@@ -250,7 +250,7 @@ router.patch("/profile-form/delivery", async (req, res) => {
     console.log("routes/vendor::: PATCH /profile-form/delivery");
     try {
         const { address1, address2, city, zipCode } = req.body;
-        const userId = req.user.userId; // Corrected line
+        const userId = req.user.id; // Corrected line
         const user = await User.findById(userId);
 
         if (!user?.vendor) {
@@ -280,7 +280,7 @@ function isDuplicateBankAccount(vendor, newBank) {
 // save bank account as pending bank account
 router.patch("/profile-form/bank", async (req, res) => {
     console.log("routes/vendor::: PATCH /profile-form/bank");
-    const userId = req.user.userId;
+    const userId = req.user.id;
     const { bankName, accountNumber, accountName } = req.body;
     const updatedBankInfo = { bankName, accountNumber, accountName };
     const user = await User.findOne({ _id: userId });
@@ -315,7 +315,7 @@ router.patch(
     async (req, res) => {
         console.log("routes/vendor::: DELETE PATCH /profile-form/registration-document");
 
-        const userId = req.user.userId;
+        const userId = req.user.id;
         let documentFilePath = req?.file?.path;
 
         if (!documentFilePath) {
@@ -554,18 +554,16 @@ router.delete("/document-history/:userId", async (req, res) => {
     }
 });
 
-// Route to get all vendors with user details
+// Route to get all vendors (approved and pending) with user details
 router.get("/all", async (req, res) => {
     try {
-        const users = await User.find({ isAdmin: true })
-            .select('name username image email vendor isAdmin');
+        const users = await User.find({ $or: [{ role: 'admin' }, { vendor: { $exists: true } }] })
+            .select('name username image email vendor role isAdmin');
 
         const vendorsWithUserDetails = users.map(user => {            
             let vendorData = {};
             if (user.vendor) {
                 vendorData = user.vendor.toObject ? user.vendor.toObject() : user.vendor;
-            } else {
-                console.log(`User ${user._id} does not have vendor data`);
             }
 
             return {
@@ -575,7 +573,9 @@ router.get("/all", async (req, res) => {
                     username: user.username,
                     image: user.image,
                     email: user.email,
+                    role: user.role,
                     isAdmin: user.isAdmin,
+                    _id: user._id,
                 },
                 userId: user._id,
             };

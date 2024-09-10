@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv/config");
 const authJwt = require("./helpers/jwt");
+const { superAdminMiddleware } = require("./common-middleware");
 const errorHandler = require("./helpers/error-handler");
 const backgroundService = require("./backgroundService");
 
@@ -50,6 +51,7 @@ const purchaseRoutes = require("./routes/purchase");
 const vendorRoutes = require("./routes/vendor");
 const clientRoutes = require("./routes/client");
 const returnBankRoutes = require("./routes/returnBank");
+const vendorSupportQueryRoutes = require("./routes/vendor-support-query");
 
 const api = process.env.API_URL;
 
@@ -71,6 +73,7 @@ app.use(`${api}/purchase`, purchaseRoutes);
 app.use(`${api}/vendor`, vendorRoutes);
 app.use(`${api}/client`, clientRoutes);
 app.use(`${api}/returnBank`, returnBankRoutes);
+app.use(`${api}/vendor-support-query`, vendorSupportQueryRoutes);
 
 // Schedule the task to run periodically (e.g., every hour)
 setInterval(backgroundService.updateProductsOnSaleStatus, 3600000);

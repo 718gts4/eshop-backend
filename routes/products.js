@@ -146,7 +146,7 @@ router.post(`/create`,
                 parentCategory,
                 category: category || null,
                 isFeatured,
-                createdBy: req.user.userId, // user data from middleware
+                createdBy: req.user.id, // user data from middleware
                 likes: {},
                 bookmarks: {},
                 colorOptions: JSON.parse(colorOptions),
