@@ -28,9 +28,8 @@ const createVendorSupportQuery = async (req, res) => {
             headers: req.headers
         });
         
-        if (!req.user || !req.user.id) {
+        if (!req.user) {
             console.log("[ERROR] User not authenticated", { 
-                user: req.user, 
                 headers: req.headers
             });
             return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
@@ -89,7 +88,7 @@ exports.getVendorSupportQuery = async (req, res) => {
             return res.status(400).json({ message: 'get vendor query: Invalid vendor support query ID' });
         }
 
-        if (!req.user || !req.user.id) {
+        if (!req.user) {
             console.log("[ERROR] User not authenticated", { headers: req.headers });
             return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
         }
@@ -255,7 +254,7 @@ exports.markMessagesAsRead = async (req, res) => {
 // Get all vendor support queries for the authenticated user
 exports.getUserVendorSupportQueries = async (req, res) => {                                      
     try {
-      if (!req.user || !req.user.id) {
+      if (!req.user) {
         return res.status(401).json({ message: 'User not authenticated' });
       }
 
@@ -277,8 +276,8 @@ exports.getAllVendorSupportQueries = async (req, res) => {
         console.log('[DEBUG] User object:', req.user);
         console.log('[DEBUG] User role:', req.user ? req.user.role : 'No user');
 
-        if (!req.user || !req.user.id) {
-            console.log('[ERROR] User not authenticated', { user: req.user });
+        if (!req.user) {
+            console.log('[ERROR] User not authenticated');
             return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
         }
 
