@@ -274,7 +274,7 @@ exports.getFeaturedProductsOfCounts = async (req, res) => {
 
 
 exports.getAdminProducts = async (req, res) => {
-    const product = await Product.find({createdBy: req.params.id})
+    const product = await Product.find({sellerId: req.params.id})
                         .populate('category')
                         .populate('sellerId', ['name', 'image', 'username', 'brand'])
                         .populate('reviews.createdBy', ['name', 'image', 'username'])
