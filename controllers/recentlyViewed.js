@@ -15,6 +15,7 @@ exports.getRecentlyViewed = async (req, res) => {
 };
 
 exports.saveRecentlyViewed = async (req, res) => {
+    console.log('CHECK', req.body)
     const { userId, productId } = req.body;
     const existingViewedItem = await RecentlyViewed.findOne({
         user: userId,
