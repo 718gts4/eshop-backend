@@ -16,6 +16,7 @@ const getIamportToken = async () => {
 
 // Verify payment and store in the database
 exports.verifyPayment = async (req, res) => {
+    console.log('CHECK', req.body)
     const { imp_uid, merchant_uid, amount } = req.body;
 
     try {
