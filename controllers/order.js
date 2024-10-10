@@ -151,7 +151,7 @@ exports.postOrder = async (req, res) => {
                 product: orderItem.product.id,
                 buyer: req.body.user,
                 address: req.body.address,
-                sellerId: orderItem.product.createdBy,
+                sellerId: orderItem.product.sellerId,
                 orderNumber: orderNumber,
                 parentOrderNumber: parentOrderNumber,
                 orderStatus: orderStatus,
