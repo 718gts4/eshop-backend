@@ -36,6 +36,10 @@ const canceledOrderSchema = mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    orderNumber : {
+        type: String,
+        default: '***'
+    }
 }, {timestamps: true})
 
 exports.CanceledOrder = mongoose.model('CanceledOrder', canceledOrderSchema);
