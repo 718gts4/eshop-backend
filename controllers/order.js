@@ -249,7 +249,7 @@ exports.updateOrder = async (req, res) => {
 exports.deleteOrder = async (req, res) => {
     Order.findByIdAndRemove(req.params.id)
         .then(async (order) => {
-            if (order) {
+            if (order && order.status == '결제완료') {
                 console.log('ORDER CHECK', order)
                 // await order.orderItems.map(async (orderItem) => {
                 //     await OrderItem.findByIdAndRemove(orderItem);
