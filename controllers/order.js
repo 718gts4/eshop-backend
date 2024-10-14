@@ -249,7 +249,7 @@ exports.updateOrder = async (req, res) => {
 exports.deleteOrder = async (req, res) => {
     Order.findByIdAndRemove(req.params.id)
         .then(async (order) => {
-            if (order && order.status == '결제완료') {
+            if (order.status == '결제완료') {
                 console.log('ORDER CHECK', order)
                 // await order.orderItems.map(async (orderItem) => {
                 //     await OrderItem.findByIdAndRemove(orderItem);
@@ -260,7 +260,7 @@ exports.deleteOrder = async (req, res) => {
             } else {
                 return res
                     .status(404)
-                    .json({ success: false, message: "order not found" });
+                    .json({ success: false, message: "주문을 취소할 수 없습니다. 판매자에게 문의하세요." });
             }
         })
         .catch((err) => {
