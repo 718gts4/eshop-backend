@@ -250,12 +250,13 @@ exports.deleteOrder = async (req, res) => {
     Order.findByIdAndRemove(req.params.id)
         .then(async (order) => {
             if (order) {
-                await order.orderItems.map(async (orderItem) => {
-                    await OrderItem.findByIdAndRemove(orderItem);
-                });
-                return res
-                    .status(200)
-                    .json({ success: true, message: "the order is deleted" });
+                console.log('ORDER CHECK', order)
+                // await order.orderItems.map(async (orderItem) => {
+                //     await OrderItem.findByIdAndRemove(orderItem);
+                // });
+                // return res
+                //     .status(200)
+                //     .json({ success: true, message: "the order is deleted" });
             } else {
                 return res
                     .status(404)
