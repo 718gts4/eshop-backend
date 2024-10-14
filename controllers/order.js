@@ -247,25 +247,35 @@ exports.updateOrder = async (req, res) => {
 };
 
 exports.deleteOrder = async (req, res) => {
-    Order.findByIdAndRemove(req.params.id)
-        .then(async (order) => {
-            if (order.status == '결제완료') {
-                console.log('ORDER CHECK', order)
-                // await order.orderItems.map(async (orderItem) => {
-                //     await OrderItem.findByIdAndRemove(orderItem);
-                // });
-                // return res
-                //     .status(200)
-                //     .json({ success: true, message: "the order is deleted" });
-            } else {
-                return res
-                    .status(404)
-                    .json({ success: false, message: "주문을 취소할 수 없습니다. 판매자에게 문의하세요." });
-            }
-        })
-        .catch((err) => {
-            return res.status(400).json({ success: false, error: err });
-        });
+    try {
+        // First, find the order by ID
+        const order = await Order.findById(req.params.id);
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: "Order not found" });
+        }
+
+        // Check if order status is '결제완료'
+        if (order.status !== '결제완료') {
+            return res
+                .status(400)
+                .json({ success: false, message: "주문을 취소할 수 없습니다. 판매자에게 문의하세요." });
+        }
+
+        // If status is '결제완료', proceed to delete order and associated order items
+        await Order.findByIdAndRemove(req.params.id);
+        await Promise.all(
+            order.orderItems.map(async (orderItem) => {
+                await OrderItem.findByIdAndRemove(orderItem);
+            })
+        );
+
+        return res
+            .status(200)
+            .json({ success: true, message: "The order is deleted" });
+    } catch (err) {
+        return res.status(400).json({ success: false, error: err.message });
+    }
 };
 
 exports.getOrdersCount = async (req, res) => {
