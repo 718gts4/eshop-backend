@@ -233,6 +233,7 @@ exports.toggleOrderStatus = async (req, res) => {
 };
 
 exports.updateOrder = async (req, res) => {
+    console.log('checking', req.body.status)
     const order = await Order.findByIdAndUpdate(
         req.params.id,
         {
@@ -254,7 +255,7 @@ exports.deleteOrder = async (req, res) => {
         if (!order) {
             return res.status(404).json({ success: false, message: "Order not found" });
         }
-        console.log('ORDER CHECK', order.status)
+
         // Check if order status is '결제완료'
         if (order.status !== '결제완료') {
             return res
