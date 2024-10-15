@@ -247,7 +247,7 @@ exports.updateOrder = async (req, res) => {
 };
 
 exports.updateOrderItem = async (req, res) => {
-    const order = await Order.findByIdAndUpdate(
+    const order = await OrderItem.findByIdAndUpdate(
         req.params.id,
         {
             isCanceled: req.body.isCanceled,
