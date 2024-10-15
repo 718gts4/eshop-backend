@@ -233,7 +233,6 @@ exports.toggleOrderStatus = async (req, res) => {
 };
 
 exports.updateOrder = async (req, res) => {
-    console.log('checking', req.body.status)
     const order = await Order.findByIdAndUpdate(
         req.params.id,
         {
@@ -243,6 +242,20 @@ exports.updateOrder = async (req, res) => {
     );
 
     if (!order) return res.status(400).send("the order cannot be update!");
+
+    res.send(order);
+};
+
+exports.updateOrderItem = async (req, res) => {
+    const order = await Order.findByIdAndUpdate(
+        req.params.id,
+        {
+            isCanceled: req.body.isCanceled,
+        },
+        { new: true }
+    );
+
+    if (!order) return res.status(400).send("the order item cannot be updated in the backend!");
 
     res.send(order);
 };
