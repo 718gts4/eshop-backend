@@ -201,16 +201,7 @@ exports.postOrder = async (req, res) => {
         // Save the updated order object with totalPrice to the database
         const updatedOrder = await order.save();
         // Populate 'orderItems.product' to return full product details in response
-        const populatedOrder = await updatedOrder
-            .populate({
-                path: "orderItems",
-                populate: {
-                    path: "product",
-                },
-            })
-            .execPopulate();
-
-        res.send(populatedOrder);
+        res.send(updatedOrder);
     } catch (error) {
         return res.status(500).send("An error occurred while saving the order");
     }
