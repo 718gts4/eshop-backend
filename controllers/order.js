@@ -209,7 +209,7 @@ exports.postOrder = async (req, res) => {
         })
 
         console.log('CHECKING', populatedOrder)
-        res.send(updatedOrder);
+        res.send(populatedOrder);
     } catch (error) {
         return res.status(500).send("An error occurred while saving the order");
     }
