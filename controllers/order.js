@@ -206,8 +206,6 @@ exports.postOrder = async (req, res) => {
                 path: "orderItems",
                 populate: {
                     path: "product",
-                    model: "Product",
-                    select: "name price image colorOptions subOption1 subOption2 subOption3"
                 },
             })
             .execPopulate();
