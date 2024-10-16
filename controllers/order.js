@@ -207,11 +207,11 @@ exports.postOrder = async (req, res) => {
                 populate: {
                     path: "product",
                     model: "Product",
-                    select: "name price image selectedColor selectedSize subOption1 subOption2 subOption3 selectedQuantity"
+                    select: "name price image colorOptions subOption1 subOption2 subOption3"
                 },
             })
             .execPopulate();
-            
+
         res.send(populatedOrder);
     } catch (error) {
         return res.status(500).send("An error occurred while saving the order");
