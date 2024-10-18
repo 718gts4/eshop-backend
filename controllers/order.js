@@ -208,7 +208,6 @@ exports.postOrder = async (req, res) => {
             }
         })
 
-        console.log('CHECKING', populatedOrder)
         res.send(populatedOrder);
     } catch (error) {
         return res.status(500).send("An error occurred while saving the order");
@@ -256,7 +255,7 @@ exports.updateOrder = async (req, res) => {
 };
 
 exports.updateOrderItem = async (req, res) => {
-    console.log('checking', req.body.isCanceled)
+
     const order = await OrderItem.findByIdAndUpdate(
         req.params.id,
         {
