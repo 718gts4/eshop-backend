@@ -118,7 +118,6 @@ router.post(`/create`,
 
         let hasStocks = false;
         if (colorOptions?.sizes) {
-            console.log("checkingSizes", JSON.parse(colorOptions)?.sizes);
             hasStocks = true;
         }
 

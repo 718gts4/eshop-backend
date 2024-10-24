@@ -173,7 +173,6 @@ router.patch(
                     new: true,
                 }
             );
-            console.log("updated user", { userId });
             updatedUser.$ignore = ["passwordHash", "email"];
             res.status(200).json({ user: updatedUser });
         } catch (error) {
@@ -226,7 +225,7 @@ router.patch("/profile-form/managers", async (req, res) => {
 
 // Get vendor by user ID
 router.get("/user-id/:userId", async (req, res) => {
-    console.log("routes/vendor::: GET /user-id/:userId", { userId: req.params.userId });
+
     try {
         const user = await User.findById(req.params.userId);
         if (!user) {
@@ -237,7 +236,7 @@ router.get("/user-id/:userId", async (req, res) => {
             console.log("No vendor information found for this user");
             return res.status(404).json({ message: "No vendor information found for this user" });
         }
-        console.log({ vendorId: user.vendor._id, userId: user._id });
+
         res.json(user.vendor);
     } catch (err) {
         console.error(err);

@@ -105,7 +105,6 @@ exports.getProductsByCategoryId = async (req, res) => {
 }
 
 exports.getProductsByChildCategoryId = async (req, res) => {
-    console.log('req.params.', req.params.categoryId)
     try {
         const categoryId = mongoose.Types.ObjectId(req.params.categoryId);
         const products = await Product.find({ category: categoryId});
