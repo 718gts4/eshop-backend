@@ -98,7 +98,8 @@ exports.getVideosByWebVendor = async (req, res) => {
             .populate({
                 path: "videoItems",
             })
-            .sort({dateCreated: -1});
+            .sort({dateCreated: -1})
+            .limit(120);
 
         // Check if any videos are found
         if (!videos || videos.length === 0) {
