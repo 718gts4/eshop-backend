@@ -92,6 +92,11 @@ exports.getVideosByWebVendor = async (req, res) => {
     try {
         const userId = req.params.userId; // assuming userId is passed as a parameter in the request
 
+        // Check if userId is provided and is a valid ObjectId
+        if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Invalid or missing userId." });
+        }
+
         // Find all videos created by the user
         const videos = await Video.find({ createdBy: userId })
             .populate("createdBy")
