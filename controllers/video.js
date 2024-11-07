@@ -91,6 +91,10 @@ exports.getVideosByUser = async (req, res) => {
 exports.getVideosByWebVendor = async (req, res) => {
     try {
         const userId = req.params.userId; // assuming userId is passed as a parameter in the request
+        console.log('SKIP', req.query.skip)
+        console.log('LIMIT', req.query.limit)
+        const skip = parseInt(req.query.skip) || 0;
+        const limit = parseInt(req.query.limit) || 60;
 
         // Check if userId is provided and is a valid ObjectId
         if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
@@ -104,7 +108,7 @@ exports.getVideosByWebVendor = async (req, res) => {
                 path: "videoItems",
             })
             .sort({dateCreated: -1})
-            .limit(120);
+            .limit(60);
 
         // Check if any videos are found
         if (!videos || videos.length === 0) {
