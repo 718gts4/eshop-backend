@@ -73,8 +73,8 @@ exports.getVideosByUser = async (req, res) => {
     let limit = 60;
     let skip = parseInt(req.query.skip);
 
-    console.log('SKIP', req.query.skip)
-    console.log('LIMIT', req.query.limit)
+    console.log('SKIP!', req.query.skip)
+    console.log('LIMIT!!', req.query.limit)
 
     const videoList = await Video.find({ createdBy: req.params.id })
         .populate("createdBy")
