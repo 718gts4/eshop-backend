@@ -76,6 +76,7 @@ app.use(`${api}/client`, clientRoutes);
 app.use(`${api}/returnBank`, returnBankRoutes);
 app.use(`${api}/vendor-support-query`, vendorSupportQueryRoutes);
 app.use(`${api}/payment`, paymentRoutes);
+app.use(`${api}/superadminQuestions`, paymentRoutes);
 
 // Schedule the task to run periodically (e.g., every hour)
 setInterval(backgroundService.updateProductsOnSaleStatus, 3600000);
