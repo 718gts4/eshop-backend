@@ -14,13 +14,7 @@ const answerSchema = new mongoose.Schema({
 // Schema for questions
 const superadminquestionSchema = new mongoose.Schema({
     question: { type: String, required: true }, // Main question text
-    answers: [
-        {
-            text: { type: String, required: true },
-            userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-            createdAt: { type: Date, default: Date.now },
-        },
-    ],
+    answers: [answerSchema],                   // Array of answers
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -29,4 +23,4 @@ const superadminquestionSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
 });
 
-exports.SuperAdminQuestion = mongoose.model("SuperAdminQuestion", superadminquestionSchema);
+exports.SuperAdminQuestion = mongoose.model('SuperAdminQuestion', superadminquestionSchema);
