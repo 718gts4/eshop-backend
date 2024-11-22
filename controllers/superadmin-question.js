@@ -18,6 +18,7 @@ exports.getQuestionsByUser = async (req, res) => {
     try {
         const { userId } = req.params; // Extract userId from request parameters
         const questions = await SuperAdminQuestion.find({ userId }) // Filter questions by userId
+            .sort({ createdAt: -1 })
             .populate("userId", "name image username isAdmin email") // Populate user details for the question
             .populate("answers.userId", "name username image isAdmin"); // Populate user details for answers
         res.json(questions); // Return the filtered questions
