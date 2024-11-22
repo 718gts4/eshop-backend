@@ -44,10 +44,7 @@ exports.addQuestion = async (req, res) => {
             question,
         };
 
-        console.log('question DTA', questionData);
-
         const newQuestion = new SuperAdminQuestion(questionData);
-        console.log('NEW', newQuestion);
         await newQuestion.save();
         res.json(newQuestion);
     } catch (error) {
