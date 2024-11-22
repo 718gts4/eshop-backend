@@ -1,4 +1,4 @@
-const SuperAdminQuestion = require("../models/SuperAdminQuestion");
+const SuperAdminQuestion = require("../models/superadmin-question");
 const mongoose = require('mongoose');
 
 // Fetch all questions
