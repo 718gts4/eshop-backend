@@ -30,13 +30,21 @@ exports.addQuestion = async (req, res) => {
         const { question, userId } = req.body; // Extract userId
         console.log('QQQ', question);
         console.log('USER ID', userId);
+
+        // Validate userId
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Invalid userId format" });
+        }
+        
         const objectUserId = mongoose.Types.ObjectId(userId);
+        console.log('OBJ ID', objectUserId)
         let questionData = {
             userId: objectUserId,
             question,
         };
 
         const newQuestion = new SuperAdminQuestion(questionData);
+        console.log('NEW', newQuestion);
         await newQuestion.save();
         res.json(newQuestion);
     } catch (error) {
