@@ -29,16 +29,16 @@ exports.getQuestionsByUser = async (req, res) => {
 exports.addQuestion = async (req, res) => {
     try {
         const { question, userId } = req.body; // Extract userId
-        console.log('QQQ', question);
-        console.log('USER ID', userId);
 
         const objectUserId = mongoose.Types.ObjectId(userId);
-        console.log('OBJ ID', objectUserId)
+        
         let questionData = {
             userId: objectUserId,
-            question,
+            question: question,
         };
 
+        console.log('question DTA', questionData);
+        
         const newQuestion = new SuperAdminQuestion(questionData);
         console.log('NEW', newQuestion);
         await newQuestion.save();
