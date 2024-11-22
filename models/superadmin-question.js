@@ -14,7 +14,7 @@ const answerSchema = new mongoose.Schema({
 // Schema for questions
 const superadminquestionSchema = new mongoose.Schema({
     question: { type: String, required: true }, // Main question text
-    // answers: [answerSchema],                   // Array of answers
+    answers: [answerSchema],                   // Array of answers
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
