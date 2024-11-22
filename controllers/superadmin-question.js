@@ -31,11 +31,6 @@ exports.addQuestion = async (req, res) => {
         console.log('QQQ', question);
         console.log('USER ID', userId);
 
-        // Validate userId
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).json({ message: "Invalid userId format" });
-        }
-        
         const objectUserId = mongoose.Types.ObjectId(userId);
         console.log('OBJ ID', objectUserId)
         let questionData = {
