@@ -1,4 +1,4 @@
-const SuperAdminQuestion = require("../models/superadmin-question/SuperAdminQuestion");
+const {SuperAdminQuestion} = require("../models/superadmin-question");
 const mongoose = require('mongoose');
 console.log("Model:", SuperAdminQuestion);
 
