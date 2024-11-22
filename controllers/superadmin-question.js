@@ -33,7 +33,7 @@ exports.addQuestion = async (req, res) => {
         const objectUserId = mongoose.Types.ObjectId(userId);
         let questionData = {
             userId: objectUserId,
-            question: question,
+            question,
         };
 
         const newQuestion = new SuperAdminQuestion(questionData);
