@@ -1,5 +1,6 @@
 const SuperAdminQuestion = require("../models/superadmin-question");
 const mongoose = require('mongoose');
+console.log("Model:", SuperAdminQuestion);
 
 // Fetch all questions
 exports.getQuestions = async (req, res) => {
