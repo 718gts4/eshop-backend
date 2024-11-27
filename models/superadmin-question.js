@@ -20,6 +20,10 @@ const superadminquestionSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    repliedBySuperadmin: {
+        type: Boolean,
+        default: false
+    },
     createdAt: { type: Date, default: Date.now },
 });
 
