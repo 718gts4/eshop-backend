@@ -69,3 +69,24 @@ exports.addAnswer = async (req, res) => {
         res.status(500).json({ message: "Error adding answer", error });
     }
 };
+
+// Edit a reply by ID
+exports.editQuestion = async (req, res) => {
+    const { questionId } = req.params;
+    const { repliedBySuperadmin } = req.body;
+    try {
+        const question = await SuperAdminQuestion.findByIdAndUpdate(
+            questionId,
+            { repliedBySuperadmin: repliedBySuperadmin },
+            { new: true }
+        );
+        if (!question) {
+            return res.status(404).json({ error: "Question not found" });
+        }
+
+        await question.save();
+        res.json(question);
+    } catch (error) {
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
