@@ -246,7 +246,21 @@ exports.likeUser = async (req, res) => {
     try {
         const { id } = req.params;
         const { userId } = req.body;
+
+        // Validate `id` and `userId` as ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid user ID in params" });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Invalid user ID in body" });
+        }
+
         const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
         const isLiked = user.likes?.get(userId);
 
         if (isLiked) {
