@@ -1,5 +1,8 @@
 const express = require("express");
 const app = express();
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -8,6 +11,8 @@ const authJwt = require("./helpers/jwt");
 const { superAdminMiddleware } = require("./common-middleware");
 const errorHandler = require("./helpers/error-handler");
 const backgroundService = require("./backgroundService");
+const socketHandlers = require('./socketHandlers');
+const jwt = require('jsonwebtoken');
 
 // when in development, allow requests from localhost:3000.
 // heroku sets NODE_ENV to production by default for hosted apps. 
@@ -22,16 +27,32 @@ const corsOptions = isProduction
         methods: "GET,POST,PUT,PATCH,DELETE",
         allowedHeaders: "Content-Type,Authorization",
     };
+
+const io = new Server(server, {
+  cors: corsOptions
+});
 const options = cors(corsOptions);
 app.use(options);
 app.options("*", options);
 
-//Middlewear
+//Middleware
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authJwt());
 app.use(errorHandler);
 app.use("/uploads", express.static(__dirname + "/uploads"));
+
+// Debug route to generate JWT tokens
+app.get('/debug/generate-token/:userId/:role', (req, res) => {
+    const { userId, role } = req.params;
+    const token = jwt.sign(
+        { userId: userId, role: role },
+        process.env.secret,
+        { expiresIn: '1d' }
+    );
+    console.log(`Generated token for user ${userId} with role ${role}:`, token);
+    res.json({ token });
+});
 
 //Routes
 const productsRoutes = require("./routes/products");
@@ -52,6 +73,7 @@ const vendorRoutes = require("./routes/vendor");
 const clientRoutes = require("./routes/client");
 const returnBankRoutes = require("./routes/returnBank");
 const vendorSupportQueryRoutes = require("./routes/vendor-support-query");
+const vendorSupportQueryController = require("./controllers/vendor-support-query");
 
 const api = process.env.API_URL;
 
@@ -75,6 +97,8 @@ app.use(`${api}/client`, clientRoutes);
 app.use(`${api}/returnBank`, returnBankRoutes);
 app.use(`${api}/vendor-support-query`, vendorSupportQueryRoutes);
 
+// Socket.IO handlers are initialized in socketHandlers.js
+
 // Schedule the task to run periodically (e.g., every hour)
 setInterval(backgroundService.updateProductsOnSaleStatus, 3600000);
 mongoose
@@ -92,7 +116,13 @@ mongoose
 // })
 
 // Production
-var server = app.listen(process.env.PORT || 3000, function () {
-    var port = server.address().port;
-    console.log("Express is working on port " + port);
+const port = process.env.PORT || 3000;
+server.listen(port, function () {
+    console.log("Express and Socket.IO are working on port " + port);
 });
+
+// Make io available to our app
+app.set('io', io);
+
+// Initialize Socket.IO handlers
+socketHandlers(io, app);

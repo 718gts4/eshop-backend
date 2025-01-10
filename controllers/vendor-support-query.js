@@ -1,302 +1,230 @@
 const VendorSupportQuery = require('../models/vendor-support-query');
 const User = require('../models/user').User;
-const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
 const sanitizeHtml = require('sanitize-html');
+const { isValidId } = require('../utils/validation');
 
 const validateVendorSupportQuery = [
     body('queryType').isIn(['Product', 'Customer', 'Settlement', 'Order', 'Video']).withMessage('Invalid query type'),
     body('initialMessage').isString().trim().isLength({ min: 1, max: 1000 }).withMessage('Initial message must be between 1 and 1000 characters')
 ];
 
-const validateMessage = [
-    body('content').isString().trim().isLength({ min: 1, max: 1000 }).withMessage('Message must be between 1 and 1000 characters')
-];
-
-// Controller function
-const createVendorSupportQuery = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-
+const createSupportQuery = async (req, res) => {
     try {
-        const { queryType, initialMessage } = req.body;
-        console.log(`[INFO] Creating vendor support query`, { 
-            body: req?.body, 
-            user: req?.user,
-            headers: req.headers
-        });
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
         
-        if (!req.user) {
-            console.log("[ERROR] User not authenticated", { 
-                headers: req.headers
-            });
-            return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
-        }
-
+        const { queryType, initialMessage } = req.body;
         const initiatorId = req.user.id;
-        console.log("[INFO] Initiator ID:", initiatorId);
         const initiator = await User.findById(initiatorId).select('name email role image');
-
-        if (!initiator) {
-            console.log("[ERROR] Initiator not found", { initiatorId });
-            return res.status(404).json({ message: 'User not found' });
+        
+        if (!initiator || (initiator.role !== 'admin' && initiator.role !== 'superAdmin')) {
+            return res.status(403).json({ message: 'Unauthorized: Only vendors (admin) or superAdmin can initiate a support query' });
         }
-
-        console.log("[INFO] Initiator details:", {
-            id: initiator._id,
-            name: initiator.name,
-            email: initiator.email,
-            role: initiator.role,
-            hasImage: !!initiator.image,
-            imageValue: initiator.image
-        });
-
-        if (initiator.role !== 'admin' && initiator.role !== 'superAdmin' && initiator.role !== 'vendor') {
-            return res.status(403).json({ message: 'Vendor support query can only be initiated by a vendor or admin' });
-        }
-
-        const vendorSupportQuery = new VendorSupportQuery({
-            participants: [initiatorId],
+        
+        // Create query with atomic operation to ensure unique participant
+        const vendorSupportQuery = await VendorSupportQuery.create({
+            participants: [{
+                user: initiatorId,
+                isOnline: true,
+                lastReadMessage: null
+            }],
             queryType,
             messages: [{
                 sender: initiatorId,
-                content: sanitizeHtml(initialMessage)
+                content: sanitizeHtml(initialMessage),
+                readBy: [initiatorId]
             }]
         });
 
-        const savedVendorSupportQuery = await vendorSupportQuery.save();
-        await User.findByIdAndUpdate(initiatorId, { $push: { vendorSupportQueries: savedVendorSupportQuery._id } });
+        // Update user's queries list atomically
+        await User.findByIdAndUpdate(
+            initiatorId,
+            { $addToSet: { vendorSupportQueries: vendorSupportQuery._id } },
+            { new: true }
+        );
 
-        console.log(`[INFO] Vendor support query created by user ${initiatorId}`, { queryId: savedVendorSupportQuery._id });
-        res.status(201).json(savedVendorSupportQuery);
+        // Populate the query before sending response
+        const populatedQuery = await VendorSupportQuery.findById(vendorSupportQuery._id)
+            .populate('participants.user', 'name email image role username')
+            .populate('messages.sender', 'name email image role username');
+
+        // Emit Socket.IO event
+        const io = req.app.get('io');
+        if (io) {
+            io.emit('server:newSupportQuery', populatedQuery);
+        }
+
+        res.status(201).json(populatedQuery);
     } catch (error) {
-        console.log(`[ERROR] Error creating vendor support query`, { error: error.message, userId: req.user ? req.user.id : 'Unknown' });
+        console.log(`[ERROR] Error creating vendor support query`, { error: error.message, userId: req.user?.id });
         res.status(500).json({ message: 'Error creating vendor support query', error: error.message });
     }
 };
 
-// Export the route handler with middleware
-exports.createVendorSupportQuery = [validateVendorSupportQuery, createVendorSupportQuery];
+exports.createSupportQuery = [validateVendorSupportQuery, createSupportQuery];
 
 exports.getVendorSupportQuery = async (req, res) => {
     try {
-        const queryId = req.params.queryId;
-
-        if (!mongoose.Types.ObjectId.isValid(queryId)) {
-            return res.status(400).json({ message: 'get vendor query: Invalid vendor support query ID' });
-        }
-
-        if (!req.user) {
-            console.log("[ERROR] User not authenticated", { headers: req.headers });
-            return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
-        }
-
-        const vendorSupportQuery = await VendorSupportQuery.findById(queryId).populate({
-            path: 'participants',
-            select: 'name email role image username'
-        });
+        const { queryId } = req.params;
+        const { user } = req;
         
-        if (!vendorSupportQuery) {
-            return res.status(404).json({ message: 'Vendor support query not found' });
+        if (!isValidId(queryId) || !user) {
+            return res.status(400).json({ message: 'Invalid query ID or user not authenticated' });
         }
-
-        const isParticipant = vendorSupportQuery.participants.some(p => p._id.toString() === req.user.id);
-        const isSuperAdmin = req.user.role === 'superAdmin';
-        if (!isSuperAdmin && !isParticipant) {
-            console.log(`[WARN] Unauthorized vendor support query access attempt`, { userId: req.user.id, queryId, userRole: req.user.role });
-            return res.status(403).json({ message: 'You are not authorized to view this vendor support query' });
+        
+        const query = await VendorSupportQuery.findById(queryId)
+            .populate({
+                path: 'participants.user',
+                select: 'name email role image username'
+            })
+            .populate('messages.sender', 'name email role image username');
+        
+        if (!query) return res.status(404).json({ message: 'Vendor support query not found' });
+        
+        const isParticipant = query.participants.some(p => p.user && p.user._id.toString() === user.id);
+        const isParticipantVendor = user.role === 'admin' && isParticipant
+        const isAuthorized = (user.role === 'superAdmin' || isParticipantVendor) 
+        // superAdmins can see all queries, and participants can see their own queries
+        if(!isAuthorized) {
+            // All other cases are unauthorized
+            return res.status(403).json({ message: 'Unauthorized access' });
         }
-
-        console.log('[DEBUG] Populated vendor support query:', JSON.stringify(vendorSupportQuery, null, 2));
-
-        // Log information about each participant's image
-        vendorSupportQuery.participants.forEach((participant, index) => {
-            console.log(`[DEBUG] Participant ${index + 1} image:`, {
-                participant_id: participant._id,
-                name: participant.name,
-                hasImage: !!participant.image,
-                imageValue: participant.image
-            });
-        });
-
-        // Populate sender information for each message
-        await VendorSupportQuery.populate(vendorSupportQuery, {
-            path: 'messages.sender',
-            select: 'name email role image username'
-        });
-
-        // Log information about each message sender's image
-        vendorSupportQuery.messages.forEach((message, index) => {
-            console.log(`[DEBUG] Message ${index + 1} sender image:`, {
-                sender_id: message.sender._id,
-                name: message.sender.name,
-                hasImage: !!message.sender.image,
-                imageValue: message.sender.image
-            });
-        });
-
-        console.log(`[INFO] Vendor support query retrieved`, { userId: req.user.id, queryId });
-        res.json(vendorSupportQuery);
+        
+        res.json(query);
     } catch (error) {
-        console.log(`[ERROR] Error retrieving vendor support query`, { error: error.message, userId: req.user ? req.user.id : 'Unknown' });
+        console.error(`Error retrieving vendor support query`, { 
+            error: error.message, 
+            userId: req.user?.id,
+            queryId: req.params.queryId
+        });
         res.status(500).json({ message: 'Error retrieving vendor support query', error: error.message });
     }
 };
 
-const addMessageController = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-
-    try {
-        const { content } = req.body;
-        const senderId = req.user.id;
-        const queryId = req.params.queryId;
-
-        if (!mongoose.Types.ObjectId.isValid(queryId)) {
-            return res.status(400).json({ message: 'addMessage: Invalid vendor support query ID' });
-        }
-
-        const vendorSupportQuery = await VendorSupportQuery.findById(queryId);
-        
-        if (!vendorSupportQuery) {
-            return res.status(404).json({ message: 'Vendor support query not found' });
-        }
-
-        const isParticipant = vendorSupportQuery.participants.some(p => p.toString() === senderId);
-        const isSuperAdmin = req.user.role === 'superAdmin';
-
-        if (!isSuperAdmin && !isParticipant) {
-            return res.status(403).json({ message: 'User is not authorized to add a message to this vendor support query' });
-        }
-
-        // Add the sender to participants if not already included
-        if (!isParticipant) {
-            vendorSupportQuery.participants.push(senderId);
-        }
-
-        vendorSupportQuery.messages.push({ sender: senderId, content: sanitizeHtml(content) });
-        vendorSupportQuery.lastMessageAt = Date.now();
-        
-        const updatedVendorSupportQuery = await vendorSupportQuery.save();
-
-        console.log(`[INFO] Message added to vendor support query`, { queryId, senderId });
-        res.json(updatedVendorSupportQuery);
-    } catch (error) {
-        console.log(`[ERROR] Error adding message to vendor support query`, { error: error.message, userId: req.user.id });
-        res.status(500).json({ message: 'Error adding message', error: error.message });
-    }
+const getUserQueriesByUserId = async (userId) => {
+    return await VendorSupportQuery.find({ 'participants.user': userId })
+        .populate({
+            path: 'participants.user',
+            select: 'name email image role username'
+        })
+        .select('participants messages lastMessageAt queryType')
+        .populate('messages.sender', 'name email image role username')
+        .sort({ lastMessageAt: -1 });
 };
 
-exports.addMessage = [validateMessage, addMessageController];
-
-exports.getVendorSupportQueriesByUser = async (req, res) => {
+exports.getSupportQueries = async (req, res) => {
     try {
-        const userId = req.params.userId;
-
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
+        const userId = req.user.id;
+        if (!isValidId(userId)) {
             return res.status(400).json({ message: 'Invalid user ID' });
         }
-
-        // Only allow vendors to access their own vendor support queries, or helpdesk support to access any queries
-        if (userId !== req.user.id && req.user.role !== 'superAdmin') {
-            return res.status(403).json({ message: 'You are not authorized to view these vendor support queries' });
+        
+        const user = await User.findById(userId);
+        if (user.role !== 'admin' && user.role !== 'superAdmin') {
+            return res.status(403).json({ message: 'Only vendors (admins) and superAdmins can have support queries' });
         }
-
-        // If the user is not a helpdesk support, force the userId to be their own
-        const queryUserId = (req.user.role === 'superAdmin') ? userId : req.user.id;
-
-        const vendorSupportQueries = await VendorSupportQuery.find({ participants: queryUserId })
-                                .populate('participants', 'name email username')
-                                .sort({ lastMessageAt: -1 });
-        res.json(vendorSupportQueries);
+        
+        const queries = await getUserQueriesByUserId(userId);
+        res.status(200).json(queries);
     } catch (error) {
-        res.status(500).json({ message: 'Error retrieving vendor support queries', error: error.message });
+        console.error('[ERROR] Error fetching vendor support queries:', error);
+        res.status(500).json({ message: 'Error fetching vendor support queries', error: error.message });
     }
 };
 
-exports.markMessagesAsRead = async (req, res) => {
+exports.getAdminUserSupportQueries = async (req, res) => {
     try {
-        const queryId = req.params.queryId;
+        const targetUserId = req.params.userId;
+        if (!isValidId(targetUserId) || req.user.role !== 'superAdmin') {
+            return res.status(403).json({ message: 'Unauthorized or invalid user ID' });
+        }
+        
+        const targetUser = await User.findById(targetUserId);
+        if (!targetUser || (targetUser.role !== 'admin' && targetUser.role !== 'superAdmin')) {
+            return res.status(404).json({ message: 'User not found or not authorized for support queries' });
+        }
+        
+        const queries = await getUserQueriesByUserId(targetUserId);
+        res.status(200).json(queries);
+    } catch (error) {
+        console.error('[ERROR] Error fetching vendor support queries:', error);
+        res.status(500).json({ message: 'Error fetching vendor support queries', error: error.message });
+    }
+};
+
+exports.markSupportQueryAsRead = async (req, res) => {
+    try {
+        const { queryId } = req.params;
         const userId = req.user.id;
-
-        if (!mongoose.Types.ObjectId.isValid(queryId) || !mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).json({ message: 'Invalid vendor support query ID or user ID' });
+        
+        const query = await VendorSupportQuery.findById(queryId);
+        if (!query) {
+            return res.status(404).json({ message: 'Query not found' });
+        }
+        
+        const lastMessage = query.messages[query.messages.length - 1];
+        if (!lastMessage) {
+            return res.status(400).json({ message: 'No messages to mark as read' });
         }
 
-        const vendorSupportQuery = await VendorSupportQuery.findById(queryId);
+        const result = await VendorSupportQuery.findOneAndUpdate(
+            { _id: queryId, 'participants.user': userId },
+            { $set: { 'participants.$.lastReadMessage': lastMessage._id } },
+            { new: true }
+        );
 
-        if (!vendorSupportQuery) {
-            return res.status(404).json({ message: 'Vendor support query not found' });
+        if (!result) {
+            return res.status(404).json({ message: 'Participant not found in query' });
         }
 
-        if (!vendorSupportQuery.participants.includes(userId)) {
-            return res.status(403).json({ message: 'User is not a participant in this vendor support query' });
-        }
-
-        // Mark all unread messages as read
-        vendorSupportQuery.messages.forEach(message => {
-            if (!message.readBy.includes(userId)) {
-                message.readBy.push(userId);
-            }
-        });
-
-        const updatedVendorSupportQuery = await vendorSupportQuery.save();
-        res.json(updatedVendorSupportQuery);
+        res.json({ message: 'Query marked as read', lastReadMessageId: lastMessage._id });
     } catch (error) {
-        res.status(500).json({ message: 'Error marking messages as read', error: error.message });
+        console.error('[ERROR] Error marking messages as read:', error);
+        res.status(500).json({ message: 'Error marking messages as read' });
     }
 };
 
-// Get all vendor support queries for the authenticated user
-exports.getUserVendorSupportQueries = async (req, res) => {                                      
+exports.getAllSupportQueries = async (req, res) => {
     try {
-      if (!req.user) {
-        return res.status(401).json({ message: 'User not authenticated' });
-      }
-
-      const queries = await VendorSupportQuery.find({ participants: req.user.id })                                         
-        .populate('participants', 'name email image username')                                                 
-        .populate('messages.sender', 'name email image username')                                              
-        .sort({ createdAt: -1 });                                                               
-                                                                                                
-      res.status(200).json(queries);                                                            
-    } catch (error) {                                                                           
-      console.error('[ERROR] Error fetching user vendor support queries:', error);                   
-      res.status(500).json({ message: 'Error fetching user vendor support queries' });               
-    }                                                                                           
-  };  
-
-
-exports.getAllVendorSupportQueries = async (req, res) => {
-    try {
-        console.log('[DEBUG] User object:', req.user);
-        console.log('[DEBUG] User role:', req.user ? req.user.role : 'No user');
-
-        if (!req.user) {
-            console.log('[ERROR] User not authenticated');
-            return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
-        }
-
-        if (req.user.role !== 'superAdmin') {
-            console.log('[ERROR] User not authorized. Role:', req.user.role);
+        if (!req.user || req.user.role !== 'superAdmin') {
             return res.status(403).json({ message: 'Forbidden: Only superAdmin can access this endpoint' });
         }
-
+        
         const queries = await VendorSupportQuery.find()
-            .populate('participants', 'name email image username')
-            .populate('messages.sender', 'name email image username')
+            .populate({
+                path: 'participants.user',
+                select: 'name email image role username'
+            })
+            .populate('messages.sender', 'name email image role username')
             .sort({ createdAt: -1 });
-
-        console.log('[INFO] Successfully fetched all vendor support queries');
+        
         res.status(200).json(queries);
     } catch (error) {
         console.error('[ERROR] Error fetching all vendor support queries for superAdmin:', error);
-        res.status(500).json({ message: 'Error fetching all vendor support queries' });
+        res.status(500).json({ message: 'Error fetching all vendor support queries', error: error.message });
     }
 };
 
-module.exports = exports;
+
+
+exports.deleteSupportQuery = async (req, res) => {
+    try {
+        if (req.user.role !== 'superAdmin') {
+            return res.status(403).json({ message: 'Only superAdmin can delete support queries' });
+        }
+
+        const { queryId } = req.params;
+        const deletedQuery = await VendorSupportQuery.findByIdAndDelete(queryId);
+
+        if (!deletedQuery) {
+            return res.status(404).json({ message: 'Support query not found' });
+        }
+
+        res.status(200).json({ message: 'Support query deleted successfully' });
+    } catch (error) {
+        console.error('[ERROR] Error deleting support query:', error);
+        res.status(500).json({ message: 'Error deleting support query', error: error.message });
+    }
+};
+

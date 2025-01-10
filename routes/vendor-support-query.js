@@ -1,23 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const {
-  addMessage,
-  createVendorSupportQuery,
-  getUserVendorSupportQueries,
-  getVendorSupportQueriesByUser,
+  createSupportQuery,
+  getSupportQueries,
   getVendorSupportQuery,
-  markMessagesAsRead,
-  getAllVendorSupportQueries
+  markSupportQueryAsRead,
+  getAllSupportQueries,
+  getAdminUserSupportQueries,
+  deleteSupportQuery
 } = require('../controllers/vendor-support-query');
 const authJwt = require('../helpers/jwt');
 
-router.post('/', authJwt(), createVendorSupportQuery);
-router.get('/', authJwt(), getUserVendorSupportQueries);          
-router.get('/all', authJwt(), getAllVendorSupportQueries);
-// :queryId in these routes refers to the VendorSupportQuery ID
+router.post('/', authJwt(), createSupportQuery);
+router.get('/', authJwt(), getSupportQueries);
+router.get('/all', authJwt(), getAllSupportQueries);
 router.get('/:queryId', authJwt(), getVendorSupportQuery);
-router.post('/:queryId', authJwt(), addMessage);
-router.get('/user/:userId', authJwt(), getVendorSupportQueriesByUser);
-router.post('/:queryId/read', authJwt(), markMessagesAsRead);
+router.get('/user/:userId', authJwt(), getAdminUserSupportQueries);
+router.post('/:queryId/read', authJwt(), markSupportQueryAsRead);
+router.delete('/:queryId', authJwt(), deleteSupportQuery);
 
 module.exports = router;
