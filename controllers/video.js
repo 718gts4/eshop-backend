@@ -70,7 +70,7 @@ exports.getVideo = async (req, res) => {
 };
 
 exports.getVideosByUser = async (req, res) => {
-    let limit = 12;
+    let limit = 60;
     let skip = parseInt(req.query.skip);
 
     const videoList = await Video.find({ createdBy: req.params.id })
@@ -91,11 +91,24 @@ exports.getVideosByUser = async (req, res) => {
 exports.getVideosByWebVendor = async (req, res) => {
     try {
         const userId = req.params.userId; // assuming userId is passed as a parameter in the request
+        console.log('SKIP', req.query.skip)
+        console.log('LIMIT', req.query.limit)
+        const skip = parseInt(req.query.skip) || 0;
+        const limit = parseInt(req.query.limit) || 60;
+
+        // Check if userId is provided and is a valid ObjectId
+        if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Invalid or missing userId." });
+        }
 
         // Find all videos created by the user
-        const videos = await Video.find({ createdBy: userId }).sort({
-            dateCreated: -1,
-        });
+        const videos = await Video.find({ createdBy: userId })
+            .populate("createdBy")
+            .populate({
+                path: "videoItems",
+            })
+            .sort({dateCreated: -1})
+            .limit(60);
 
         // Check if any videos are found
         if (!videos || videos.length === 0) {
@@ -245,26 +258,6 @@ exports.updateVideoComment = async (req, res) => {
         res.status(404).json({ message: err.message });
     }
 };
-
-// exports.deleteVideo = async (req, res) => {
-//     Video.findByIdAndRemove(req.params.id)
-//         .then((video) => {
-//             if (video) {
-//                 deleteUrl(video.videoUrl);
-//                 deleteUrl(video.image);
-//                 return res
-//                     .status(200)
-//                     .json({ success: true, message: "the video is deleted!" });
-//             } else {
-//                 return res
-//                     .status(404)
-//                     .json({ success: false, message: "video not found!" });
-//             }
-//         })
-//         .catch((err) => {
-//             return res.status(500).json({ success: false, error: err });
-//         });
-// };
 
 exports.deleteVideo = async (req, res) => {
     try {

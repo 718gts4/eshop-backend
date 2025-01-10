@@ -151,7 +151,7 @@ exports.postOrder = async (req, res) => {
                 product: orderItem.product.id,
                 buyer: req.body.user,
                 address: req.body.address,
-                sellerId: orderItem.product.createdBy,
+                sellerId: orderItem.product.sellerId,
                 orderNumber: orderNumber,
                 parentOrderNumber: parentOrderNumber,
                 orderStatus: orderStatus,
@@ -200,7 +200,15 @@ exports.postOrder = async (req, res) => {
     try {
         // Save the updated order object with totalPrice to the database
         const updatedOrder = await order.save();
-        res.send(updatedOrder);
+        // Populate 'orderItems.product' to return full product details in response
+        const populatedOrder = await updatedOrder.populate({
+            path: "orderItems",
+            populate: {
+                path: "product"
+            }
+        })
+
+        res.send(populatedOrder);
     } catch (error) {
         return res.status(500).send("An error occurred while saving the order");
     }
@@ -246,25 +254,51 @@ exports.updateOrder = async (req, res) => {
     res.send(order);
 };
 
+exports.updateOrderItem = async (req, res) => {
+
+    const order = await OrderItem.findByIdAndUpdate(
+        req.params.id,
+        {
+            isCanceled: req.body.isCanceled,
+        },
+        { new: true }
+    );
+
+    if (!order) return res.status(400).send("the order item cannot be updated in the backend!");
+
+    res.send(order);
+};
+
 exports.deleteOrder = async (req, res) => {
-    Order.findByIdAndRemove(req.params.id)
-        .then(async (order) => {
-            if (order) {
-                await order.orderItems.map(async (orderItem) => {
-                    await OrderItem.findByIdAndRemove(orderItem);
-                });
-                return res
-                    .status(200)
-                    .json({ success: true, message: "the order is deleted" });
-            } else {
-                return res
-                    .status(404)
-                    .json({ success: false, message: "order not found" });
-            }
-        })
-        .catch((err) => {
-            return res.status(400).json({ success: false, error: err });
-        });
+    try {
+        // First, find the order by ID
+        const order = await Order.findById(req.params.id);
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: "Order not found" });
+        }
+
+        // Check if order status is '결제완료'
+        if (order.status !== '결제완료') {
+            return res
+                .status(400)
+                .json({ success: false, message: "주문을 취소할 수 없습니다. 판매자에게 문의하세요." });
+        }
+
+        // If status is '결제완료', proceed to delete order and associated order items
+        await Order.findByIdAndRemove(req.params.id);
+        await Promise.all(
+            order.orderItems.map(async (orderItem) => {
+                await OrderItem.findByIdAndRemove(orderItem);
+            })
+        );
+
+        return res
+            .status(200)
+            .json({ success: true, message: "The order is deleted" });
+    } catch (err) {
+        return res.status(400).json({ success: false, error: err.message });
+    }
 };
 
 exports.getOrdersCount = async (req, res) => {

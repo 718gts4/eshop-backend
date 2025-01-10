@@ -15,6 +15,7 @@ const {
     flexibleUpdate,
     updateStatus,
     updateVendorNote,
+    updateOrderItem
 } = require("../controllers/order");
 
 const express = require("express");
@@ -26,6 +27,7 @@ router.get(`/:id`, getOrder);
 router.get(`/get/adminorders/:sellerId`, getOrderItems, requireSignin);
 router.post("/", postOrder);
 router.put("/:id", updateOrder);
+router.put("/orderItem/:id", updateOrderItem);
 router.delete(`/:id`, deleteOrder);
 router.get(`/get/count`, getOrdersCount);
 router.get(`/get/userorders/:userid`, getUserOrders, requireSignin);

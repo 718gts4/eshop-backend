@@ -74,7 +74,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 50 * MEGABYTE }, // Set the maximum file size to 50MB (50 * 1024 * 1024 bytes)
+    limits: { fileSize: 500 * MEGABYTE }, // Set the maximum file size to 50MB (50 * 1024 * 1024 bytes)
 });
 
 router.get(`/`, getVideos);

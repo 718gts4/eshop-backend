@@ -105,7 +105,6 @@ exports.getProductsByCategoryId = async (req, res) => {
 }
 
 exports.getProductsByChildCategoryId = async (req, res) => {
-    console.log('req.params.', req.params.categoryId)
     try {
         const categoryId = mongoose.Types.ObjectId(req.params.categoryId);
         const products = await Product.find({ category: categoryId});
@@ -274,7 +273,7 @@ exports.getFeaturedProductsOfCounts = async (req, res) => {
 
 
 exports.getAdminProducts = async (req, res) => {
-    const product = await Product.find({createdBy: req.params.id})
+    const product = await Product.find({sellerId: req.params.id})
                         .populate('category')
                         .populate('sellerId', ['name', 'image', 'username', 'brand'])
                         .populate('reviews.createdBy', ['name', 'image', 'username'])
@@ -291,8 +290,21 @@ exports.likeProduct = async (req, res) => {
     try {
         const { id } = req.params;
         const { userId } = req.body;
+
+        // Validate that id and userId are valid MongoDB ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid product ID." });
+        }
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Invalid user ID." });
+        }
+
         const product = await Product.findById(id);
-        const isLiked = product.likes.get(userId);
+        if (!product) {
+            return res.status(404).json({ message: "Product not found." });
+        }
+
+        const isLiked = product.likes?.get(userId);
 
         if(isLiked){
             product.likes.delete(userId);

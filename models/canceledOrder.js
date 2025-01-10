@@ -19,7 +19,7 @@ const canceledOrderSchema = mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['취소완료','취소요청', '취소진행중', '환불', '취소불가', '취소확인'],
+        enum: ['취소완료','취소요청', '취소진행중', '환불', '취소불가', '취소확인', '삭제'],
         default: '삭제'
     },
     vendorRequest: {
@@ -36,6 +36,10 @@ const canceledOrderSchema = mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    orderNumber : {
+        type: String,
+        default: '***'
+    }
 }, {timestamps: true})
 
 exports.CanceledOrder = mongoose.model('CanceledOrder', canceledOrderSchema);
