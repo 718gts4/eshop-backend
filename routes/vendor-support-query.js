@@ -7,7 +7,8 @@ const {
   markSupportQueryAsRead,
   getAllSupportQueries,
   getAdminUserSupportQueries,
-  deleteSupportQuery
+  deleteSupportQuery,
+  sendMessage
 } = require('../controllers/vendor-support-query');
 const authJwt = require('../helpers/jwt');
 
@@ -17,6 +18,7 @@ router.get('/all', authJwt(), getAllSupportQueries);
 router.get('/:queryId', authJwt(), getVendorSupportQuery);
 router.get('/user/:userId', authJwt(), getAdminUserSupportQueries);
 router.post('/:queryId/read', authJwt(), markSupportQueryAsRead);
+router.post('/message', authJwt(), sendMessage);
 router.delete('/:queryId', authJwt(), deleteSupportQuery);
 
 module.exports = router;

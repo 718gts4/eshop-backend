@@ -2,7 +2,7 @@ const VendorSupportQuery = require('../models/vendor-support-query');
 const User = require('../models/user').User;
 const { body, validationResult } = require('express-validator');
 const sanitizeHtml = require('sanitize-html');
-const { isValidId } = require('../utils/validation');
+const { isValidId, isSuperAdmin } = require('../utils/validation');
 
 const validateVendorSupportQuery = [
     body('queryType').isIn(['Product', 'Customer', 'Settlement', 'Order', 'Video']).withMessage('Invalid query type'),
@@ -49,12 +49,6 @@ const createSupportQuery = async (req, res) => {
             .populate('participants.user', 'name email image role username')
             .populate('messages.sender', 'name email image role username');
 
-        // Emit Socket.IO event
-        const io = req.app.get('io');
-        if (io) {
-            io.emit('server:newSupportQuery', populatedQuery);
-        }
-
         res.status(201).json(populatedQuery);
     } catch (error) {
         console.log(`[ERROR] Error creating vendor support query`, { error: error.message, userId: req.user?.id });
@@ -84,7 +78,7 @@ exports.getVendorSupportQuery = async (req, res) => {
         
         const isParticipant = query.participants.some(p => p.user && p.user._id.toString() === user.id);
         const isParticipantVendor = user.role === 'admin' && isParticipant
-        const isAuthorized = (user.role === 'superAdmin' || isParticipantVendor) 
+        const isAuthorized = (isSuperAdmin(user) || isParticipantVendor) 
         // superAdmins can see all queries, and participants can see their own queries
         if(!isAuthorized) {
             // All other cases are unauthorized
@@ -136,7 +130,7 @@ exports.getSupportQueries = async (req, res) => {
 exports.getAdminUserSupportQueries = async (req, res) => {
     try {
         const targetUserId = req.params.userId;
-        if (!isValidId(targetUserId) || req.user.role !== 'superAdmin') {
+        if (!isValidId(targetUserId) || !isSuperAdmin(req.user)) {
             return res.status(403).json({ message: 'Unauthorized or invalid user ID' });
         }
         
@@ -185,9 +179,47 @@ exports.markSupportQueryAsRead = async (req, res) => {
     }
 };
 
+const sendMessage = async (req, res) => {
+    try {
+        const { queryId, content } = req.body;
+        const senderId = req.user.id;
+        
+        // Find query and validate access
+        const query = await VendorSupportQuery.findById(queryId)
+            .populate('participants.user', 'name email role image username');
+            
+        if (!query) {
+            return res.status(404).json({ message: 'Query not found' });
+        }
+
+        // Security check: Verify user is a participant or superAdmin
+        const isParticipant = query.participants.some(p => p.user._id.toString() === senderId);
+        if (!isParticipant && !isSuperAdmin(req.user)) {
+            return res.status(403).json({ message: 'Not authorized to send messages in this query' });
+        }
+
+        const newMessage = { 
+            sender: senderId, 
+            content: sanitizeHtml(content),
+            readBy: [senderId] 
+        };
+
+        query.messages.push(newMessage);
+        query.lastMessageAt = new Date();
+        await query.save();
+
+        res.status(201).json(newMessage);
+    } catch (error) {
+        console.error('Error sending message:', error);
+        res.status(500).json({ message: 'Error sending message' });
+    }
+};
+
+exports.sendMessage = sendMessage;
+
 exports.getAllSupportQueries = async (req, res) => {
     try {
-        if (!req.user || req.user.role !== 'superAdmin') {
+        if (!req.user || !isSuperAdmin(req.user)) {
             return res.status(403).json({ message: 'Forbidden: Only superAdmin can access this endpoint' });
         }
         
@@ -210,7 +242,7 @@ exports.getAllSupportQueries = async (req, res) => {
 
 exports.deleteSupportQuery = async (req, res) => {
     try {
-        if (req.user.role !== 'superAdmin') {
+        if (!isSuperAdmin(req.user)) {
             return res.status(403).json({ message: 'Only superAdmin can delete support queries' });
         }
 
@@ -227,4 +259,3 @@ exports.deleteSupportQuery = async (req, res) => {
         res.status(500).json({ message: 'Error deleting support query', error: error.message });
     }
 };
-

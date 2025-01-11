@@ -6,10 +6,6 @@ const participantSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    isOnline: { 
-        type: Boolean, 
-        default: false 
-    },
     lastReadMessage: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Message',
@@ -90,7 +86,6 @@ vendorSupportQuerySchema.methods.addParticipant = async function(userId) {
     if (!exists) {
         this.participants.push({
             user: userId,
-            isOnline: true,
             lastReadMessage: null
         });
         return await this.save();

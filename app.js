@@ -1,8 +1,5 @@
 const express = require("express");
 const app = express();
-const http = require('http');
-const server = http.createServer(app);
-const { Server } = require("socket.io");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -11,7 +8,6 @@ const authJwt = require("./helpers/jwt");
 const { superAdminMiddleware } = require("./common-middleware");
 const errorHandler = require("./helpers/error-handler");
 const backgroundService = require("./backgroundService");
-const socketHandlers = require('./socketHandlers');
 const jwt = require('jsonwebtoken');
 
 // when in development, allow requests from localhost:3000.
@@ -28,12 +24,8 @@ const corsOptions = isProduction
         allowedHeaders: "Content-Type,Authorization",
     };
 
-const io = new Server(server, {
-  cors: corsOptions
-});
-const options = cors(corsOptions);
-app.use(options);
-app.options("*", options);
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 //Middleware
 app.use(express.json());
@@ -101,8 +93,6 @@ app.use(`${api}/vendor-support-query`, vendorSupportQueryRoutes);
 app.use(`${api}/payment`, paymentRoutes);
 app.use(`${api}/superadminQuestions`, superadminRoutes);
 
-// Socket.IO handlers are initialized in socketHandlers.js
-
 // Schedule the task to run periodically (e.g., every hour)
 setInterval(backgroundService.updateProductsOnSaleStatus, 3600000);
 mongoose
@@ -114,19 +104,8 @@ mongoose
         console.log(err);
     });
 
-// Development
-// app.listen(process.env.PORT, ()=>{
-//     console.log(`server is running on http://localhost:${process.env.PORT}`);
-// })
-
 // Production
 const port = process.env.PORT || 3000;
-server.listen(port, function () {
-    console.log("Express and Socket.IO are working on port " + port);
+app.listen(port, function () {
+    console.log("Express server is working on port " + port);
 });
-
-// Make io available to our app
-app.set('io', io);
-
-// Initialize Socket.IO handlers
-socketHandlers(io, app);
