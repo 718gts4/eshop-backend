@@ -18,7 +18,7 @@ const createSupportQuery = async (req, res) => {
         const initiatorId = req.user.id;
         const initiator = await User.findById(initiatorId).select('name email role image');
         
-        if (!initiator || (initiator.role !== 'admin' && initiator.role !== 'superAdmin')) {
+        if (!initiator || (!isSuperAdmin(initiator) && initiator.role !== 'admin')) {
             return res.status(403).json({ message: 'Unauthorized: Only vendors (admin) or superAdmin can initiate a support query' });
         }
         
