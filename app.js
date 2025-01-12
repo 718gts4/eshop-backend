@@ -34,18 +34,6 @@ app.use(authJwt());
 app.use(errorHandler);
 app.use("/uploads", express.static(__dirname + "/uploads"));
 
-// Debug route to generate JWT tokens
-app.get('/debug/generate-token/:userId/:role', (req, res) => {
-    const { userId, role } = req.params;
-    const token = jwt.sign(
-        { userId: userId, role: role },
-        process.env.secret,
-        { expiresIn: '1d' }
-    );
-    console.log(`Generated token for user ${userId} with role ${role}:`, token);
-    res.json({ token });
-});
-
 //Routes
 const productsRoutes = require("./routes/products");
 const categoriesRoutes = require("./routes/categories");

@@ -27,16 +27,6 @@ The repository includes the following key files and directories:
 
 The application includes a background service that periodically updates the sale status of products. This service runs every hour in the production environment.
 
-## Real-time Communication
-
-The application uses Socket.IO for real-time communication, primarily for handling vendor support queries. It includes features such as:
-
-- Joining and leaving chat rooms
-- Sending and receiving messages
-- Typing indicators
-- Marking messages as read
-- Tracking online users
-
 ## API Routes
 
 The application exposes the following API routes:
@@ -83,12 +73,6 @@ Note: Replace `/api/v1` with the actual value of `process.env.API_URL` in your e
 - Multer: Middleware for handling multipart/form-data
 - Socket.io: Real-time bidirectional event-based communication
 
-## Conventions
-
-As specified in the `.aider/CONVENTIONS.md` file, the main coding convention for this project is:
-
-- Write simple code.
-
 ## Additional Features
 
 - AWS S3 integration for file storage
@@ -97,8 +81,3 @@ As specified in the `.aider/CONVENTIONS.md` file, the main coding convention for
 - Image processing with Sharp
 - HTML sanitization
 
-## License
-
-This project is licensed under the ISC License.
-
-For more detailed information about the project's API endpoints, database schema, and usage instructions, please refer to the source code and comments within the files.
