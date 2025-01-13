@@ -1,5 +1,5 @@
 require("dotenv").config();
-const connectToDatabase = require("../config/database");
+const connectToDatabase = require("../utils/database");
 const mongoose = require("mongoose");
 const { User } = require("../models/user");
 
@@ -24,9 +24,17 @@ async function updateUserRole({ email, newRole, name }) {
         console.log(`Updated user ${user.email}:`);
         console.log(`Role: ${user.role}`);
         console.log(`Name: ${user.name}`);
-        console.log(`isAdmin: ${user.isAdmin}`);
-        console.log(`Verified: ${user.verified}`);
-        console.log(`Email Verified: ${user.emailVerified}`);
+        console.log(`isAdmin: ${user.isAdmin}`); // registers through admin app not mobile app. user registers mobile app as user and then becomes admin admin.
+        console.log(`Verified: ${user.verified}`); // manual process
+        console.log(`submitted: ${user.submitted}`); // cannot be verified if business documents aren't submitted. automated process
+        
+        /*
+        TODO: a user registers as a user on mobile. 
+        He wants to register as admin, which can only be done through admin app.
+        But because he is already registered as a user, he cannot register as admin, because his email is already in the system.
+        He would have to delete his user account and then register as admin.
+        Fix?
+        */
     } catch (error) {
         console.error("Error during user role update:", error);
     } finally {

@@ -8,6 +8,7 @@ const authJwt = require("./helpers/jwt");
 const { superAdminMiddleware } = require("./common-middleware");
 const errorHandler = require("./helpers/error-handler");
 const backgroundService = require("./backgroundService");
+const jwt = require('jsonwebtoken');
 
 // when in development, allow requests from localhost:3000.
 // heroku sets NODE_ENV to production by default for hosted apps. 
@@ -22,11 +23,11 @@ const corsOptions = isProduction
         methods: "GET,POST,PUT,PATCH,DELETE",
         allowedHeaders: "Content-Type,Authorization",
     };
-const options = cors(corsOptions);
-app.use(options);
-app.options("*", options);
 
-//Middlewear
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
+
+//Middleware
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authJwt());
@@ -52,6 +53,7 @@ const vendorRoutes = require("./routes/vendor");
 const clientRoutes = require("./routes/client");
 const returnBankRoutes = require("./routes/returnBank");
 const vendorSupportQueryRoutes = require("./routes/vendor-support-query");
+const vendorSupportQueryController = require("./controllers/vendor-support-query");
 const paymentRoutes = require("./routes/payment");
 const superadminRoutes = require("./routes/superadmin-question")
 
@@ -90,13 +92,8 @@ mongoose
         console.log(err);
     });
 
-// Development
-// app.listen(process.env.PORT, ()=>{
-//     console.log(`server is running on http://localhost:${process.env.PORT}`);
-// })
-
 // Production
-var server = app.listen(process.env.PORT || 3000, function () {
-    var port = server.address().port;
-    console.log("Express is working on port " + port);
+const port = process.env.PORT || 3000;
+app.listen(port, function () {
+    console.log("Express server is working on port " + port);
 });
