@@ -15,7 +15,6 @@ const {
     bookmarkProduct,
     getBookmarkedProducts,
     resetPassword,
-    // verifyEmail,
     checkEmail,
     resendEmailVerification,
     getAllAdminUsers,
@@ -24,11 +23,8 @@ const {
 } = require("../controllers/user");
 const express = require("express");
 const router = express.Router();
-const {
-    validateRegisterRequest,
-    validateLoginRequest,
-    isRequestValidated,
-} = require("../validators/auth");
+const { validateRequest } = require('../middleware/validate-zod');
+const { authSchema, registerSchema } = require('../validators/schemas/auth');
 const { requireSignin } = require("../common-middleware/");
 const multer = require("multer");
 
@@ -45,8 +41,8 @@ router.get("/:id", getUserId);
 router.get(`/get/count`, getUserCount);
 router.get(`/search/users`, getSearchUsers);
 router.get("/admin/users", getAllAdminUsers);
-router.post("/login", validateLoginRequest, isRequestValidated, login);
-router.post("/register", validateRegisterRequest, isRequestValidated, register);
+router.post("/login", validateRequest(authSchema), login);
+router.post("/register", validateRequest(registerSchema), register);
 router.put("/:id", updateUser);
 router.delete(`/:id`, deleteUser);
 router.post(`/:userId/searchwords`, addSearchWord);
@@ -102,6 +98,5 @@ router.delete("/imagedelete/profiles/:key", async (req, res) => {
     deleteProfileUrl(key);
     res.send();
 });
-
 
 module.exports = router;
