@@ -56,8 +56,6 @@ const vendorSupportQueryRoutes = require("./routes/vendor-support-query");
 const paymentRoutes = require("./routes/payment");
 const superadminRoutes = require("./routes/superadmin-question");
 const popupRoutes = require("./routes/popup");
-// TODO: Remove after admin-query refactor is complete - this was an unfinished implementation
-const superadminRoutes = require("./routes/superadmin-question");
 const adminQueryRoutes = require("./routes/admin-query");
 
 const api = process.env.API_URL;

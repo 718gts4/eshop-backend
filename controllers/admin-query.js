@@ -88,7 +88,7 @@ exports.getAdminQuery = [
             }
 
             // Check access rights: user must be either a superadmin or the owner of the query
-            const isQueryOwner = query.userId.toString() === req.user._id.toString();
+            const isQueryOwner = query.userId.toString() === req.user.id.toString();
             const isAuthorized = isSuperAdmin(req.user) || isQueryOwner;
 
             if (!isAuthorized) {
