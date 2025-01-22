@@ -80,8 +80,8 @@ exports.getAdminQuery = [
     async (req, res) => {
         try {
             const query = await AdminQuery.findById(req.params.queryId)
-                .populate('userId', 'name email role')
-                .populate('messages.userId', 'name email role');
+                .populate('userId', 'name email role image')
+                .populate('messages.userId', 'name email role image');
 
             if (!query) {
                 return res.status(404).json({ message: 'Query not found' });
@@ -109,8 +109,8 @@ exports.getAdminQuery = [
 exports.getMyAdminQueries = async (req, res) => {
     try {
         const queries = await AdminQuery.find({ userId: req.user.id })
-            .populate('userId', 'name email role')
-            .populate('messages.userId', 'name email role')
+            .populate('userId', 'name email role image')
+            .populate('messages.userId', 'name email role image')
             .sort('-updatedAt');
 
         res.json(queries);
@@ -124,8 +124,8 @@ exports.getMyAdminQueries = async (req, res) => {
 exports.getAllAdminQueries = async (req, res) => {
     try {
         const queries = await AdminQuery.find()
-            .populate('userId', 'name email role')
-            .populate('messages.userId', 'name email role')
+            .populate('userId', 'name email role image')
+            .populate('messages.userId', 'name email role image')
             .sort('-updatedAt');
 
         res.json(queries);
@@ -160,8 +160,8 @@ exports.addMessage = [
 
             // Populate the newly added message
             const populatedQuery = await AdminQuery.findById(queryId)
-                .populate('userId', 'name email role')
-                .populate('messages.userId', 'name email role');
+                .populate('userId', 'name email role image')
+                .populate('messages.userId', 'name email role image');
 
             const newMessage = populatedQuery.messages[populatedQuery.messages.length - 1];
 

@@ -1,7 +1,7 @@
 const { User } = require("../../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { isAdminOrSuperAdmin } = require("../../utils/validation");
+const { hasAdminLevel } = require("../../utils/validation");
 
 async function createAdminUser({ name, email, phone, password }) {
     const isExistingUser = await User.findOne({ email });
@@ -33,7 +33,8 @@ async function createAdminUser({ name, email, phone, password }) {
         id: savedUser.id,
         name: savedUser.name,
         phone: savedUser.phone,
-        role: savedUser.role
+        role: savedUser.role,
+        image: savedUser.image
     };
 }
 
@@ -54,7 +55,7 @@ async function authenticateAdminUser({ email, password }) {
         throw error;
     }
 
-    if (!isAdminOrSuperAdmin(user.role)) {
+    if (!hasAdminLevel(user)) {
         const error = new Error('관리자 권한이 없습니다.');
         error.statusCode = 403;
         throw error;
@@ -63,7 +64,8 @@ async function authenticateAdminUser({ email, password }) {
     const token = jwt.sign(
         {
             id: user.id,
-            role: user.role
+            role: user.role,
+            isAdmin: user.isAdmin
         },
         process.env.secret,
         { expiresIn: '1d' }
@@ -75,6 +77,8 @@ async function authenticateAdminUser({ email, password }) {
         name: user.name,
         phone: user.phone,
         role: user.role,
+        isAdmin: user.isAdmin,
+        image: user.image,
         token
     };
 }
@@ -99,7 +103,10 @@ exports.login = async (req, res) => {
     console.log('[DEBUG] Login attempt:', { email: req.body.email });
     try {
         const user = await authenticateAdminUser(req.body);
-        res.status(200).json({ message: '로그인이 완료되었습니다.', user });
+        res.status(200).json({ 
+            message: '로그인이 완료되었습니다.', 
+            user 
+        });
     } catch (error) {
         console.error('Error in login:', error);
         res.status(error.statusCode || 500).json({ 

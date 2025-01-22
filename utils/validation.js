@@ -2,13 +2,13 @@ const mongoose = require('mongoose');
 
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
-const isSuperAdmin = user => user?.role === 'superAdmin';
-const isAdmin = user => user?.role === 'admin';
-const isAdminOrSuperAdmin = user => isAdmin(user) || isSuperAdmin(user);
+const hasSuperAdminRole = user => user?.role === 'superAdmin';
+const hasAdminRole = user => user?.role === 'admin' && user?.isAdmin === true;
+const hasAdminLevel = user => hasAdminRole(user) || hasSuperAdminRole(user);
 
 module.exports = {
     isValidId,
-    isSuperAdmin,
-    isAdmin,
-    isAdminOrSuperAdmin,
+    hasSuperAdminRole,
+    hasAdminRole,
+    hasAdminLevel,
 };
