@@ -53,9 +53,9 @@ const vendorRoutes = require("./routes/vendor");
 const clientRoutes = require("./routes/client");
 const returnBankRoutes = require("./routes/returnBank");
 const vendorSupportQueryRoutes = require("./routes/vendor-support-query");
-const vendorSupportQueryController = require("./controllers/vendor-support-query");
 const paymentRoutes = require("./routes/payment");
-const superadminRoutes = require("./routes/superadmin-question")
+const superadminRoutes = require("./routes/superadmin-question");
+const popupRoutes = require("./routes/popup");
 
 const api = process.env.API_URL;
 
@@ -80,6 +80,7 @@ app.use(`${api}/returnBank`, returnBankRoutes);
 app.use(`${api}/vendor-support-query`, vendorSupportQueryRoutes);
 app.use(`${api}/payment`, paymentRoutes);
 app.use(`${api}/superadminQuestions`, superadminRoutes);
+app.use(`${api}/popup`, popupRoutes);
 
 // Schedule the task to run periodically (e.g., every hour)
 setInterval(backgroundService.updateProductsOnSaleStatus, 3600000);

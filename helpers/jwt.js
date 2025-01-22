@@ -48,6 +48,7 @@ function authJwt() {
                 { url: /\/api\/v1\/returnBank(.*)/, methods: ["POST", "GET", "PUT", "DELETE"] },
                 { url: /\/api\/v1\/payment(.*)/, methods: ["POST", "GET", "PUT"] },
                 { url: /\/api\/v1\/superadminQuestions(.*)/, methods: ["POST", "GET", "PUT"] },
+                { url: /\/api\/v1\/popup(.*)/, methods: ["POST", "GET", "PUT", "DELETE"] },
                 `${api}/users/login`,
                 `${api}/users/register`,
                 `${api}/admin/register`,
