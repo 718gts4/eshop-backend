@@ -53,8 +53,9 @@ const vendorRoutes = require("./routes/vendor");
 const clientRoutes = require("./routes/client");
 const returnBankRoutes = require("./routes/returnBank");
 const vendorSupportQueryRoutes = require("./routes/vendor-support-query");
-const vendorSupportQueryController = require("./controllers/vendor-support-query");
 const paymentRoutes = require("./routes/payment");
+const superadminRoutes = require("./routes/superadmin-question");
+const popupRoutes = require("./routes/popup");
 // TODO: Remove after admin-query refactor is complete - this was an unfinished implementation
 const superadminRoutes = require("./routes/superadmin-question");
 const adminQueryRoutes = require("./routes/admin-query");
@@ -81,6 +82,8 @@ app.use(`${api}/client`, clientRoutes);
 app.use(`${api}/returnBank`, returnBankRoutes);
 app.use(`${api}/admin-queries`, adminQueryRoutes);  
 app.use(`${api}/payment`, paymentRoutes);
+app.use(`${api}/superadminQuestions`, superadminRoutes);
+app.use(`${api}/popup`, popupRoutes);
 
 // TODO: Legacy routes to be removed once admin-queries is fully implemented and tested
 // These routes are being replaced by the new admin-queries endpoint
