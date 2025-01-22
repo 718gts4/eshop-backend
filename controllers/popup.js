@@ -50,3 +50,21 @@ exports.deletePopup = async (req, res) => {
         return res.status(400).json({success: false, error: err})
     })    
 }
+
+exports.postPopup = async (req, res) => {
+    try{
+        let popup = new Popup({
+                image: req.body.image,
+                userId: req.body.userId
+            })
+
+            popup = await popup.save();
+
+            if(!popup)
+            return res.status(404).send('the popup cannot be created!')
+            
+            res.send(popup);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+}
