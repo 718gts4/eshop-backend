@@ -27,13 +27,42 @@ exports.getQuestionsByUser = async (req, res) => {
     }
 };
 
+// Get a question by ID
+exports.getQuestionById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Validate id format
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid question ID format" });
+        }
+
+        const question = await SuperAdminQuestion.findById(id)
+            .populate("userId", "name image username isAdmin email")
+            .populate("answers.userId", "name username image isAdmin");
+
+        if (!question) {
+            return res.status(404).json({ message: "Question not found" });
+        }
+
+        res.json(question);
+    } catch (error) {
+        console.error('Error fetching question:', error);
+        res.status(500).json({ message: "Error fetching question", error });
+    }
+};
+
 // Add a new question
 exports.addQuestion = async (req, res) => {
     try {
-        const { question, userId } = req.body; // Extract userId
-
-        const objectUserId = mongoose.Types.ObjectId(userId);
+        const { question, questionType } = req.body;
         
+        // Get userId from authenticated user
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(401).json({ message: "User not authenticated" });
+        }
+
         // Validate userId
         if (!mongoose.Types.ObjectId.isValid(userId)) {
             return res.status(400).json({ message: "Invalid userId format" });
@@ -43,13 +72,14 @@ exports.addQuestion = async (req, res) => {
         const questionData = {
             userId: mongoose.Types.ObjectId(userId),
             question,
+            questionType, // Add questionType if provided
         };
 
         const newQuestion = new SuperAdminQuestion(questionData);
         await newQuestion.save();
         res.json(newQuestion);
     } catch (error) {
-        console.error("Error adding question:", error);
+        console.error('Error adding question:', error);
         res.status(500).json({ message: "Error adding question", error });
     }
 };

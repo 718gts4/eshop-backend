@@ -14,6 +14,7 @@ const answerSchema = new mongoose.Schema({
 // Schema for questions
 const superadminquestionSchema = new mongoose.Schema({
     question: { type: String, required: true }, // Main question text
+    questionType: { type: String, enum: ['Product', 'Customer', 'Settlement', 'Order', 'Video'] }, // Optional to maintain backward compatibility
     answers: [answerSchema],                   // Array of answers
     userId: {
         type: mongoose.Schema.Types.ObjectId,

@@ -52,12 +52,9 @@ const purchaseRoutes = require("./routes/purchase");
 const vendorRoutes = require("./routes/vendor");
 const clientRoutes = require("./routes/client");
 const returnBankRoutes = require("./routes/returnBank");
-const vendorSupportQueryRoutes = require("./routes/vendor-support-query");
 const paymentRoutes = require("./routes/payment");
-const superadminRoutes = require("./routes/superadmin-question");
 const popupRoutes = require("./routes/popup");
-const adminQueryRoutes = require("./routes/admin-query");
-
+const superadminRoutes = require("./routes/superadmin-question");
 const api = process.env.API_URL;
 
 //Routers
@@ -78,16 +75,11 @@ app.use(`${api}/purchase`, purchaseRoutes);
 app.use(`${api}/vendor`, vendorRoutes);
 app.use(`${api}/client`, clientRoutes);
 app.use(`${api}/returnBank`, returnBankRoutes);
-app.use(`${api}/admin-queries`, adminQueryRoutes);  
 app.use(`${api}/payment`, paymentRoutes);
-app.use(`${api}/superadminQuestions`, superadminRoutes);
 app.use(`${api}/popup`, popupRoutes);
 
-// TODO: Legacy routes to be removed once admin-queries is fully implemented and tested
-// These routes are being replaced by the new admin-queries endpoint
-app.use(`${api}/vendor-support-query`, vendorSupportQueryRoutes);  // Legacy - to be removed
-app.use(`${api}/superadminQuestions`, superadminRoutes);          // Legacy - to be removed
-app.use(`${api}/admin-query`, adminQueryRoutes);
+// Used by mobile app and admin dashboard
+app.use(`${api}/superadminQuestions`, superadminRoutes);
 
 // Schedule the task to run periodically (e.g., every hour)
 setInterval(backgroundService.updateProductsOnSaleStatus, 3600000);
