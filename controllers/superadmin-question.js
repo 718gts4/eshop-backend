@@ -1,54 +1,68 @@
-const {SuperAdminQuestion} = require("../models/superadmin-question");
 const mongoose = require('mongoose');
-console.log("Model:", SuperAdminQuestion);
+const { isValidObjectId } = require('mongoose');
+const { SuperAdminQuestion } = require("../models/superadmin-question");
 
 // Fetch all questions
 exports.getQuestions = async (req, res) => {
     try {
         const questions = await SuperAdminQuestion.find()
-            .populate("userId", "name image username isAdmin email")
-            .populate("answers.userId", "name username image isAdmin")
+            .sort({ createdAt: -1 })
+            .populate("userId", "name image username role")
+            .populate("answers.userId", "name username image role")
         res.json(questions);
     } catch (error) {
-        res.status(500).json({ message: "Error fetching questions", error });
-    }
-};
-  
-exports.getQuestionsByUser = async (req, res) => {
-    try {
-        const { userId } = req.params; // Extract userId from request parameters
-        const questions = await SuperAdminQuestion.find({ userId }) // Filter questions by userId
-            .sort({ createdAt: -1 })
-            .populate("userId", "name image username isAdmin email") // Populate user details for the question
-            .populate("answers.userId", "name username image isAdmin"); // Populate user details for answers
-        res.json(questions); // Return the filtered questions
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching user's questions", error });
+        console.error('Error in getQuestions:', error);
+        res.status(500).json({ message: "Error fetching questions", error: error.message });
     }
 };
 
-// Get a question by ID
+exports.getQuestionsByUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        console.log('Getting questions for userId:', userId);
+
+        if (!isValidObjectId(userId)) {
+            return res.status(400).json({ message: "Invalid user ID format" });
+        }
+
+        const questions = await SuperAdminQuestion.find({ userId })
+            .sort({ createdAt: -1 })
+            .populate("userId", "name image username role")
+            .populate("answers.userId", "name username image role");
+
+        console.log(`Found ${questions.length} questions for user ${userId}`);
+        res.json(questions);
+    } catch (error) {
+        console.error('Error in getQuestionsByUser:', error);
+        res.status(500).json({ 
+            message: "Error fetching user's questions", 
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    }
+};
+
+// Get a single question by ID
 exports.getQuestionById = async (req, res) => {
     try {
         const { id } = req.params;
         
         // Validate id format
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: "Invalid question ID format" });
+        if (!isValidObjectId(id)) {
+            return res.status(400).json({ error: "Invalid question ID format" });
         }
 
         const question = await SuperAdminQuestion.findById(id)
-            .populate("userId", "name image username isAdmin email")
-            .populate("answers.userId", "name username image isAdmin");
+            .populate("userId", "name image username role")
+            .populate("answers.userId", "name username image role");
 
         if (!question) {
-            return res.status(404).json({ message: "Question not found" });
+            return res.status(404).json({ error: "Question not found" });
         }
-
         res.json(question);
     } catch (error) {
-        console.error('Error fetching question:', error);
-        res.status(500).json({ message: "Error fetching question", error });
+        console.error('Error in getQuestionById:', error);
+        res.status(500).json({ error: "Internal server error", details: error.message });
     }
 };
 
@@ -60,63 +74,129 @@ exports.addQuestion = async (req, res) => {
         // Get userId from authenticated user
         const userId = req.user?.id;
         if (!userId) {
-            return res.status(401).json({ message: "User not authenticated" });
+            return res.status(400).json({ error: "User ID is required" });
         }
 
-        // Validate userId
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).json({ message: "Invalid userId format" });
-        }
-
-        // Prepare question data
-        const questionData = {
-            userId: mongoose.Types.ObjectId(userId),
+        const newQuestion = new SuperAdminQuestion({
             question,
-            questionType, // Add questionType if provided
-        };
+            questionType,
+            userId,
+            answers: []
+        });
 
-        const newQuestion = new SuperAdminQuestion(questionData);
-        await newQuestion.save();
-        res.json(newQuestion);
+        const savedQuestion = await newQuestion.save();
+        const populatedQuestion = await SuperAdminQuestion.findById(savedQuestion._id)
+            .populate("userId", "name image username role")
+            .populate("answers.userId", "name username image role");
+
+        res.status(201).json(populatedQuestion);
     } catch (error) {
-        console.error('Error adding question:', error);
-        res.status(500).json({ message: "Error adding question", error });
+        console.error('Error in addQuestion:', error);
+        res.status(500).json({ error: "Error creating question", details: error.message });
     }
 };
-  
+
 // Add an answer to a question
 exports.addAnswer = async (req, res) => {
     try {
-        const { text, userId } = req.body; // Extract userId
-        const question = await SuperAdminQuestion.findById(req.params.id);
-        if (!question) {
-            return res.status(404).json({ message: "Question not found" });
-        }
-        question.answers.push({ text, userId }); // Include userId in the answer
-        await question.save();
-        res.json(question);
-    } catch (error) {
-        res.status(500).json({ message: "Error adding answer", error });
-    }
-};
+        const { text } = req.body;
+        const userId = req.user?.id;
+        const { id: questionId } = req.params;
 
-// Edit a reply by ID
-exports.editQuestion = async (req, res) => {
-    const { questionId } = req.params;
-    const { repliedBySuperadmin } = req.body;
-    try {
-        const question = await SuperAdminQuestion.findByIdAndUpdate(
-            questionId,
-            { repliedBySuperadmin: repliedBySuperadmin },
-            { new: true }
-        );
+        // Validate questionId format
+        if (!isValidObjectId(questionId)) {
+            return res.status(400).json({ error: "Invalid question ID format" });
+        }
+
+        const question = await SuperAdminQuestion.findById(questionId);
         if (!question) {
             return res.status(404).json({ error: "Question not found" });
         }
 
+        question.answers.push({ text, userId });
         await question.save();
-        res.json(question);
+
+        const updatedQuestion = await SuperAdminQuestion.findById(questionId)
+            .populate("userId", "name image username role")
+            .populate("answers.userId", "name username image role");
+
+        res.json(updatedQuestion);
     } catch (error) {
-        res.status(500).json({ error: "Internal server error" });
+        console.error('Error in addAnswer:', error);
+        res.status(500).json({ error: "Error adding answer", details: error.message });
+    }
+};
+
+// Legacy edit endpoint - keep as is for mobile app
+exports.editQuestion = async (req, res) => {
+    try {
+        const { questionId } = req.params;
+        const { text, isReadByAdmin, isReadBySuperadmin } = req.body;
+
+        // Validate questionId format
+        if (!isValidObjectId(questionId)) {
+            return res.status(400).json({ error: "Invalid question ID format" });
+        }
+
+        const question = await SuperAdminQuestion.findById(questionId);
+        if (!question) {
+            return res.status(404).json({ error: "Question not found" });
+        }
+
+        if (text) question.text = text;
+        if (typeof isReadByAdmin !== 'undefined') question.isReadByAdmin = isReadByAdmin;
+        if (typeof isReadBySuperadmin !== 'undefined') question.isReadBySuperadmin = isReadBySuperadmin;
+
+        await question.save();
+        const updatedQuestion = await SuperAdminQuestion.findById(questionId)
+            .populate("userId", "name image username role")
+            .populate("answers.userId", "name username image role");
+        res.json(updatedQuestion);
+    } catch (error) {
+        console.error('Error in editQuestion:', error);
+        res.status(500).json({ error: "Error updating question", details: error.message });
+    }
+};
+
+// New endpoint for read status. Used by web superadmin-question feature.
+exports.updateAnswerReadStatus = async (req, res) => {
+    try {
+        const { questionId } = req.params;
+        const { answerId, isReadByAdmin, isReadBySuperadmin } = req.body;
+
+        // Validate IDs and fetch question
+        if (!isValidObjectId(questionId)) {
+            return res.status(400).json({ error: "Invalid question ID format" });
+        }
+        const question = await SuperAdminQuestion.findById(questionId);
+        if (!question) {
+            return res.status(404).json({ error: "Question not found" });
+        }
+
+        // Validate answerId and get answer
+        if (!isValidObjectId(answerId)) {
+            return res.status(400).json({ error: "Invalid answer ID format" });
+        }
+        const answer = question.answers.id(answerId);
+        if (!answer) {
+            return res.status(404).json({ error: "Answer not found" });
+        }
+        
+        // Update read status
+        if (isReadByAdmin) {
+            answer.isReadByAdmin = isReadByAdmin;
+        }
+        if (isReadBySuperadmin) {
+            answer.isReadBySuperadmin = isReadBySuperadmin;
+        }
+
+        await question.save();
+        const updatedQuestion = await SuperAdminQuestion.findById(questionId)
+            .populate("userId", "name image username role")
+            .populate("answers.userId", "name username image role");
+        res.json(updatedQuestion);
+    } catch (error) {
+        console.error('Error in updateAnswerReadStatus:', error);
+        res.status(500).json({ error: "Internal server error", details: error.message });
     }
 };

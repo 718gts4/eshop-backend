@@ -9,6 +9,9 @@ const answerSchema = new mongoose.Schema({
         required: true
     },
     createdAt: { type: Date, default: Date.now },
+    isReadByAdmin: { type: Boolean, default: false },     // Only checked for latest answer
+    isReadBySuperadmin: { type: Boolean, default: false }, // Only checked for latest answer
+    isReadByUser: { type: Boolean, default: false }        // New field to track read status by user
 });
 
 // Schema for questions
