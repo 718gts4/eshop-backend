@@ -101,6 +101,7 @@ exports.addAnswer = async (req, res) => {
     try {
         const { text } = req.body;
         const userId = req.user?.id;
+        const userRole = req.user?.role;
         const { id: questionId } = req.params;
 
         // Validate questionId format
@@ -113,7 +114,18 @@ exports.addAnswer = async (req, res) => {
             return res.status(404).json({ error: "Question not found" });
         }
 
-        question.answers.push({ text, userId });
+        // Add answer with initial read status false
+        question.answers.push({
+            text,
+            userId,
+            isRead: false // New answers start as unread
+        });
+
+        // Update repliedBySuperadmin flag for mobile compatibility
+        if (userRole === 'superAdmin') {
+            question.repliedBySuperadmin = true;
+        }
+
         await question.save();
 
         const updatedQuestion = await SuperAdminQuestion.findById(questionId)
@@ -162,8 +174,8 @@ exports.editQuestion = async (req, res) => {
 exports.updateAnswerReadStatus = async (req, res) => {
     try {
         const { questionId } = req.params;
-        const { answerId, isReadByAdmin, isReadBySuperadmin } = req.body;
-
+        const currentUserRole = req.user.role;
+        
         // Validate questionId and fetch question
         if (!isValidObjectId(questionId)) {
             return res.status(400).json({ error: "Invalid question ID format" });
@@ -173,38 +185,28 @@ exports.updateAnswerReadStatus = async (req, res) => {
             return res.status(404).json({ error: "Question not found" });
         }
 
-        // If answerId is provided, update the answer's read status
-        if (answerId) {
-            if (!isValidObjectId(answerId)) {
-                return res.status(400).json({ error: "Invalid answer ID format" });
-            }
-            const answer = question.answers.id(answerId);
-            if (!answer) {
-                return res.status(404).json({ error: "Answer not found" });
-            }
-            
-            if (isReadByAdmin) {
-                answer.isReadByAdmin = isReadByAdmin;
-            }
-            if (isReadBySuperadmin) {
-                answer.isReadBySuperadmin = isReadBySuperadmin;
-            }
-        } 
-        // If no answerId, update the question's read status
-        else {
-            if (isReadByAdmin) {
-                question.isReadByAdmin = isReadByAdmin;
-            }
-            if (isReadBySuperadmin) {
-                question.isReadBySuperadmin = isReadBySuperadmin;
-            }
+        // Get the latest answer
+        const answers = question.answers || [];
+        if (answers.length === 0) {
+            return res.status(200).json({ success: true }); // No answers to mark as read
         }
 
-        await question.save();
-        const updatedQuestion = await SuperAdminQuestion.findById(questionId)
-            .populate("userId", "name image username role")
-            .populate("answers.userId", "name username image role");
-        res.json(updatedQuestion);
+        const latestAnswer = answers[answers.length - 1];
+
+        // Only update read status if viewer is different role than sender
+        if (latestAnswer.userId.role !== currentUserRole) {
+            latestAnswer.isRead = true;
+            
+            // Update repliedBySuperadmin for mobile compatibility if superadmin is reading
+            if (currentUserRole === 'superAdmin' && !question.repliedBySuperadmin) {
+                question.repliedBySuperadmin = true;
+            }
+            
+            await question.save();
+        }
+
+        // Return success without sensitive data
+        res.status(200).json({ success: true });
     } catch (error) {
         console.error('Error in updateAnswerReadStatus:', error);
         res.status(500).json({ error: "Internal server error", details: error.message });
