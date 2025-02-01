@@ -164,7 +164,7 @@ exports.updateAnswerReadStatus = async (req, res) => {
         const { questionId } = req.params;
         const { answerId, isReadByAdmin, isReadBySuperadmin } = req.body;
 
-        // Validate IDs and fetch question
+        // Validate questionId and fetch question
         if (!isValidObjectId(questionId)) {
             return res.status(400).json({ error: "Invalid question ID format" });
         }
@@ -173,21 +173,31 @@ exports.updateAnswerReadStatus = async (req, res) => {
             return res.status(404).json({ error: "Question not found" });
         }
 
-        // Validate answerId and get answer
-        if (!isValidObjectId(answerId)) {
-            return res.status(400).json({ error: "Invalid answer ID format" });
-        }
-        const answer = question.answers.id(answerId);
-        if (!answer) {
-            return res.status(404).json({ error: "Answer not found" });
-        }
-        
-        // Update read status
-        if (isReadByAdmin) {
-            answer.isReadByAdmin = isReadByAdmin;
-        }
-        if (isReadBySuperadmin) {
-            answer.isReadBySuperadmin = isReadBySuperadmin;
+        // If answerId is provided, update the answer's read status
+        if (answerId) {
+            if (!isValidObjectId(answerId)) {
+                return res.status(400).json({ error: "Invalid answer ID format" });
+            }
+            const answer = question.answers.id(answerId);
+            if (!answer) {
+                return res.status(404).json({ error: "Answer not found" });
+            }
+            
+            if (isReadByAdmin) {
+                answer.isReadByAdmin = isReadByAdmin;
+            }
+            if (isReadBySuperadmin) {
+                answer.isReadBySuperadmin = isReadBySuperadmin;
+            }
+        } 
+        // If no answerId, update the question's read status
+        else {
+            if (isReadByAdmin) {
+                question.isReadByAdmin = isReadByAdmin;
+            }
+            if (isReadBySuperadmin) {
+                question.isReadBySuperadmin = isReadBySuperadmin;
+            }
         }
 
         await question.save();
