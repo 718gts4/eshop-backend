@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const { isValidObjectId } = require('mongoose');
 const { SuperAdminQuestion } = require("../models/superadmin-question");
 
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
 // Fetch all questions
 exports.getQuestions = async (req, res) => {
     try {
@@ -11,18 +13,19 @@ exports.getQuestions = async (req, res) => {
             .populate("answers.userId", "name username image role")
         res.json(questions);
     } catch (error) {
-        console.error('Error in getQuestions:', error);
-        res.status(500).json({ message: "Error fetching questions", error: error.message });
+        if (isDevelopment) {
+            console.error('Failed to fetch questions:', error.message);
+        }
+        res.status(500).json({ error: "Failed to fetch questions" });
     }
 };
 
 exports.getQuestionsByUser = async (req, res) => {
     try {
         const { userId } = req.params;
-        console.log('Getting questions for userId:', userId);
-
+        
         if (!isValidObjectId(userId)) {
-            return res.status(400).json({ message: "Invalid user ID format" });
+            return res.status(400).json({ error: "Invalid user ID format" });
         }
 
         const questions = await SuperAdminQuestion.find({ userId })
@@ -30,15 +33,16 @@ exports.getQuestionsByUser = async (req, res) => {
             .populate("userId", "name image username role")
             .populate("answers.userId", "name username image role");
 
-        console.log(`Found ${questions.length} questions for user ${userId}`);
+        if (isDevelopment) {
+            console.log(`Found ${questions.length} questions for user`);
+        }
+        
         res.json(questions);
     } catch (error) {
-        console.error('Error in getQuestionsByUser:', error);
-        res.status(500).json({ 
-            message: "Error fetching user's questions", 
-            error: error.message,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-        });
+        if (isDevelopment) {
+            console.error('Failed to fetch user questions:', error.message);
+        }
+        res.status(500).json({ error: "Failed to fetch questions" });
     }
 };
 
@@ -47,7 +51,6 @@ exports.getQuestionById = async (req, res) => {
     try {
         const { id } = req.params;
         
-        // Validate id format
         if (!isValidObjectId(id)) {
             return res.status(400).json({ error: "Invalid question ID format" });
         }
@@ -61,17 +64,17 @@ exports.getQuestionById = async (req, res) => {
         }
         res.json(question);
     } catch (error) {
-        console.error('Error in getQuestionById:', error);
-        res.status(500).json({ error: "Internal server error", details: error.message });
+        if (isDevelopment) {
+            console.error('Failed to fetch question:', error.message);
+        }
+        res.status(500).json({ error: "Failed to fetch question" });
     }
 };
 
-// Add a new question
 exports.addQuestion = async (req, res) => {
     try {
         const { question, questionType } = req.body;
         
-        // Get userId from authenticated user
         const userId = req.user?.id;
         if (!userId) {
             return res.status(400).json({ error: "User ID is required" });
@@ -91,8 +94,10 @@ exports.addQuestion = async (req, res) => {
 
         res.status(201).json(populatedQuestion);
     } catch (error) {
-        console.error('Error in addQuestion:', error);
-        res.status(500).json({ error: "Error creating question", details: error.message });
+        if (isDevelopment) {
+            console.error('Failed to create question:', error.message);
+        }
+        res.status(500).json({ error: "Failed to create question" });
     }
 };
 
@@ -104,7 +109,6 @@ exports.addAnswer = async (req, res) => {
         const userRole = req.user?.role;
         const { id: questionId } = req.params;
 
-        // Validate questionId format
         if (!isValidObjectId(questionId)) {
             return res.status(400).json({ error: "Invalid question ID format" });
         }
@@ -114,14 +118,12 @@ exports.addAnswer = async (req, res) => {
             return res.status(404).json({ error: "Question not found" });
         }
 
-        // Add answer with initial read status false
         question.answers.push({
             text,
             userId,
-            isRead: false // New answers start as unread
+            isRead: false
         });
 
-        // Update repliedBySuperadmin flag for mobile compatibility
         if (userRole === 'superAdmin') {
             question.repliedBySuperadmin = true;
         }
@@ -134,18 +136,18 @@ exports.addAnswer = async (req, res) => {
 
         res.json(updatedQuestion);
     } catch (error) {
-        console.error('Error in addAnswer:', error);
-        res.status(500).json({ error: "Error adding answer", details: error.message });
+        if (isDevelopment) {
+            console.error('Failed to add answer:', error.message);
+        }
+        res.status(500).json({ error: "Failed to add answer" });
     }
 };
 
-// Legacy edit endpoint - keep as is for mobile app
 exports.editQuestion = async (req, res) => {
     try {
         const { questionId } = req.params;
         const { text, isReadByAdmin, isReadBySuperadmin } = req.body;
 
-        // Validate questionId format
         if (!isValidObjectId(questionId)) {
             return res.status(400).json({ error: "Invalid question ID format" });
         }
@@ -165,14 +167,21 @@ exports.editQuestion = async (req, res) => {
             .populate("answers.userId", "name username image role");
         res.json(updatedQuestion);
     } catch (error) {
-        console.error('Error in editQuestion:', error);
-        res.status(500).json({ error: "Error updating question", details: error.message });
+        if (isDevelopment) {
+            console.error('Failed to update question:', error.message);
+        }
+        res.status(500).json({ error: "Failed to update question" });
     }
 };
 
 // New endpoint for read status. Used by web superadmin-question feature.
 exports.updateAnswerReadStatus = async (req, res) => {
+    const isDevelopment = process.env.NODE_ENV !== 'production';
     try {
+        if (!req.user) {
+            return res.status(401).json({ error: "Authentication required" });
+        }
+        
         const { questionId } = req.params;
         const currentUserRole = req.user.role;
         
@@ -180,7 +189,9 @@ exports.updateAnswerReadStatus = async (req, res) => {
         if (!isValidObjectId(questionId)) {
             return res.status(400).json({ error: "Invalid question ID format" });
         }
-        const question = await SuperAdminQuestion.findById(questionId);
+        
+        const question = await SuperAdminQuestion.findById(questionId)
+            .populate("answers.userId", "role");
         if (!question) {
             return res.status(404).json({ error: "Question not found" });
         }
@@ -194,7 +205,11 @@ exports.updateAnswerReadStatus = async (req, res) => {
         const latestAnswer = answers[answers.length - 1];
 
         // Only update read status if viewer is different role than sender
-        if (latestAnswer.userId.role !== currentUserRole) {
+        if (latestAnswer.userId?.role !== currentUserRole) {
+            if (isDevelopment) {
+                console.log('Marking message as read:', { questionId });
+            }
+            
             latestAnswer.isRead = true;
             
             // Update repliedBySuperadmin for mobile compatibility if superadmin is reading
@@ -202,13 +217,21 @@ exports.updateAnswerReadStatus = async (req, res) => {
                 question.repliedBySuperadmin = true;
             }
             
-            await question.save();
+            try {
+                await question.save();
+            } catch (error) {
+                if (isDevelopment) {
+                    console.error('Failed to save read status:', error.message);
+                }
+                return res.status(500).json({ error: "Failed to save read status" });
+            }
         }
 
-        // Return success without sensitive data
         res.status(200).json({ success: true });
     } catch (error) {
-        console.error('Error in updateAnswerReadStatus:', error);
-        res.status(500).json({ error: "Internal server error", details: error.message });
+        if (isDevelopment) {
+            console.error('Error updating read status:', error.message);
+        }
+        res.status(500).json({ error: "Internal server error" });
     }
 };
