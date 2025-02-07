@@ -203,7 +203,6 @@ exports.updateAnswerReadStatus = async (req, res) => {
         }
 
         const latestAnswer = answers[answers.length - 1];
-
         // Only update read status if viewer is different role than sender
         if (latestAnswer.userId?.role !== currentUserRole) {
             if (isDevelopment) {
@@ -213,7 +212,7 @@ exports.updateAnswerReadStatus = async (req, res) => {
             latestAnswer.isRead = true;
             
             // Update repliedBySuperadmin for mobile compatibility if superadmin is reading
-            if (currentUserRole === 'superAdmin' && !question.repliedBySuperadmin) {
+            if (currentUserRole === 'superAdmin') {
                 question.repliedBySuperadmin = true;
             }
             
