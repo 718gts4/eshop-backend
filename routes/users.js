@@ -20,7 +20,7 @@ const {
     getAllAdminUsers,
     checkUsername,
     resetPasswordConfirm,
-} = require("../controllers/user");
+} = require("../controllers/user/user");
 const express = require("express");
 const router = express.Router();
 const { validateRequest } = require('../middleware/validate-zod');

@@ -106,8 +106,21 @@ exports.addAnswer = async (req, res) => {
     try {
         const { text } = req.body;
         const userId = req.user?.id;
+        if (!userId) {
+            return res.status(401).json({
+                error: "User ID is required"
+            });
+        }
         const userRole = req.user?.role;
         const { id: questionId } = req.params;
+
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('Token structure:', {
+                providedId: userId,
+                source: req.user?.id ? 'admin login' : 'user login',
+                role: userRole
+            });
+        }
 
         if (!isValidObjectId(questionId)) {
             return res.status(400).json({ error: "Invalid question ID format" });
@@ -137,8 +150,14 @@ exports.addAnswer = async (req, res) => {
         res.json(updatedQuestion);
     } catch (error) {
         if (isDevelopment) {
-            console.error('Failed to add answer:', error.message);
+            console.error('Failed to add answer:', {
+                error: error.message,
+                user: req.user,
+                providedId: req.user?.id || req.user?.userId,
+                questionId
+            });
         }
+
         res.status(500).json({ error: "Failed to add answer" });
     }
 };
@@ -176,7 +195,6 @@ exports.editQuestion = async (req, res) => {
 
 // New endpoint for read status. Used by web superadmin-question feature.
 exports.updateAnswerReadStatus = async (req, res) => {
-    const isDevelopment = process.env.NODE_ENV !== 'production';
     try {
         if (!req.user) {
             return res.status(401).json({ error: "Authentication required" });
