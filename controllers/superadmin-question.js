@@ -114,14 +114,6 @@ exports.addAnswer = async (req, res) => {
         const userRole = req.user?.role;
         const { id: questionId } = req.params;
 
-        if (process.env.NODE_ENV !== 'production') {
-            console.log('Token structure:', {
-                providedId: userId,
-                source: req.user?.id ? 'admin login' : 'user login',
-                role: userRole
-            });
-        }
-
         if (!isValidObjectId(questionId)) {
             return res.status(400).json({ error: "Invalid question ID format" });
         }
