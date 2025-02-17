@@ -1,10 +1,10 @@
-const { User } = require("../models/user");
-const VerificationToken = require("../models/verificationToken");
+const { User } = require("../../models/user");
+const VerificationToken = require("../../models/verificationToken");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
-const nodemailer = require("nodemailer");
 const { isValidObjectId } = require("mongoose");
+const { AUTH_MESSAGES, ERROR_MESSAGES } = require("./messages");
 
 const {
     generateOTP,
@@ -12,7 +12,7 @@ const {
     generateEmailTemplate,
     generatePasswordResetEmailTemplate,
     generateResetCode,
-} = require("../utils/mail");
+} = require("../../utils/mail");
 
 exports.getUsers = async (req, res) => {
     const userList = await User.find().select("-passwordHash");
@@ -29,7 +29,7 @@ exports.getUserId = async (req, res) => {
 
         if (!user) {
             return res.status(404).json({
-                message: "The user with the given ID was not found",
+                message: AUTH_MESSAGES.USER_NOT_FOUND
             });
         }
 
@@ -37,7 +37,7 @@ exports.getUserId = async (req, res) => {
     } catch (error) {
         console.error("Error finding user:", error);
         return res.status(500).json({
-            message: "An error occurred while finding the user",
+            message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR
         });
     }
 };
@@ -48,13 +48,13 @@ exports.updateUser = async (req, res) => {
     const usernameExist = await User.findOne({ username: req.body.username });
     if (usernameExist)
         return res.status(400).json({
-            message: "이미 등록된 유저이름입니다",
+            message: AUTH_MESSAGES.USERNAME_EXISTS
         });
 
     const emailExist = await User.findOne({ email: req.body.email });
     if (emailExist)
         return res.status(400).json({
-            message: "이미 등록된 이메일 주소입니다.",
+            message: AUTH_MESSAGES.EMAIL_EXISTS
         });
 
     let newPassword;
@@ -91,7 +91,7 @@ exports.updateUser = async (req, res) => {
     );
 
     if (!user)
-        return res.status(400).send("사용자 정보를 업데이트할 수 없습니다");
+        return res.status(400).json({ message: AUTH_MESSAGES.UPDATE_FAILED });
 
     res.send(user);
 };
@@ -106,7 +106,7 @@ exports.deleteUser = (req, res) => {
             } else {
                 return res
                     .status(404)
-                    .json({ success: false, message: "user not found" });
+                    .json({ success: false, message: AUTH_MESSAGES.USER_NOT_FOUND });
             }
         })
         .catch((err) => {
@@ -114,13 +114,12 @@ exports.deleteUser = (req, res) => {
         });
 };
 
-// used for sign up as first time user
 exports.register = async (req, res) => {
     const registerUser = await User.findOne({ email: req.body.email });
 
     if (registerUser)
         return res.status(400).json({
-            message: "이미 등록된 이메일 주소입니다!!!",
+            message: AUTH_MESSAGES.EMAIL_EXISTS
         });
 
     let user = new User({
@@ -150,9 +149,7 @@ exports.register = async (req, res) => {
     user = await user.save();
 
     if (!user)
-        return res
-            .status(400)
-            .send("회원가입에 문제가 발생했습니다. 정보를 확인해주세요.");
+        return res.status(400).json({ message: AUTH_MESSAGES.REGISTRATION_FAILED });
 
     mailTransport().sendMail({
         from: process.env.EMAIL,
@@ -162,7 +159,7 @@ exports.register = async (req, res) => {
     }, (error, info) => {
         if(error){
             console.log('Error sending email', error.message);
-            return res.status(500).send('이메일 전송에 실패했습니다.');
+            return res.status(500).json({ message: AUTH_MESSAGES.EMAIL_SEND_FAILED });
         } else {
             console.log('Email sent', info.response);
         }
@@ -176,13 +173,17 @@ exports.login = async (req, res) => {
     const secret = process.env.secret;
     const twentyYearsInSeconds = 60 * 60 * 24 * 365 * 20;
     if (!user) {
-        return res.status(400).send("The user not found");
+        return res.status(400).json({
+            message: AUTH_MESSAGES.INVALID_CREDENTIALS
+        });
     }
 
     if (user && bcrypt.compareSync(req.body.password, user.passwordHash)) {
         const token = jwt.sign(
             {
                 userId: user.id,
+                id: user.id,
+                role: user.role,
                 isAdmin: user.isAdmin,
             },
             secret,
@@ -193,7 +194,9 @@ exports.login = async (req, res) => {
             user
         });
     } else {
-        res.status(400).send("password is wrong!");
+        res.status(400).json({
+            message: AUTH_MESSAGES.INVALID_CREDENTIALS
+        });
     }
 };
 
@@ -247,18 +250,17 @@ exports.likeUser = async (req, res) => {
         const { id } = req.params;
         const { userId } = req.body;
 
-        // Validate `id` and `userId` as ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: "Invalid user ID in params" });
+            return res.status(400).json({ message: ERROR_MESSAGES.INVALID_USER_ID_PARAMS });
         }
 
         if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).json({ message: "Invalid user ID in body" });
+            return res.status(400).json({ message: ERROR_MESSAGES.INVALID_USER_ID_BODY });
         }
 
         const user = await User.findById(id);
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: AUTH_MESSAGES.USER_NOT_FOUND });
         }
 
         const isLiked = user.likes?.get(userId);
@@ -310,7 +312,7 @@ exports.getSearchUsers = async (req, res) => {
         res.json(users);
     } catch (error) {
         console.error("Error", error);
-        res.status(500).json({ message: "Server Error" });
+        res.status(500).json({ message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
     }
 };
 
@@ -321,14 +323,14 @@ exports.addSearchWord = async (req, res) => {
 
         const user = await User.findById(userId);
         if (!user) {
-            return res.status(404).json({ message: "User is not found" });
+            return res.status(404).json({ message: AUTH_MESSAGES.USER_NOT_FOUND });
         }
         user.searchWords.unshift(searchWord);
         await user.save();
 
         res.status(200).json({ message: "Search word added successfully" });
     } catch (error) {
-        res.status(500).json({ message: "서버에 문제가 발생했습니다." });
+        res.status(500).json({ message: AUTH_MESSAGES.GENERIC_ERROR });
     }
 };
 
@@ -338,7 +340,7 @@ exports.getSearchWords = async (req, res) => {
 
         const user = await User.findById(userId);
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: AUTH_MESSAGES.USER_NOT_FOUND });
         }
 
         const searchWords = user.searchWords;
@@ -346,7 +348,7 @@ exports.getSearchWords = async (req, res) => {
         res.status(200).json({ searchWords });
     } catch (error) {
         console.error("Error", error);
-        res.status(500).json({ message: "Server Error" });
+        res.status(500).json({ message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
     }
 };
 
@@ -356,17 +358,16 @@ exports.deleteAllSearchWords = async (req, res) => {
     try {
         const user = await User.findById(userId);
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: AUTH_MESSAGES.USER_NOT_FOUND });
         }
 
-        // Clear the searchWords array
         user.searchWords = [];
         await user.save();
 
         res.json({ message: "Search words deleted successfully" });
     } catch (error) {
         console.error("Error", error);
-        res.status(500).json({ message: "Server Error" });
+        res.status(500).json({ message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
     }
 };
 
@@ -390,10 +391,8 @@ exports.bookmarkProduct = async (req, res) => {
         }
 
         if (bookmarkIndex > -1) {
-            // If the product is already bookmarked, remove it from the array
             user.bookmarkProducts.splice(bookmarkIndex, 1);
         } else {
-            // If the product is not bookmarked, add it to the array
             user.bookmarkProducts.push(productId);
         }
 
@@ -410,7 +409,7 @@ exports.getBookmarkedProducts = async (req, res) => {
         const user = await User.findById(userId).populate("bookmarkProducts");
 
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: AUTH_MESSAGES.USER_NOT_FOUND });
         }
 
         const bookmarkedProducts = user.bookmarkProducts;
@@ -424,24 +423,24 @@ exports.getBookmarkedProducts = async (req, res) => {
 exports.checkEmail = async (req, res) => {
     const { userId, otp } = req.body;
     if (!userId || !otp.trim()) {
-        return res.status(400).send("PIN 번호를 다시 확인하시기 바랍니다.");
+        return res.status(400).json({ message: AUTH_MESSAGES.INVALID_PIN });
     }
 
     if (!isValidObjectId(userId)) {
-        return res.status(400).send("유저 ID에 문제가 있습니다.");
+        return res.status(400).json({ message: AUTH_MESSAGES.INVALID_USER_ID });
     }
 
     const user = await User.findById(userId);
-    if (!user) return res.status(400).send("회원을 찾을 수 없습니다.");
+    if (!user) return res.status(400).json({ message: AUTH_MESSAGES.USER_NOT_FOUND });
 
     if (user.verified)
-        return res.status(400).send("PIN 번호가 확인된 이메일입니다.");
+        return res.status(400).json({ message: AUTH_MESSAGES.EMAIL_ALREADY_VERIFIED });
 
     const token = await VerificationToken.findOne({ owner: userId });
-    if (!token) return res.status(400).send("Sorry, user not found!");
+    if (!token) return res.status(400).json({ message: AUTH_MESSAGES.USER_NOT_FOUND });
 
     const isMatched = await token.compareToken(otp);
-    if (!isMatched) return res.status(400).send("PIN 번호가 잘못되었습니다");
+    if (!isMatched) return res.status(400).json({ message: AUTH_MESSAGES.INVALID_OTP });
 
     user.verified = true;
 
@@ -454,16 +453,16 @@ exports.checkEmail = async (req, res) => {
 exports.resendEmailVerification = async (req, res) => {
     const { userId } = req.body;
     const user = await User.findById(userId);
-    if (!user) return res.json({ error: "User is not found" });
+    if (!user) return res.json({ error: AUTH_MESSAGES.USER_NOT_FOUND });
 
     if (user.verified)
-        return res.json({ error: "This email is already verified!" });
+        return res.json({ error: AUTH_MESSAGES.EMAIL_ALREADY_VERIFIED });
 
     const alreadyHasToken = await VerificationToken.findOne({
         owner: userId,
     });
     if (alreadyHasToken)
-        return res.json({ error: "1시간 후 다른 PIN을 요청하실 수 있습니다." });
+        return res.json({ error: AUTH_MESSAGES.OTP_REQUEST_LIMIT });
 
     const OTP = generateOTP();
     console.log("new otp", OTP);
@@ -482,7 +481,7 @@ exports.resendEmailVerification = async (req, res) => {
         html: generateEmailTemplate(OTP),
     });
 
-    res.json({ message: "새로운 PIN이 이메일로 발송되었습니다." });
+    res.json({ message: AUTH_MESSAGES.NEW_OTP_SENT });
 };
 
 exports.resetPassword = async (req, res) => {
@@ -490,8 +489,8 @@ exports.resetPassword = async (req, res) => {
     const existingUser = await User.findOne({email});
 
     if(!existingUser){
-        console.error({success:false, message: '이메일 비밀번호를 재설정하는데 문제가 발생했습니다.'});
-        return res.send({success: false, message: '사용자가 존재하면 이메일이 발송되었습니다.'})
+        console.error({success:false, message: AUTH_MESSAGES.GENERIC_ERROR});
+        return res.json({success: false, message: '사용자가 존재하면 이메일이 발송되었습니다.'});
     }
 
     const token = generateResetCode()
@@ -507,7 +506,7 @@ exports.resetPassword = async (req, res) => {
         html: generatePasswordResetEmailTemplate(token),
     });
 
-    return res.json({ success:true, message: "비밀번호 재설정 인증번호가 발송되었습니다."});
+    return res.json({ success:true, message: AUTH_MESSAGES.RESET_CODE_SENT });
 };
 
 exports.resetPasswordConfirm = async (req, res) => {
@@ -518,11 +517,11 @@ exports.resetPasswordConfirm = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (!user || user.resettoken !== verificationCode) {
-            return res.status(400).send({success:false, message: "인증번호가 잘못되었습니다"})
+            return res.status(400).json({success:false, message: AUTH_MESSAGES.INVALID_RESET_CODE});
         }
 
-        if (user.resettokenExpiration  < new Date()) {
-            return res.status(400).send({success:false, message: "인증번호가 만료되었습니다"})
+        if (user.resettokenExpiration < new Date()) {
+            return res.status(400).json({success:false, message: AUTH_MESSAGES.RESET_CODE_EXPIRED});
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -531,11 +530,11 @@ exports.resetPasswordConfirm = async (req, res) => {
         user.resettokenExpiration = null;
         await user.save();
 
-        return res.status(200).send({success:true});
+        return res.status(200).json({success:true});
     } catch (error) {
-        return res.status(500).send({ success: false, message: "문제가 발생했습니다. 1분 뒤 다시 시도해보세요"})
+        return res.status(500).json({ success: false, message: AUTH_MESSAGES.GENERIC_ERROR });
     }
-}
+};
 
 exports.getAllAdminUsers = async (req, res) => {
     try {
@@ -557,7 +556,7 @@ exports.getAllAdminUsers = async (req, res) => {
 
         res.status(200).json(adminUsers);
     } catch (error) {
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
     }
 };
 
@@ -568,7 +567,7 @@ exports.checkUsername = async (req, res) => {
         const existingUser = await User.findOne({ username: username });
         res.json({ unique: !existingUser });
     } catch (error) {
-        console.log("Error checking username:", error); // Removed the extra function call
-        res.status(500).json({ error: "Internal server error" });
+        console.log("Error checking username:", error);
+        res.status(500).json({ error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR });
     }
 };

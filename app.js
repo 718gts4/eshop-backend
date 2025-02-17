@@ -19,9 +19,9 @@ console.log("NODE_ENV:", process.env.NODE_ENV,{isProduction});
 const corsOptions = isProduction
     ? {} 
     : {
-        origin: "http://localhost:3000", // Allow requests from your frontend server
-        methods: "GET,POST,PUT,PATCH,DELETE",
         allowedHeaders: "Content-Type,Authorization",
+        methods: "GET,POST,PUT,PATCH,DELETE",
+        origin: "http://localhost:3000", // Allow requests from your frontend server
     };
 
 app.use(cors(corsOptions));
@@ -52,11 +52,9 @@ const purchaseRoutes = require("./routes/purchase");
 const vendorRoutes = require("./routes/vendor");
 const clientRoutes = require("./routes/client");
 const returnBankRoutes = require("./routes/returnBank");
-const vendorSupportQueryRoutes = require("./routes/vendor-support-query");
 const paymentRoutes = require("./routes/payment");
-const superadminRoutes = require("./routes/superadmin-question");
 const popupRoutes = require("./routes/popup");
-
+const superadminRoutes = require("./routes/superadmin-question");
 const api = process.env.API_URL;
 
 //Routers
@@ -77,10 +75,11 @@ app.use(`${api}/purchase`, purchaseRoutes);
 app.use(`${api}/vendor`, vendorRoutes);
 app.use(`${api}/client`, clientRoutes);
 app.use(`${api}/returnBank`, returnBankRoutes);
-app.use(`${api}/vendor-support-query`, vendorSupportQueryRoutes);
 app.use(`${api}/payment`, paymentRoutes);
-app.use(`${api}/superadminQuestions`, superadminRoutes);
 app.use(`${api}/popup`, popupRoutes);
+
+// Used by mobile app and admin dashboard
+app.use(`${api}/superadminQuestions`, superadminRoutes);
 
 // Schedule the task to run periodically (e.g., every hour)
 setInterval(backgroundService.updateProductsOnSaleStatus, 3600000);

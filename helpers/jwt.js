@@ -7,17 +7,23 @@ function authJwt() {
 
     return [
         (req, res, next) => {
-        
+            const isDevelopment = process.env.NODE_ENV !== 'production';
+            
             if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
                 const token = req.headers.authorization.split(' ')[1];
                 try {
                     const decoded = jwt.verify(token, secret);
                     req.user = decoded;
                 } catch (error) {
-                    console.error("Error verifying token:", error);
+                    if (isDevelopment) {
+                        console.error("Token verification failed:", error.message);
+                    }
+                    return res.status(401).json({
+                        message: 'Invalid or expired token'
+                    });
                 }
-            } else {
-                console.log("No valid authorization header found");
+            } else if (isDevelopment) {
+                console.log("Missing or invalid authorization header");
             }
             
             next();
